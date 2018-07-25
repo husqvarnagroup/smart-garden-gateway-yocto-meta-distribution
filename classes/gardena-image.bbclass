@@ -1,6 +1,6 @@
 # Base for all Gardena images
 
-IMAGE_INSTALL += "mtd-utils"
+IMAGE_INSTALL += "packagegroup-core-boot mtd-utils"
 
 IMAGE_FEATURES += "ssh-server-dropbear package-management"
 
