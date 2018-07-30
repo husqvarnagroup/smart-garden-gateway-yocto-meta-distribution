@@ -1,6 +1,8 @@
 # Base for all Gardena images
 
-IMAGE_INSTALL += "packagegroup-core-boot mtd-utils ppp \
+IMAGE_INSTALL += "packagegroup-core-boot \
+                  mtd-utils mtd-utils-ubifs \
+                  ppp \
                   python3-core \
                   python3-datetime \
                   python3-threading \
