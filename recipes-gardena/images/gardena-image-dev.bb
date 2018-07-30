@@ -2,6 +2,7 @@ SUMMARY = "The Gardena image with additional tools for developers"
 
 # tools-profile would be nice to have, but pulls in (too) many X11 dependencies
 IMAGE_FEATURES += "tools-debug debug-tweaks"
+IMAGE_INSTALL += "i2c-tools"
 
 # Useful for nfsroot
 IMAGE_FSTYPES += "tar.bz2"
