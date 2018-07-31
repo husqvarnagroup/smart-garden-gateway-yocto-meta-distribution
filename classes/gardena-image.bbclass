@@ -2,6 +2,7 @@
 
 IMAGE_INSTALL += "packagegroup-core-boot \
                   mtd-utils mtd-utils-ubifs \
+                  squashfs-tools \
                   ppp \
                   python3-core \
                   python3-datetime \
