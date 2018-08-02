@@ -1,6 +1,10 @@
 # Base for all Gardena images
 
-IMAGE_INSTALL += "packagegroup-core-boot mtd-utils ppp"
+IMAGE_INSTALL += "packagegroup-core-boot mtd-utils ppp \
+                  python3-core \
+                  python3-datetime \
+                  python3-threading \
+                  python3-unittest"
 
 IMAGE_FEATURES += "ssh-server-dropbear package-management"
 
