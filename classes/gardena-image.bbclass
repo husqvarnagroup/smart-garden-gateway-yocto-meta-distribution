@@ -3,6 +3,7 @@
 IMAGE_INSTALL += "packagegroup-core-boot mtd-utils ppp \
                   python3-core \
                   python3-datetime \
+                  python3-json \
                   python3-threading \
                   python3-unittest"
 
