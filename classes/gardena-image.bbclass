@@ -1,6 +1,7 @@
 # Base for all Gardena images
 
 IMAGE_INSTALL += "packagegroup-core-boot \
+                  memtester \
                   mtd-utils mtd-utils-ubifs \
                   squashfs-tools \
                   ppp \
