@@ -5,3 +5,4 @@ You can now run 'bitbake <target>'
 
 Common targets are:
     gardena-image-dev
+    gardena-image-prod
