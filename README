@@ -8,6 +8,9 @@ Dependencies
   URI: ../smart-garden-low-cost-gateway-yocto-meta-mediatek.git
   branch: master
 
+  URI: ../smart-garden-low-cost-gateway-yocto-meta-openembedded.git
+  branch: sumo
+
 Table of Contents
 =================
 
