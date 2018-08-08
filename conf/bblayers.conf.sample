@@ -9,4 +9,5 @@ BBLAYERS ?= " \
   ##OEROOT##/meta \
   ##OEROOT##/meta-mediatek \
   ##OEROOT##/meta-distribution \
+  ##OEROOT##/meta-openembedded/meta-oe \
   "
