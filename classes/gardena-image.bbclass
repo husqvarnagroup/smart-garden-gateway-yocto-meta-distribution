@@ -1,6 +1,7 @@
 # Base for all Gardena images
 
 IMAGE_INSTALL += "packagegroup-core-boot \
+                  dhcpcd \
                   memtester \
                   mtd-utils mtd-utils-ubifs \
                   squashfs-tools \
