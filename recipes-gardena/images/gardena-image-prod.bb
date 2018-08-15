@@ -1,5 +1,5 @@
 SUMMARY = "The Gardena image for usage on productive gateways"
 
-IMAGE_FEATURES += "read-only-rootfs"
+IMAGE_INSTALL_append = " initscripts-readonly-rootfs-overlay"
 
 inherit gardena-image

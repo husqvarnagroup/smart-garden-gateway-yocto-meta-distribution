@@ -10,4 +10,5 @@ BBLAYERS ?= " \
   ##OEROOT##/meta-mediatek \
   ##OEROOT##/meta-distribution \
   ##OEROOT##/meta-openembedded/meta-oe \
+  ##OEROOT##/meta-readonly-rootfs-overlay \
   "
