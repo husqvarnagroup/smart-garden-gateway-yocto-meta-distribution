@@ -2,15 +2,18 @@
 
 IMAGE_INSTALL += "packagegroup-core-boot \
                   dhcpcd \
+                  initscripts-readonly-rootfs-overlay \
                   memtester \
-                  mtd-utils mtd-utils-ubifs \
-                  squashfs-tools \
+                  mtd-utils \
+                  mtd-utils-ubifs \
                   ppp \
                   python3-core \
                   python3-datetime \
                   python3-json \
                   python3-threading \
-                  python3-unittest"
+                  python3-unittest \
+                  squashfs-tools \
+"
 
 IMAGE_FEATURES += " \
     empty-root-password \
