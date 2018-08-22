@@ -12,7 +12,11 @@ IMAGE_INSTALL += "packagegroup-core-boot \
                   python3-threading \
                   python3-unittest"
 
-IMAGE_FEATURES += "ssh-server-dropbear package-management"
+IMAGE_FEATURES += " \
+    empty-root-password \
+    package-management \ 
+    ssh-server-dropbear \
+"
 
 # We do not need any additional locales
 IMAGE_LINGUAS = " "
