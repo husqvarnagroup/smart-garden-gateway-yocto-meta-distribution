@@ -1,15 +1,16 @@
-From 4acb4f253ff7be95dcb7818c35952a97036c414c Mon Sep 17 00:00:00 2001
+From b41e5db04c3c828869c04f386de5c09cdebeeac3 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <code@reto-schneider.ch>
 Date: Thu, 23 Aug 2018 02:39:07 +0200
 Subject: [PATCH] Do url-encoding of file names using the curl backend
 
 Warning: This hack requires the usage of the curl backend.
+
 ---
- libopkg/opkg_download.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+ libopkg/opkg_download.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/libopkg/opkg_download.c b/libopkg/opkg_download.c
-index 480ae02..18c3763 100644
+index 480ae02..135f68c 100644
 --- a/libopkg/opkg_download.c
 +++ b/libopkg/opkg_download.c
 @@ -19,6 +19,7 @@
@@ -29,25 +30,26 @@ index 480ae02..18c3763 100644
  
      if (pkg->src == NULL) {
          opkg_msg(ERROR,
-@@ -240,7 +243,17 @@ static char *get_pkg_url(pkg_t * pkg)
+@@ -240,7 +243,21 @@ static char *get_pkg_url(pkg_t * pkg)
          return NULL;
      }
  
 -    sprintf_alloc(&url, "%s/%s", pkg->src->value, pkg->filename);
-+    curl = curl_easy_init();
-+    if(!curl)
-+        return NULL;
++    if (!str_starts_with(pkg->src->value, "file:")) {
++        curl = curl_easy_init();
++        if (!curl)
++            return NULL;
 +
-+    filename_encoded = curl_easy_escape(curl, pkg->filename, 0);
++        filename_encoded = curl_easy_escape(curl, pkg->filename, 0);
 +
-+    sprintf_alloc(&url, "%s/%s", pkg->src->value, filename_encoded);
++        sprintf_alloc(&url, "%s/%s", pkg->src->value, filename_encoded);
 +
-+    curl_free(filename_encoded);
-+    curl_easy_cleanup(curl);
++        curl_free(filename_encoded);
++        curl_easy_cleanup(curl);
++    } else {
++        sprintf_alloc(&url, "%s/%s", pkg->src->value, pkg->filename);
++    }
 +
      return url;
  }
  
--- 
-2.11.0
-
