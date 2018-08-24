@@ -133,6 +133,8 @@ PACKAGE_CLASSES ?= "package_ipk"
 # NOTE: mklibs also needs to be explicitly enabled for a given image, see local.conf.extended
 USER_CLASSES ?= "buildstats image-mklibs image-prelink"
 
+# Do not install recommended packages automatically
+NO_RECOMMENDATIONS = "1"
 
 #
 # Runtime testing of images
