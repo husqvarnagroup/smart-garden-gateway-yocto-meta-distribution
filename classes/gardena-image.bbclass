@@ -14,6 +14,7 @@ IMAGE_INSTALL += " \
     ppp \
     squashfs-tools \
     swdtool \
+    swupdate \
     u-boot \
     u-boot-fw-utils \
 "

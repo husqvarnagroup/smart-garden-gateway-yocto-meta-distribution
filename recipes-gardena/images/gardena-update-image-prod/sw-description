@@ -1,0 +1,80 @@
+software = {
+	version = "0.0.1";
+	description = "Linux Firmware for the Gardena smart Gateway MT7688";
+
+	smart_gateway_mt7688 = {
+		hardware-compatibility: [ "0.5" ];
+
+		stable = {
+			bootslot0 : {
+				images: (
+					{
+						filename = "gardena-image-prod-mt7688.squashfs-xz";
+						volume = "rootfs0";
+					},
+					{
+						filename = "uImage.lzma-mt7688.bin";
+						volume = "kernel0";
+					}
+				);
+
+				/* partitions tag is used to resize UBI partitions */
+				partitions: ( /* UBI Volumes */
+					{
+							name = "kernel0";
+							device = "mtd4";
+							size = 4317184;
+							data = "static";
+					},
+					{
+							name = "rootfs0";
+							device = "mtd4";
+							size = 42029056;
+							data = "static";
+					},
+					{
+							name = "overlay";
+							device = "mtd4";
+							size = 34029568;
+							data = "dynamic";
+					}
+				);
+			};
+
+			bootslot1 : {
+				images: (
+					{
+						filename = "gardena-image-prod-mt7688.squashfs-xz";
+						volume = "rootfs1";
+					},
+					{
+						filename = "uImage.lzma-mt7688.bin";
+						volume = "kernel1";
+					}
+				);
+
+				/* partitions tag is used to resize UBI partitions */
+				partitions: ( /* UBI Volumes */
+					{
+							name = "kernel1";
+							device = "mtd4";
+							size = 4317184;
+							data = "static";
+					},
+					{
+							name = "rootfs1";
+							device = "mtd4";
+							size = 42029056;
+							data = "static";
+					},
+					{
+							name = "overlay";
+							device = "mtd4";
+							size = 34029568;
+							data = "dynamic";
+					}
+				);
+			};
+		};
+	}
+}
