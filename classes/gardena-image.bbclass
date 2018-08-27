@@ -13,6 +13,8 @@ IMAGE_INSTALL += "packagegroup-core-boot \
                   python3-threading \
                   python3-unittest \
                   squashfs-tools \
+                  u-boot \
+                  u-boot-fw-utils \
 "
 
 IMAGE_FEATURES += " \
