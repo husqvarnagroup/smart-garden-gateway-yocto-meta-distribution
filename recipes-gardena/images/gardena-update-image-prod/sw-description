@@ -5,6 +5,14 @@ software = {
 	smart_gateway_mt7688 = {
 		hardware-compatibility: [ "0.5" ];
 
+		images: (
+			{
+				filename = "u-boot-mt7688.bin";
+				mtdname = "uboot";
+				type = "flash";
+			}
+		);
+
 		stable = {
 			bootslot0 : {
 				images: (

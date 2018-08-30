@@ -11,9 +11,10 @@ SRC_URI = "\
 IMAGE_DEPENDS = "gardena-image-prod u-boot virtual/kernel"
 
 # images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "gardena-image-prod uImage.lzma"
+SWUPDATE_IMAGES = "gardena-image-prod u-boot uImage.lzma"
 
 SWUPDATE_IMAGES_FSTYPES[gardena-image-prod] = ".squashfs-xz"
 SWUPDATE_IMAGES_FSTYPES[uImage.lzma] = ".bin"
+SWUPDATE_IMAGES_FSTYPES[u-boot] = ".bin"
 
 inherit swupdate
