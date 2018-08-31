@@ -10,6 +10,7 @@ BBLAYERS ?= " \
   ##OEROOT##/meta-mediatek \
   ##OEROOT##/meta-distribution \
   ##OEROOT##/meta-gardena \
+  ##OEROOT##/meta-lemonbeat-firmware \
   ##OEROOT##/meta-openembedded/meta-oe \
   ##OEROOT##/meta-openembedded/meta-python \
   ##OEROOT##/meta-openembedded/meta-networking \
