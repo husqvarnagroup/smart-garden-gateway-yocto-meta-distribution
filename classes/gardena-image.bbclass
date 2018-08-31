@@ -1,19 +1,19 @@
 # Base for all Gardena images
 
 IMAGE_INSTALL += " \
-                  dhcpcd \
-                  initscripts-readonly-rootfs-overlay \
-                  iw \
-                  manufacturing-tools \
-                  memtester \
-                  mtd-utils \
-                  mtd-utils-ubifs \
-                  packagegroup-core-boot \
-                  ppp \
-                  squashfs-tools \
-                  swdtool \
-                  u-boot \
-                  u-boot-fw-utils \
+    dhcpcd \
+    initscripts-readonly-rootfs-overlay \
+    iw \
+    manufacturing-tools \
+    memtester \
+    mtd-utils \
+    mtd-utils-ubifs \
+    packagegroup-core-boot \
+    ppp \
+    squashfs-tools \
+    swdtool \
+    u-boot \
+    u-boot-fw-utils \
 "
 
 IMAGE_FEATURES += " \
