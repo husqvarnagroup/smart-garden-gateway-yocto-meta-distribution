@@ -3,6 +3,7 @@ SUMMARY = "The Gardena image with additional tools for developers"
 # tools-profile would be nice to have, but pulls in (too) many X11 dependencies
 IMAGE_FEATURES += "tools-debug"
 IMAGE_INSTALL += " \
+    cuitest \
     i2c-tools \
     openssh-sftp-server \
     picocom \
