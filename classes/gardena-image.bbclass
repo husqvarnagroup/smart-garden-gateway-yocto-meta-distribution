@@ -3,6 +3,7 @@
 IMAGE_INSTALL += "packagegroup-core-boot \
                   dhcpcd \
                   initscripts-readonly-rootfs-overlay \
+                  iw \
                   memtester \
                   mtd-utils \
                   mtd-utils-ubifs \
