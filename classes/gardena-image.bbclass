@@ -10,6 +10,7 @@ IMAGE_INSTALL += "packagegroup-core-boot \
                   mtd-utils-ubifs \
                   ppp \
                   squashfs-tools \
+                  swdtool \
                   u-boot \
                   u-boot-fw-utils \
 "
