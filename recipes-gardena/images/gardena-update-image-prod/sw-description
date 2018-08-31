@@ -31,12 +31,6 @@ software = {
 							device = "mtd4";
 							size = 42029056;
 							data = "static";
-					},
-					{
-							name = "overlay";
-							device = "mtd4";
-							size = 34029568;
-							data = "dynamic";
 					}
 				);
 			};
@@ -66,12 +60,6 @@ software = {
 							device = "mtd4";
 							size = 42029056;
 							data = "static";
-					},
-					{
-							name = "overlay";
-							device = "mtd4";
-							size = 34029568;
-							data = "dynamic";
 					}
 				);
 			};
