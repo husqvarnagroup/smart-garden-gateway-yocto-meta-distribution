@@ -4,15 +4,11 @@ IMAGE_INSTALL += "packagegroup-core-boot \
                   dhcpcd \
                   initscripts-readonly-rootfs-overlay \
                   iw \
+                  manufacturing-tools \
                   memtester \
                   mtd-utils \
                   mtd-utils-ubifs \
                   ppp \
-                  python3-core \
-                  python3-datetime \
-                  python3-json \
-                  python3-threading \
-                  python3-unittest \
                   squashfs-tools \
                   u-boot \
                   u-boot-fw-utils \
