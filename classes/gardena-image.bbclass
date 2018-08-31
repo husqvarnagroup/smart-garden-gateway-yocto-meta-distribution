@@ -1,6 +1,6 @@
 # Base for all Gardena images
 
-IMAGE_INSTALL += "packagegroup-core-boot \
+IMAGE_INSTALL += " \
                   dhcpcd \
                   initscripts-readonly-rootfs-overlay \
                   iw \
@@ -8,6 +8,7 @@ IMAGE_INSTALL += "packagegroup-core-boot \
                   memtester \
                   mtd-utils \
                   mtd-utils-ubifs \
+                  packagegroup-core-boot \
                   ppp \
                   squashfs-tools \
                   swdtool \
