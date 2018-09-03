@@ -17,4 +17,15 @@ SWUPDATE_IMAGES_FSTYPES[gardena-image-prod] = ".squashfs-xz"
 SWUPDATE_IMAGES_FSTYPES[uImage.lzma] = ".bin"
 SWUPDATE_IMAGES_FSTYPES[u-boot] = ".bin"
 
+# In order to sign the image, the variables SWUPDATE_SIGNING, SWUPDATE_CMS_KEY,
+# and SWUPDATE_CMS_CERT need to be set. [1]
+# Please do so by either adding them to our local.conf file or by exporting them
+# to bitbake in bash (adding them to BB_ENV_EXTRAWHITE) before building this
+# image. [2]
+# [1] https://sbabic.github.io/swupdate/building-with-yocto.html#template-for-recipe-using-the-class
+# [2] https://www.yoctoproject.org/docs/latest/bitbake-user-manual/bitbake-user-manual.html#var-BB_ENV_EXTRAWHITE
+#SWUPDATE_SIGNING = "CMS"
+#SWUPDATE_CMS_KEY = "/path/to/key.pem"
+#SWUPDATE_CMS_CERT = "/path/to/cert.pem"
+
 inherit swupdate
