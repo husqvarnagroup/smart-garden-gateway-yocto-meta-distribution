@@ -18,14 +18,12 @@ software = {
 						volume = "kernel0";
 						sha256 = "@uImage.lzma-mt7688.bin";
 					},
-					images: (
-						{
-							filename = "u-boot-mt7688.bin";
-							mtdname = "uboot";
-							type = "flash";
-							sha256 = "@u-boot-mt7688.bin";
-						}
-					);
+					{
+						filename = "u-boot-mt7688.bin";
+						mtdname = "uboot";
+						type = "flash";
+						sha256 = "@u-boot-mt7688.bin";
+					}
 				);
 
 				/* partitions tag is used to resize UBI partitions */
@@ -57,14 +55,12 @@ software = {
 						volume = "kernel1";
 						sha256 = "@uImage.lzma-mt7688.bin";
 					},
-					images: (
-						{
-							filename = "u-boot-mt7688.bin";
-							mtdname = "uboot";
-							type = "flash";
-							sha256 = "@u-boot-mt7688.bin";
-						}
-					);
+					{
+						filename = "u-boot-mt7688.bin";
+						mtdname = "uboot";
+						type = "flash";
+						sha256 = "@u-boot-mt7688.bin";
+					}
 				);
 
 				/* partitions tag is used to resize UBI partitions */
