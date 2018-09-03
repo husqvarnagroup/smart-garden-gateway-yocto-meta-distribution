@@ -5,15 +5,6 @@ software = {
 	smart_gateway_mt7688 = {
 		hardware-compatibility: [ "0.5" ];
 
-		images: (
-			{
-				filename = "u-boot-mt7688.bin";
-				mtdname = "uboot";
-				type = "flash";
-				sha256 = "@u-boot-mt7688.bin";
-			}
-		);
-
 		stable = {
 			bootslot0 : {
 				images: (
@@ -26,7 +17,15 @@ software = {
 						filename = "uImage.lzma-mt7688.bin";
 						volume = "kernel0";
 						sha256 = "@uImage.lzma-mt7688.bin";
-					}
+					},
+					images: (
+						{
+							filename = "u-boot-mt7688.bin";
+							mtdname = "uboot";
+							type = "flash";
+							sha256 = "@u-boot-mt7688.bin";
+						}
+					);
 				);
 
 				/* partitions tag is used to resize UBI partitions */
@@ -57,7 +56,15 @@ software = {
 						filename = "uImage.lzma-mt7688.bin";
 						volume = "kernel1";
 						sha256 = "@uImage.lzma-mt7688.bin";
-					}
+					},
+					images: (
+						{
+							filename = "u-boot-mt7688.bin";
+							mtdname = "uboot";
+							type = "flash";
+							sha256 = "@u-boot-mt7688.bin";
+						}
+					);
 				);
 
 				/* partitions tag is used to resize UBI partitions */
