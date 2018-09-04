@@ -41,6 +41,17 @@ software = {
 							data = "static";
 					}
 				);
+
+				bootenv: (
+					{
+						name = "bootslot";
+						value = "0";
+					},
+					{
+						name = "bootslot_next";
+						value = "1";
+					}
+				);
 			};
 
 			bootslot1 : {
@@ -76,6 +87,17 @@ software = {
 							device = "nand";
 							size = 42029056;
 							data = "static";
+					}
+				);
+
+				bootenv: (
+					{
+						name = "bootslot";
+						value = "1";
+					},
+					{
+						name = "bootslot_next";
+						value = "0";
 					}
 				);
 			};

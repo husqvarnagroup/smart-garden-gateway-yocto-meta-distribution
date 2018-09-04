@@ -9,6 +9,7 @@ SRC_URI += " \
     file://enable_signing_cms.cfg \
     file://enable_systemd.cfg \
     file://enable_ubi.cfg \
+    file://enable_bootloader.cfg \
     file://0001-core-ustrtoull-convert-zero-length-strings-to-0.patch \
     file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
 "
