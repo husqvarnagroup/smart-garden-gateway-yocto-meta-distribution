@@ -1,0 +1,32 @@
+From f76d46e6631b86af25cf84b626400255c8baed86 Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Tue, 4 Sep 2018 15:48:24 +0200
+Subject: [PATCH] core: ustrtoull: convert zero-length strings to 0
+
+Before 6e4f913d1d267d045ef08cdadf44062951afcedd (ustrtoull refactoring),
+zero-length (empty) strings got converted to 0. This commit mimics this
+old behavior by checking the string length before calling strtoull which
+would set errno to EINVAL for empty strings.
+---
+ core/util.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/core/util.c b/core/util.c
+index b71b7cc..cf0f7ed 100644
+--- a/core/util.c
++++ b/core/util.c
+@@ -484,12 +484,12 @@ unsigned long long ustrtoull(const char *cp, unsigned int base)
+ 	errno = 0;
+ 	char *endp = NULL;
+ 
+-	unsigned long long result = strtoull(cp, &endp, base);
+-
+ 	if (strnlen(cp, MAX_SEEK_STRING_SIZE) == 0) {
+ 		return 0;
+ 	}
+ 
++	unsigned long long result = strtoull(cp, &endp, base);
++
+ 	if (cp == endp || (result == ULLONG_MAX && errno == ERANGE)) {
+ 		errno = ERANGE;
+ 		return 0;

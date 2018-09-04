@@ -8,6 +8,7 @@ SRC_URI += " \
     file://enable_sha256.cfg \
     file://enable_systemd.cfg \
     file://enable_ubi.cfg \
+    file://0001-core-ustrtoull-convert-zero-length-strings-to-0.patch \
 "
 
 DEPENDS += "systemd curl"
