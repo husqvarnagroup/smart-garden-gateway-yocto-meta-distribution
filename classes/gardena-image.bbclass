@@ -9,6 +9,7 @@ IMAGE_INSTALL += " \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \
+    os-release \
     packagegroup-core-boot \
     ppp \
     squashfs-tools \
