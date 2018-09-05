@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRCREV = 'dfd1dbd764d02e7f2b1de586517b9c8f6210e14f'
+SRCREV = 'd8069ae82853c2dc6b8400a29ec51b1b556e4134'
 
 SRC_URI += " \
     file://disable_webserver.cfg \
@@ -10,7 +10,6 @@ SRC_URI += " \
     file://enable_systemd.cfg \
     file://enable_ubi.cfg \
     file://enable_bootloader.cfg \
-    file://0001-core-ustrtoull-convert-zero-length-strings-to-0.patch \
     file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
 "
 
