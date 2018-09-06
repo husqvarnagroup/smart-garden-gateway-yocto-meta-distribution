@@ -11,57 +11,6 @@ software = {
 					{
 						name = "rootfs";
 						filename = "gardena-image-prod-mt7688.squashfs-xz";
-						volume = "rootfs0";
-						sha256 = "@gardena-image-prod-mt7688.squashfs-xz";
-					},
-					{
-						name = "kernel";
-						filename = "uImage.lzma-mt7688.bin";
-						volume = "kernel0";
-						sha256 = "@uImage.lzma-mt7688.bin";
-					},
-					{
-						name = "u-boot";
-						filename = "u-boot-mt7688.bin";
-						mtdname = "uboot";
-						type = "flash";
-						sha256 = "@u-boot-mt7688.bin";
-					}
-				);
-
-				/* partitions tag is used to resize UBI partitions */
-				partitions: ( /* UBI Volumes */
-					{
-							name = "kernel0";
-							device = "nand";
-							size = 4317184;
-							data = "static";
-					},
-					{
-							name = "rootfs0";
-							device = "nand";
-							size = 42029056;
-							data = "static";
-					}
-				);
-
-				bootenv: (
-					{
-						name = "bootslot";
-						value = "0";
-					},
-					{
-						name = "bootslot_next";
-						value = "1";
-					}
-				);
-			};
-
-			bootslot1 : {
-				images: (
-					{
-						name = "rootfs";
-						filename = "gardena-image-prod-mt7688.squashfs-xz";
 						volume = "rootfs1";
 						sha256 = "@gardena-image-prod-mt7688.squashfs-xz";
 					},
@@ -100,9 +49,52 @@ software = {
 					{
 						name = "bootslot";
 						value = "1";
+					}
+				);
+			};
+
+			bootslot1 : {
+				images: (
+					{
+						name = "rootfs";
+						filename = "gardena-image-prod-mt7688.squashfs-xz";
+						volume = "rootfs0";
+						sha256 = "@gardena-image-prod-mt7688.squashfs-xz";
 					},
 					{
-						name = "bootslot_next";
+						name = "kernel";
+						filename = "uImage.lzma-mt7688.bin";
+						volume = "kernel0";
+						sha256 = "@uImage.lzma-mt7688.bin";
+					},
+					{
+						name = "u-boot";
+						filename = "u-boot-mt7688.bin";
+						mtdname = "uboot";
+						type = "flash";
+						sha256 = "@u-boot-mt7688.bin";
+					}
+				);
+
+				/* partitions tag is used to resize UBI partitions */
+				partitions: ( /* UBI Volumes */
+					{
+							name = "kernel0";
+							device = "nand";
+							size = 4317184;
+							data = "static";
+					},
+					{
+							name = "rootfs0";
+							device = "nand";
+							size = 42029056;
+							data = "static";
+					}
+				);
+
+				bootenv: (
+					{
+						name = "bootslot";
 						value = "0";
 					}
 				);
