@@ -1,0 +1,2202 @@
+From 74c472b8768bf42d90d25bbd4d453153a5e05e41 Mon Sep 17 00:00:00 2001
+From: Reto Schneider <code@reto-schneider.ch>
+Date: Fri, 7 Sep 2018 02:36:56 +0200
+Subject: [PATCH] Remove doubled newlines
+
+The ERROR/WARN/INFO/TRACE/DEBUG macros implicitly append a newline for
+every message. Having two looks just ugly on the console.
+---
+ bootloader/grub.c             |  24 ++++-----
+ bootloader/uboot.c            |  10 ++--
+ core/cpio_utils.c             |  46 ++++++++---------
+ core/parser.c                 |   2 +-
+ core/pctl.c                   |   2 +-
+ core/swupdate.c               |  22 ++++-----
+ core/util.c                   |  10 ++--
+ corelib/channel_curl.c        |  84 +++++++++++++++----------------
+ corelib/installer.c           |   4 +-
+ corelib/lua_interface.c       |  18 +++----
+ corelib/mtd-interface.c       |   6 +--
+ corelib/parsing_library.c     |   4 +-
+ corelib/stream_interface.c    |   6 +--
+ corelib/swupdate_decrypt.c    |   6 +--
+ corelib/swupdate_settings.c   |   2 +-
+ corelib/verify_signature.c    |  30 +++++------
+ handlers/archive_handler.c    |  26 +++++-----
+ handlers/flash_handler.c      |  10 ++--
+ handlers/raw_handler.c        |   8 +--
+ handlers/swuforward_handler.c |   8 +--
+ handlers/ubivol_handler.c     |   8 +--
+ parser/parse_external.c       |   2 +-
+ parser/parser.c               |  40 +++++++--------
+ suricatta/server_hawkbit.c    | 112 +++++++++++++++++++++---------------------
+ suricatta/state.c             |   4 +-
+ suricatta/suricatta.c         |  12 ++---
+ 26 files changed, 253 insertions(+), 253 deletions(-)
+
+diff --git a/bootloader/grub.c b/bootloader/grub.c
+index 4c9b0b8..414c759 100644
+--- a/bootloader/grub.c
++++ b/bootloader/grub.c
+@@ -19,13 +19,13 @@ static int grubenv_open(struct grubenv_t *grubenv)
+ 
+ 	fp = fopen(GRUBENV_PATH, "rb");
+ 	if (!fp) {
+-		ERROR("Failed to open grubenv file: %s\n", GRUBENV_PATH);
++		ERROR("Failed to open grubenv file: %s", GRUBENV_PATH);
+ 		ret = -1;
+ 		goto cleanup;
+ 	}
+ 
+ 	if (fseek(fp, 0, SEEK_END)) {
+-		ERROR("Failed to seek end grubenv file: %s\n", GRUBENV_PATH);
++		ERROR("Failed to seek end grubenv file: %s", GRUBENV_PATH);
+ 		ret = -1;
+ 		goto cleanup;
+ 	}
+@@ -33,40 +33,40 @@ static int grubenv_open(struct grubenv_t *grubenv)
+ 	size = (size_t)ftell(fp);
+ 
+ 	if (size != GRUBENV_SIZE) {
+-		ERROR("Ivalid grubenv file size: %d\n", (int)size);
++		ERROR("Ivalid grubenv file size: %d", (int)size);
+ 		ret = -1;
+ 		goto cleanup;
+ 	}
+ 
+ 	if (fseek(fp, 0, SEEK_SET)) {
+-		ERROR("Failed to seek set grubenv file: %s\n", GRUBENV_PATH);
++		ERROR("Failed to seek set grubenv file: %s", GRUBENV_PATH);
+ 		ret = -1;
+ 		goto cleanup;
+ 	}
+ 
+ 	buf = malloc(size);
+ 	if (!buf) {
+-		ERROR("Not enough memory for environment\n");
++		ERROR("Not enough memory for environment");
+ 		fclose(fp);
+ 		ret = -ENOMEM;
+ 		goto cleanup;
+ 	}
+ 
+ 	if (fread(buf, 1, size, fp) != size) {
+-		ERROR("Failed to read file %s\n", GRUBENV_PATH);
++		ERROR("Failed to read file %s", GRUBENV_PATH);
+ 		ret = 1;
+ 		goto cleanup;
+ 	}
+ 
+ 	if (memcmp(buf, GRUBENV_HEADER, strlen(GRUBENV_HEADER) -1)) {
+-		ERROR("Invalid grubenv header\n");
++		ERROR("Invalid grubenv header");
+ 		ret = -1;
+ 		goto cleanup;
+ 	}
+ 
+ 	/* truncate header, prepare buf for further splitting */
+ 	if (!(strtok(buf, "\n"))) {
+-		ERROR("grubenv header not found\n");
++		ERROR("grubenv header not found");
+ 		ret = -1;
+ 		goto cleanup;
+ 	}
+@@ -108,7 +108,7 @@ static int grubenv_parse_script(struct grubenv_t *grubenv, const char *script)
+ 	/* open script generated during sw-description parsing */
+ 	fp = fopen(script, "rb");
+ 	if (!fp) {
+-		ERROR("Failed to open grubenv script file: %s\n", script);
++		ERROR("Failed to open grubenv script file: %s", script);
+ 		ret = -1;
+ 		goto cleanup;
+ 	}
+@@ -186,7 +186,7 @@ static int grubenv_write(struct grubenv_t *grubenv)
+ 
+ 	buf = malloc(GRUBENV_SIZE);
+ 	if (!buf) {
+-		ERROR("Not enough memory for environment\n");
++		ERROR("Not enough memory for environment");
+ 		ret = -ENOMEM;
+ 		goto cleanup;
+ 	}
+@@ -214,7 +214,7 @@ static int grubenv_write(struct grubenv_t *grubenv)
+ 	/* write buffer into grubenv.nev file */
+ 	ret = fwrite(buf , 1, GRUBENV_SIZE, fp);
+ 	if (ret != GRUBENV_SIZE) {
+-		ERROR("Failed to write file: %s. Bytes written: %d\n",
++		ERROR("Failed to write file: %s. Bytes written: %d",
+ 			GRUBENV_PATH_NEW, ret);
+ 		ret = -1;
+ 		goto cleanup;
+@@ -222,7 +222,7 @@ static int grubenv_write(struct grubenv_t *grubenv)
+ 
+ 	/* rename grubenv.new into grubenv */
+ 	if (rename(GRUBENV_PATH_NEW, GRUBENV_PATH)) {
+-		ERROR("Failed to move environment: %s into %s\n",
++		ERROR("Failed to move environment: %s into %s",
+ 			GRUBENV_PATH_NEW, GRUBENV_PATH);
+ 		ret = -1;
+ 		goto cleanup;
+diff --git a/bootloader/uboot.c b/bootloader/uboot.c
+index 803c571..ff0b11b 100644
+--- a/bootloader/uboot.c
++++ b/bootloader/uboot.c
+@@ -34,11 +34,11 @@ static int lock_uboot_env(void)
+ 	int lockfd = -1;
+ 	lockfd = open(lockname, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+ 	if (lockfd < 0) {
+-		ERROR("Error opening U-Boot lock file %s, %s\n", lockname, strerror(errno));
++		ERROR("Error opening U-Boot lock file %s, %s", lockname, strerror(errno));
+ 		return -1;
+ 	}
+ 	if (flock(lockfd, LOCK_EX) < 0) {
+-		ERROR("Error locking file %s, %s\n", lockname, strerror(errno));
++		ERROR("Error locking file %s, %s", lockname, strerror(errno));
+ 		close(lockfd);
+ 		return -1;
+ 	}
+@@ -61,7 +61,7 @@ int bootloader_env_set(const char *name, const char *value)
+ 		return -1;
+ 
+ 	if (fw_env_open (fw_env_opts)) {
+-		ERROR("Error: environment not initialized, %s\n", strerror(errno));
++		ERROR("Error: environment not initialized, %s", strerror(errno));
+ 		unlock_uboot_env(lock);
+ 		return -1;
+ 	}
+@@ -90,7 +90,7 @@ char *bootloader_env_get(const char *name)
+ 		return NULL;
+ 
+ 	if (fw_env_open (fw_env_opts)) {
+-		ERROR("Error: environment not initialized, %s\n", strerror(errno));
++		ERROR("Error: environment not initialized, %s", strerror(errno));
+ 		unlock_uboot_env(lock);
+ 		return NULL;
+ 	}
+@@ -113,7 +113,7 @@ int bootloader_apply_list(const char *filename)
+ 
+ 	lockfd = lock_uboot_env();
+ 	if (lockfd < 0) {
+-		ERROR("Error opening U-Boot lock file %s, %s\n", lockname, strerror(errno));
++		ERROR("Error opening U-Boot lock file %s, %s", lockname, strerror(errno));
+ 		return -ENODEV;
+ 	}
+ 
+diff --git a/core/cpio_utils.c b/core/cpio_utils.c
+index bd713af..40ae474 100644
+--- a/core/cpio_utils.c
++++ b/core/cpio_utils.c
+@@ -33,7 +33,7 @@ static int get_cpiohdr(unsigned char *buf, unsigned long *size,
+ 
+ 	cpiohdr = (struct new_ascii_header *)buf;
+ 	if (strncmp(cpiohdr->c_magic, "070702", 6) != 0) {
+-		ERROR("CPIO Format not recognized: magic not found\n");
++		ERROR("CPIO Format not recognized: magic not found");
+ 			return -EINVAL;
+ 	}
+ 	*size = FROM_HEX(cpiohdr->c_filesize);
+@@ -351,9 +351,9 @@ int copyfile(int fdin, void *out, unsigned int nbytes, unsigned long *offs, unsi
+ 
+ 	if (seek) {
+ 		int fdout = (out != NULL) ? *(int *)out : -1;
+-		TRACE("offset has been defined: %llu bytes\n", seek);
++		TRACE("offset has been defined: %llu bytes", seek);
+ 		if (lseek(fdout, seek, SEEK_SET) < 0) {
+-			ERROR("offset argument: seek failed\n");
++			ERROR("offset argument: seek failed");
+ 			ret = -EFAULT;
+ 			goto copyfile_exit;
+ 		}
+@@ -519,18 +519,18 @@ int extract_sw_description(int fd, const char *descfile, off_t *offs)
+ 	const char* TMPDIR = get_tmpdir();
+ 
+ 	if (extract_cpio_header(fd, &fdh, &offset)) {
+-		ERROR("CPIO Header wrong\n");
++		ERROR("CPIO Header wrong");
+ 		return -1;
+ 	}
+ 
+ 	if (strcmp(fdh.filename, descfile)) {
+-		ERROR("Expected %s but found %s.\n",
++		ERROR("Expected %s but found %s.",
+ 			descfile,
+ 			fdh.filename);
+ 		return -1;
+ 	}
+ 	if ((strlen(TMPDIR) + strlen(fdh.filename)) > sizeof(output_file)) {
+-		ERROR("File Name too long : %s\n", fdh.filename);
++		ERROR("File Name too long : %s", fdh.filename);
+ 		return -1;
+ 	}
+ 	strncpy(output_file, TMPDIR, sizeof(output_file));
+@@ -538,26 +538,26 @@ int extract_sw_description(int fd, const char *descfile, off_t *offs)
+ 	fdout = openfileoutput(output_file);
+ 
+ 	if (lseek(fd, offset, SEEK_SET) < 0) {
+-		ERROR("CPIO file corrupted : %s\n", strerror(errno));
++		ERROR("CPIO file corrupted : %s", strerror(errno));
+ 		close(fdout);
+ 		return -1;
+ 	}
+ 	if (copyfile(fd, &fdout, fdh.size, &offset, 0, 0, 0, &checksum, NULL, 0, NULL) < 0) {
+-		ERROR("%s corrupted or not valid\n", descfile);
++		ERROR("%s corrupted or not valid", descfile);
+ 		close(fdout);
+ 		return -1;
+ 	}
+ 
+ 	close(fdout);
+ 
+-	TRACE("Found file:\n\tfilename %s\n\tsize %lu\n\tchecksum 0x%lx %s\n",
++	TRACE("Found file:\n\tfilename %s\n\tsize %lu\n\tchecksum 0x%lx %s",
+ 		fdh.filename,
+ 		(unsigned long)fdh.size,
+ 		(unsigned long)checksum,
+ 		(checksum == fdh.chksum) ? "VERIFIED" : "WRONG");
+ 
+ 	if (checksum != fdh.chksum) {
+-		ERROR("Checksum WRONG ! Computed 0x%lx, it should be 0x%lx\n",
++		ERROR("Checksum WRONG ! Computed 0x%lx, it should be 0x%lx",
+ 			(unsigned long)checksum, fdh.chksum);
+ 		return -1;
+ 	}
+@@ -571,16 +571,16 @@ int extract_img_from_cpio(int fd, unsigned long offset, struct filehdr *fdh)
+ {
+ 
+ 	if (lseek(fd, offset, SEEK_SET) < 0) {
+-		ERROR("CPIO file corrupted : %s\n",
++		ERROR("CPIO file corrupted : %s",
+ 		strerror(errno));
+ 		return -EBADF;
+ 	}
+ 	if (extract_cpio_header(fd, fdh, &offset)) {
+-		ERROR("CPIO Header wrong\n");
++		ERROR("CPIO Header wrong");
+ 		return -1;
+ 	}
+ 	if (lseek(fd, offset, SEEK_SET) < 0) {
+-		ERROR("CPIO file corrupted : %s\n", strerror(errno));
++		ERROR("CPIO file corrupted : %s", strerror(errno));
+ 		return -1;
+ 	}
+ 
+@@ -597,37 +597,37 @@ off_t extract_next_file(int fd, int fdout, off_t start, int compressed,
+ 
+ 	ret = lseek(fd, offset, SEEK_SET);
+ 	if (ret < 0) {
+-		ERROR("CPIO file corrupted : %s\n",
++		ERROR("CPIO file corrupted : %s",
+ 		strerror(errno));
+ 		return ret;
+ 	}
+ 
+ 	ret = extract_cpio_header(fd, &fdh, &offset);
+ 	if (ret) {
+-		ERROR("CPIO Header wrong\n");
++		ERROR("CPIO Header wrong");
+ 		return ret;
+ 	}
+ 
+ 	ret = lseek(fd, offset, SEEK_SET);
+ 	if (ret < 0) {
+-		ERROR("CPIO file corrupted : %s\n", strerror(errno));
++		ERROR("CPIO file corrupted : %s", strerror(errno));
+ 		return ret;
+ 	}
+ 
+ 	ret = copyfile(fd, &fdout, fdh.size, &offset, 0, 0, compressed, &checksum, hash, encrypted, NULL);
+ 	if (ret < 0) {
+-		ERROR("Error copying extracted file\n");
++		ERROR("Error copying extracted file");
+ 		return ret;
+ 	}
+ 
+-	TRACE("Copied file:\n\tfilename %s\n\tsize %u\n\tchecksum 0x%lx %s\n",
++	TRACE("Copied file:\n\tfilename %s\n\tsize %u\n\tchecksum 0x%lx %s",
+ 		fdh.filename,
+ 		(unsigned int)fdh.size,
+ 		(unsigned long)checksum,
+ 		(checksum == fdh.chksum) ? "VERIFIED" : "WRONG");
+ 
+ 	if (checksum != fdh.chksum) {
+-		ERROR("Checksum WRONG ! Computed 0x%lx, it should be 0x%lx\n",
++		ERROR("Checksum WRONG ! Computed 0x%lx, it should be 0x%lx",
+ 			(unsigned long)checksum, fdh.chksum);
+ 		return -EINVAL;
+ 	}
+@@ -658,7 +658,7 @@ int cpio_scan(int fd, struct swupdate_cfg *cfg, off_t start)
+ 		SEARCH_FILE(img, cfg->scripts, file_listed, start);
+ 		SEARCH_FILE(img, cfg->bootscripts, file_listed, start);
+ 
+-		TRACE("Found file:\n\tfilename %s\n\tsize %lu\n\t%s\n",
++		TRACE("Found file:\n\tfilename %s\n\tsize %lu\n\t%s",
+ 			fdh.filename,
+ 			fdh.size,
+ 			file_listed ? "REQUIRED" : "not required");
+@@ -669,12 +669,12 @@ int cpio_scan(int fd, struct swupdate_cfg *cfg, off_t start)
+ 		 */
+ 		if (copyfile(fd, NULL, fdh.size, &offset, 0, 1, 0, &checksum, img ? img->sha256 : NULL,
+ 				0, NULL) != 0) {
+-			ERROR("invalid archive\n");
++			ERROR("invalid archive");
+ 			return -1;
+ 		}
+ 
+ 		if ((uint32_t)(fdh.chksum) != checksum) {
+-			ERROR("Checksum verification failed for %s: %x != %x\n",
++			ERROR("Checksum verification failed for %s: %x != %x",
+ 			fdh.filename, (uint32_t)fdh.chksum, checksum);
+ 			return -1;
+ 		}
+@@ -682,7 +682,7 @@ int cpio_scan(int fd, struct swupdate_cfg *cfg, off_t start)
+ 		/* Next header must be 4-bytes aligned */
+ 		offset += NPAD_BYTES(offset);
+ 		if (lseek(fd, offset, SEEK_SET) < 0) {
+-			ERROR("CPIO file corrupted : %s\n", strerror(errno));
++			ERROR("CPIO file corrupted : %s", strerror(errno));
+ 			return -1;
+ 		}
+ 	}
+diff --git a/core/parser.c b/core/parser.c
+index c10d712..89a819e 100644
+--- a/core/parser.c
++++ b/core/parser.c
+@@ -192,7 +192,7 @@ int parse(struct swupdate_cfg *sw, const char *descfile)
+ 	}
+ 
+ 	if (ret != 0) {
+-		ERROR("no parser available to parse " SW_DESCRIPTION_FILENAME "!\n");
++		ERROR("no parser available to parse " SW_DESCRIPTION_FILENAME "!");
+ 		return ret;
+ 	}
+ 
+diff --git a/core/pctl.c b/core/pctl.c
+index 466cc37..5ac77de 100644
+--- a/core/pctl.c
++++ b/core/pctl.c
+@@ -175,7 +175,7 @@ static void start_swupdate_subprocess(sourcetype type,
+ 	procs[nprocs].name = name;
+ 	procs[nprocs].type = type;
+ 	if (spawn_process(&procs[nprocs], uid, gid, cfgfile, argc, argv, start, cmdline) < 0) {
+-		ERROR("Spawning %s failed, exiting process...\n", name);
++		ERROR("Spawning %s failed, exiting process...", name);
+ 		exit(1);
+ 	}
+ 
+diff --git a/core/swupdate.c b/core/swupdate.c
+index 4a32e47..aeb0dc2 100644
+--- a/core/swupdate.c
++++ b/core/swupdate.c
+@@ -194,7 +194,7 @@ static int opt_to_hwrev(char *param, struct hw_type *hw)
+ 	s = strchr(param, ':');
+ 
+ 	if (!s) {
+-		ERROR("You pass Hardware Revision in wrong format: %s\n",
++		ERROR("You pass Hardware Revision in wrong format: %s",
+ 				param);
+ 		return -EINVAL;
+ 	}
+@@ -227,7 +227,7 @@ static int searching_for_image(char *name)
+ 	fpattern = basename(basec);
+ 	path = opendir(dir);
+ 
+-	TRACE("Searching image: check %s into %s\n",
++	TRACE("Searching image: check %s into %s",
+ 			basec, dirc);
+ 	if (!path) {
+ 		free(dirc);
+@@ -246,7 +246,7 @@ static int searching_for_image(char *name)
+ 		found = !fnmatch(fpattern, dp->d_name, FNM_CASEFOLD);
+ 
+ 		if (found) {
+-			TRACE("File found: %s :\n", dp->d_name);
++			TRACE("File found: %s :", dp->d_name);
+ 			/* Buffer for hexa output */
+ 			buf = (char *)malloc(3 * strlen(dp->d_name) + 1);
+ 			if (buf) {
+@@ -255,7 +255,7 @@ static int searching_for_image(char *name)
+ 					memcpy(&buf[3 * i], hex, 3);
+ 				}
+ 				buf[3 * strlen(dp->d_name)] = '\0';
+-				TRACE("File name (hex): %s\n", buf);
++				TRACE("\nFile name (hex): %s", buf);
+ 			}
+ 			/* Take the first one as image */
+ 			if (fd < 0) {
+@@ -265,7 +265,7 @@ static int searching_for_image(char *name)
+ 				}
+ 				fd = open(fname, O_RDONLY);
+ 				if (fd > 0)
+-					TRACE("\t\t**Used for upgrade\n");
++					TRACE("\t\t**Used for upgrade");
+ 			}
+ 			free(buf);
+ 		}
+@@ -286,7 +286,7 @@ static int install_from_file(char *fname, int check)
+ 
+ 
+ 	if (!strlen(fname)) {
+-		ERROR("Image not found...please reboot\n");
++		ERROR("Image not found...please reboot");
+ 		exit(1);
+ 	}
+ 
+@@ -294,7 +294,7 @@ static int install_from_file(char *fname, int check)
+ 	if (fdsw < 0) {
+ 		fdsw = searching_for_image(fname);
+ 		if (fdsw < 0) {
+-			ERROR("Image Software cannot be read...exiting !\n");
++			ERROR("Image Software cannot be read...exiting !");
+ 			exit(1);
+ 		}
+ 	}
+@@ -317,13 +317,13 @@ static int install_from_file(char *fname, int check)
+ 	sprintf(swdescfilename, "%s%s", get_tmpdir(), SW_DESCRIPTION_FILENAME);
+ 	ret = parse(&swcfg, swdescfilename);
+ 	if (ret) {
+-		ERROR("failed to parse " SW_DESCRIPTION_FILENAME "!\n");
++		ERROR("failed to parse " SW_DESCRIPTION_FILENAME "!");
+ 		exit(1);
+ 	}
+ 
+ 
+ 	if (check_hw_compatibility(&swcfg)) {
+-		ERROR("SW not compatible with hardware\n");
++		ERROR("SW not compatible with hardware");
+ 		exit(1);
+ 	}
+ 
+@@ -339,12 +339,12 @@ static int install_from_file(char *fname, int check)
+ 	 */
+ 	ret = check_provided(&swcfg.images);
+ 	if (ret) {
+-		ERROR("failed to check images!\n");
++		ERROR("failed to check images!");
+ 		exit(1);
+ 	}
+ 	ret = check_provided(&swcfg.scripts);
+ 	if (ret) {
+-		ERROR("failed to check scripts!\n");
++		ERROR("failed to check scripts!");
+ 		exit(1);
+ 	}
+ 
+diff --git a/core/util.c b/core/util.c
+index cf0f7ed..bc4a468 100644
+--- a/core/util.c
++++ b/core/util.c
+@@ -138,7 +138,7 @@ int openfileoutput(const char *filename)
+ 
+ 	fdout = open(filename, O_CREAT | O_WRONLY | O_TRUNC,  S_IRUSR | S_IWUSR );
+ 	if (fdout < 0)
+-		ERROR("I cannot open %s %d\n", filename, errno);
++		ERROR("I cannot open %s %d", filename, errno);
+ 
+ 	return fdout;
+ }
+@@ -183,7 +183,7 @@ int get_hw_revision(struct hw_type *hw)
+ 	fclose(fp);
+ 
+ 	if (ret != 2) {
+-		TRACE("Cannot find Board Revision\n");
++		TRACE("Cannot find Board Revision");
+ 		if(ret == 1)
+ 			free(b1);
+ 		return -1;
+@@ -261,14 +261,14 @@ from_ascii (char const *where, size_t digs, unsigned logbase)
+ 		char *p = strchr (codetab, toupper (*buf));
+ 		if (!p)
+ 		{
+-			ERROR("Malformed number %.*s\n", (int)digs, where);
++			ERROR("Malformed number %.*s", (int)digs, where);
+ 			break;
+ 		}
+ 
+ 		d = p - codetab;
+ 		if ((d >> logbase) > 1)
+ 		{
+-			ERROR("Malformed number %.*s\n", (int)digs, where);
++			ERROR("Malformed number %.*s", (int)digs, where);
+ 			break;
+ 		}
+ 		value += d;
+@@ -278,7 +278,7 @@ from_ascii (char const *where, size_t digs, unsigned logbase)
+ 		value <<= logbase;
+ 	}
+ 	if (overflow)
+-		ERROR("Archive value %.*s is out of range\n",
++		ERROR("Archive value %.*s is out of range",
+ 			(int)digs, where);
+ 	return value;
+ }
+diff --git a/corelib/channel_curl.c b/corelib/channel_curl.c
+index 3b6cdb2..b3ed21b 100644
+--- a/corelib/channel_curl.c
++++ b/corelib/channel_curl.c
+@@ -80,7 +80,7 @@ channel_op_res_t channel_curl_init(void)
+ #endif
+ 	CURLcode curlrc = curl_global_init(CURL_FLAGS);
+ 	if (curlrc != CURLE_OK) {
+-		ERROR("Initialization of channel failed (%d): '%s'\n", curlrc,
++		ERROR("Initialization of channel failed (%d): '%s'", curlrc,
+ 		      curl_easy_strerror(curlrc));
+ 		return CHANNEL_EINIT;
+ 	}
+@@ -140,7 +140,7 @@ channel_op_res_t channel_open(channel_t *this, void *cfg)
+ 	}
+ 
+ 	if ((channel_curl->handle = curl_easy_init()) == NULL) {
+-		ERROR("Initialization of channel failed.\n");
++		ERROR("Initialization of channel failed.");
+ 		return CHANNEL_EINIT;
+ 	}
+ 
+@@ -162,7 +162,7 @@ size_t channel_callback_write_file(void *streamdata, size_t size, size_t nmemb,
+ 		if (swupdate_HASH_update(data->channel_data->dgst,
+ 					 streamdata,
+ 					 size * nmemb) < 0) {
+-			ERROR("Updating checksum of chunk failed.\n");
++			ERROR("Updating checksum of chunk failed.");
+ 			result_channel_callback_write_file = CHANNEL_EIO;
+ 			return 0;
+ 		}
+@@ -170,7 +170,7 @@ size_t channel_callback_write_file(void *streamdata, size_t size, size_t nmemb,
+ 
+ 	if (ipc_send_data(data->output, streamdata, (int)(size * nmemb)) <
+ 	    0) {
+-		ERROR("Writing into SWUpdate IPC stream failed.\n");
++		ERROR("Writing into SWUpdate IPC stream failed.");
+ 		result_channel_callback_write_file = CHANNEL_EIO;
+ 		return 0;
+ 	}
+@@ -200,7 +200,7 @@ size_t channel_callback_membuffer(void *streamdata, size_t size, size_t nmemb,
+ 
+ 	mem->memory = realloc(mem->memory, mem->size + realsize + 1);
+ 	if (mem->memory == NULL) {
+-		ERROR("Channel get operation failed with OOM\n");
++		ERROR("Channel get operation failed with OOM");
+ 		return 0;
+ 	}
+ 	memcpy(&(mem->memory[mem->size]), streamdata, realsize);
+@@ -222,7 +222,7 @@ static void channel_log_effective_url(channel_t *this)
+ 		      LIBCURL_VERSION);
+ 		return;
+ 	}
+-	TRACE("Channel's effective URL resolved to %s\n",
++	TRACE("Channel's effective URL resolved to %s",
+ 	      channel_curl->effective_url);
+ }
+ 
+@@ -240,7 +240,7 @@ channel_op_res_t channel_map_http_code(channel_t *this, long *http_response_code
+ 	}
+ 	switch (*http_response_code) {
+ 	case 0:   /* libcURL: no server response code has been received yet */
+-		DEBUG("No HTTP response code has been received yet!\n");
++		DEBUG("No HTTP response code has been received yet!");
+ 		return CHANNEL_EBADMSG;
+ 	case 401: /* Unauthorized. The request requires user authentication. */
+ 	case 403: /* Forbidden. */
+@@ -494,7 +494,7 @@ channel_op_res_t channel_set_options(channel_t *this,
+ 			goto cleanup;
+ 		}
+ 		if (channel_data->debug) {
+-			TRACE("Posted: %s\n", channel_data->request_body);
++			TRACE("Posted: %s", channel_data->request_body);
+ 		}
+ 		break;
+ 	}
+@@ -590,20 +590,20 @@ static channel_op_res_t channel_post_method(channel_t *this, void *data)
+ 		  channel_curl->header, "Accept: application/json")) == NULL) ||
+ 	    ((channel_curl->header = curl_slist_append(
+ 		  channel_curl->header, "charsets: utf-8")) == NULL)) {
+-		ERROR("Set channel header failed.\n");
++		ERROR("Set channel header failed.");
+ 		result = CHANNEL_EINIT;
+ 		goto cleanup_header;
+ 	}
+ 
+ 	if ((result = channel_set_options(this, channel_data, CHANNEL_POST)) !=
+ 	    CHANNEL_OK) {
+-		ERROR("Set channel option failed.\n");
++		ERROR("Set channel option failed.");
+ 		goto cleanup_header;
+ 	}
+ 
+ 	CURLcode curlrc = curl_easy_perform(channel_curl->handle);
+ 	if (curlrc != CURLE_OK) {
+-		ERROR("Channel put operation failed (%d): '%s'\n", curlrc,
++		ERROR("Channel put operation failed (%d): '%s'", curlrc,
+ 		      curl_easy_strerror(curlrc));
+ 		result = channel_map_curl_error(curlrc);
+ 		goto cleanup_header;
+@@ -614,12 +614,12 @@ static channel_op_res_t channel_post_method(channel_t *this, void *data)
+ 	long http_response_code;
+ 	if ((result = channel_map_http_code(this, &http_response_code)) !=
+ 	    CHANNEL_OK) {
+-		ERROR("Channel operation returned HTTP error code %ld.\n",
++		ERROR("Channel operation returned HTTP error code %ld.",
+ 		      http_response_code);
+ 		goto cleanup_header;
+ 	}
+ 	if (channel_data->debug) {
+-		TRACE("Channel put operation returned HTTP status code %ld.\n",
++		TRACE("Channel put operation returned HTTP status code %ld.",
+ 			http_response_code);
+ 	}
+ 
+@@ -652,14 +652,14 @@ static channel_op_res_t channel_put_method(channel_t *this, void *data)
+ 		  channel_curl->header, "Accept: application/json")) == NULL) ||
+ 	    ((channel_curl->header = curl_slist_append(
+ 		  channel_curl->header, "charsets: utf-8")) == NULL)) {
+-		ERROR("Set channel header failed.\n");
++		ERROR("Set channel header failed.");
+ 		result = CHANNEL_EINIT;
+ 		goto cleanup_header;
+ 	}
+ 
+ 	if ((result = channel_set_options(this, channel_data, CHANNEL_PUT)) !=
+ 	    CHANNEL_OK) {
+-		ERROR("Set channel option failed.\n");
++		ERROR("Set channel option failed.");
+ 		goto cleanup_header;
+ 	}
+ 
+@@ -669,13 +669,13 @@ static channel_op_res_t channel_put_method(channel_t *this, void *data)
+ 			     (curl_off_t)strlen(channel_data->request_body)) != CURLE_OK) ||
+ 	   (curl_easy_setopt(channel_curl->handle, CURLOPT_READDATA, channel_data) !=
+ 			CURLE_OK)) {
+-		ERROR("Set channel option failed.\n");
++		ERROR("Set channel option failed.");
+ 		goto cleanup_header;
+ 	}
+ 
+ 	CURLcode curlrc = curl_easy_perform(channel_curl->handle);
+ 	if (curlrc != CURLE_OK) {
+-		ERROR("Channel put operation failed (%d): '%s'\n", curlrc,
++		ERROR("Channel put operation failed (%d): '%s'", curlrc,
+ 		      curl_easy_strerror(curlrc));
+ 		result = channel_map_curl_error(curlrc);
+ 		goto cleanup_header;
+@@ -685,11 +685,11 @@ static channel_op_res_t channel_put_method(channel_t *this, void *data)
+ 
+ 	long http_response_code;
+ 	if ((result = channel_map_http_code(this, &http_response_code)) != CHANNEL_OK) {
+-		ERROR("Channel operation returned HTTP error code %ld.\n",
++		ERROR("Channel operation returned HTTP error code %ld.",
+ 		      http_response_code);
+ 		goto cleanup_header;
+ 	}
+-	TRACE("Channel put operation returned HTTP error code %ld.\n",
++	TRACE("Channel put operation returned HTTP error code %ld.",
+ 	      http_response_code);
+ 
+ cleanup_header:
+@@ -712,7 +712,7 @@ channel_op_res_t channel_put(channel_t *this, void *data)
+ 	case CHANNEL_POST:
+ 		return channel_post_method(this, data);
+ 	default:
+-		TRACE("Channel method (POST, PUT) is not set !\n");
++		TRACE("Channel method (POST, PUT) is not set !");
+ 		return CHANNEL_EINIT;
+ 	}
+ }
+@@ -732,7 +732,7 @@ channel_op_res_t channel_get_file(channel_t *this, void *data)
+ 		channel_data->dgst = swupdate_HASH_init("sha1");
+ 		if (!channel_data->dgst) {
+ 			result = CHANNEL_EINIT;
+-			ERROR("Cannot initialize sha1 checksum context.\n");
++			ERROR("Cannot initialize sha1 checksum context.");
+ 			return result;
+ 		}
+ 	}
+@@ -748,13 +748,13 @@ channel_op_res_t channel_get_file(channel_t *this, void *data)
+ 		  channel_curl->header, "Accept: application/octet-stream")) ==
+ 	     NULL)) {
+ 		result = CHANNEL_EINIT;
+-		ERROR("Set channel header failed.\n");
++		ERROR("Set channel header failed.");
+ 		goto cleanup_header;
+ 	}
+ 
+ 	if ((result = channel_set_options(this, channel_data, CHANNEL_GET)) !=
+ 	    CHANNEL_OK) {
+-		ERROR("Set channel option failed.\n");
++		ERROR("Set channel option failed.");
+ 		goto cleanup_header;
+ 	}
+ 
+@@ -768,7 +768,7 @@ channel_op_res_t channel_get_file(channel_t *this, void *data)
+ 		sleep(1);
+ 	}
+ 	if (file_handle < 0) {
+-		ERROR("Cannot open SWUpdate IPC stream: %s\n", strerror(errno));
++		ERROR("Cannot open SWUpdate IPC stream: %s", strerror(errno));
+ 		result = CHANNEL_EIO;
+ 		goto cleanup_header;
+ 	}
+@@ -781,7 +781,7 @@ channel_op_res_t channel_get_file(channel_t *this, void *data)
+ 			      channel_callback_write_file) != CURLE_OK) ||
+ 	    (curl_easy_setopt(channel_curl->handle, CURLOPT_WRITEDATA,
+ 			      &wrdata) != CURLE_OK)) {
+-		ERROR("Cannot setup file writer callback function.\n");
++		ERROR("Cannot setup file writer callback function.");
+ 		result = CHANNEL_EINIT;
+ 		goto cleanup_file;
+ 	}
+@@ -838,7 +838,7 @@ channel_op_res_t channel_get_file(channel_t *this, void *data)
+ 		curlrc = curl_easy_perform(channel_curl->handle);
+ 		result = channel_map_curl_error(curlrc);
+ 		if ((result != CHANNEL_OK) && (result != CHANNEL_EAGAIN)) {
+-			ERROR("Channel operation returned error (%d): '%s'\n",
++			ERROR("Channel operation returned error (%d): '%s'",
+ 			      curlrc, curl_easy_strerror(curlrc));
+ 			goto cleanup_file;
+ 		}
+@@ -860,18 +860,18 @@ channel_op_res_t channel_get_file(channel_t *this, void *data)
+ 
+ 	channel_log_effective_url(this);
+ 
+-	DEBUG("Channel downloaded %llu bytes ~ %llu MiB.\n",
++	DEBUG("Channel downloaded %llu bytes ~ %llu MiB.",
+ 	      total_bytes_downloaded, total_bytes_downloaded / 1024 / 1024);
+ 
+ 	long http_response_code;
+ 	if ((result = channel_map_http_code(this, &http_response_code)) !=
+ 	    CHANNEL_OK) {
+-		ERROR("Channel operation returned HTTP error code %ld.\n",
++		ERROR("Channel operation returned HTTP error code %ld.",
+ 		      http_response_code);
+ 		goto cleanup_file;
+ 	}
+ 	if (channel_data->debug) {
+-		TRACE("Channel operation returned HTTP status code %ld.\n",
++		TRACE("Channel operation returned HTTP status code %ld.",
+ 			http_response_code);
+ 	}
+ 
+@@ -884,7 +884,7 @@ channel_op_res_t channel_get_file(channel_t *this, void *data)
+ 		unsigned char sha1hash[SHA_DIGEST_LENGTH];
+ 		unsigned int md_len;
+ 		if (swupdate_HASH_final(channel_data->dgst, sha1hash, &md_len) != 1) {
+-			ERROR("Cannot compute checksum.\n");
++			ERROR("Cannot compute checksum.");
+ 			goto cleanup_file;
+ 		}
+ 
+@@ -901,7 +901,7 @@ cleanup_file:
+ 	 *      Also, for a given file handle, calling ipc_end() would make
+ 	 *      no semantic sense. */
+ 	if (close(file_handle) != 0) {
+-		ERROR("Channel error while closing download target handle: '%s'\n",
++		ERROR("Channel error while closing download target handle: '%s'",
+ 		      strerror(errno));
+ 	}
+ 	if (channel_data->dgst) {
+@@ -937,19 +937,19 @@ channel_op_res_t channel_get(channel_t *this, void *data)
+ 	    ((channel_curl->header = curl_slist_append(
+ 		  channel_curl->header, "charsets: utf-8")) == NULL)) {
+ 		result = CHANNEL_EINIT;
+-		ERROR("Set channel header failed.\n");
++		ERROR("Set channel header failed.");
+ 		goto cleanup_header;
+ 	}
+ 
+ 	if ((result = channel_set_options(this, channel_data, CHANNEL_GET)) !=
+ 	    CHANNEL_OK) {
+-		ERROR("Set channel option failed.\n");
++		ERROR("Set channel option failed.");
+ 		goto cleanup_header;
+ 	}
+ 
+ 	output_data_t chunk = {.memory = NULL, .size = 0};
+ 	if ((chunk.memory = malloc(1)) == NULL) {
+-		ERROR("Channel buffer reservation failed with OOM.\n");
++		ERROR("Channel buffer reservation failed with OOM.");
+ 		result = CHANNEL_ENOMEM;
+ 		goto cleanup_header;
+ 	}
+@@ -962,7 +962,7 @@ channel_op_res_t channel_get(channel_t *this, void *data)
+ 			      channel_callback_membuffer) != CURLE_OK) ||
+ 	    (curl_easy_setopt(channel_curl->handle, CURLOPT_WRITEDATA,
+ 			      (void *)&wrdata) != CURLE_OK)) {
+-		ERROR("Cannot setup memory buffer writer callback function.\n");
++		ERROR("Cannot setup memory buffer writer callback function.");
+ 		result = CHANNEL_EINIT;
+ 		goto cleanup_chunk;
+ 	}
+@@ -972,7 +972,7 @@ channel_op_res_t channel_get(channel_t *this, void *data)
+ 	}
+ 	CURLcode curlrc = curl_easy_perform(channel_curl->handle);
+ 	if (curlrc != CURLE_OK) {
+-		ERROR("Channel get operation failed (%d): '%s'\n", curlrc,
++		ERROR("Channel get operation failed (%d): '%s'", curlrc,
+ 		      curl_easy_strerror(curlrc));
+ 		result = channel_map_curl_error(curlrc);
+ 		goto cleanup_chunk;
+@@ -985,18 +985,18 @@ channel_op_res_t channel_get(channel_t *this, void *data)
+ 	long http_response_code;
+ 	if ((result = channel_map_http_code(this, &http_response_code)) !=
+ 	    CHANNEL_OK) {
+-		ERROR("Channel operation returned HTTP error code %ld.\n",
++		ERROR("Channel operation returned HTTP error code %ld.",
+ 		      http_response_code);
+ 		if (http_response_code == 500) {
+-			DEBUG("The error's message is: '%s'\n", chunk.memory);
++			DEBUG("The error's message is: '%s'", chunk.memory);
+ 		}
+ 		if (http_response_code == 404) {
+-			DEBUG("The error's message is: '%s'\n", chunk.memory);
++			DEBUG("The error's message is: '%s'", chunk.memory);
+ 		}
+ 		goto cleanup_chunk;
+ 	}
+ 	if (channel_data->debug) {
+-		TRACE("Channel operation returned HTTP status code %ld.\n",
++		TRACE("Channel operation returned HTTP status code %ld.",
+ 			http_response_code);
+ 	}
+ 
+@@ -1010,13 +1010,13 @@ channel_op_res_t channel_get(channel_t *this, void *data)
+ 	} while ((json_res = json_tokener_get_error(json_tokenizer)) ==
+ 		 json_tokener_continue);
+ 	if (json_res != json_tokener_success) {
+-		ERROR("Error while parsing channel's returned JSON data: %s\n",
++		ERROR("Error while parsing channel's returned JSON data: %s",
+ 		      json_tokener_error_desc(json_res));
+ 		result = CHANNEL_EBADMSG;
+ 		goto cleanup_json_tokenizer;
+ 	}
+ 	if (channel_data->debug) {
+-		TRACE("Get JSON: %s\n", chunk.memory);
++		TRACE("Get JSON: %s", chunk.memory);
+ 	}
+ 
+ cleanup_json_tokenizer:
+diff --git a/corelib/installer.c b/corelib/installer.c
+index db9ff7a..324d1d9 100644
+--- a/corelib/installer.c
++++ b/corelib/installer.c
+@@ -70,7 +70,7 @@ int check_if_required(struct imglist *list, struct filehdr *pfdh,
+ 			 *  sw-description contains an error
+ 			 */
+ 			if (install_direct) {
+-				ERROR("sw-description: stream to several handlers unsupported\n");
++				ERROR("sw-description: stream to several handlers unsupported");
+ 				return -EINVAL;
+ 			}
+ 
+@@ -131,7 +131,7 @@ static int extract_scripts(int fd, struct imglist *head, int fromfile)
+ 			fdin = open(tmpfile, O_RDONLY);
+ 			free(tmpfile);
+ 			if (fdin < 0) {
+-				ERROR("Extracted script not found in %s: %s %d\n",
++				ERROR("Extracted script not found in %s: %s %d",
+ 					get_tmpdir(), script->extract_file, errno);
+ 				return -ENOENT;
+ 			}
+diff --git a/corelib/lua_interface.c b/corelib/lua_interface.c
+index fdefe6e..3155174 100644
+--- a/corelib/lua_interface.c
++++ b/corelib/lua_interface.c
+@@ -80,7 +80,7 @@ static void lua_dump_table(lua_State *L, char *str, struct img_type *img, const
+ 					lua_tostring(L, -1),
+ 					lua_tostring(L, -2));
+ 				if (img) {
+-					TRACE("Inserting property %s[%s] = %s\n",
++					TRACE("Inserting property %s[%s] = %s",
+ 							key,
+ 							lua_tostring(L, -1),
+ 							lua_tostring(L, -2));
+@@ -706,12 +706,12 @@ static int l_mount(lua_State *L) {
+ 		goto l_mount_exit;
+ 
+ 	if (asprintf(&target, "%s%sXXXXXX", get_tmpdir(), DATADST_DIR_SUFFIX) == -1) {
+-		TRACE("Unable to allocate memory\n");
++		TRACE("Unable to allocate memory");
+ 		goto l_mount_exit;
+ 	}
+ 
+ 	if (!mkdtemp(target)) {
+-		TRACE("Unable to create a unique temporary directory %s: %s\n",
++		TRACE("Unable to create a unique temporary directory %s: %s",
+ 			target, strerror(errno));
+ 		goto l_mount_free_exit;
+ 	}
+@@ -743,12 +743,12 @@ static int l_umount(lua_State *L) {
+ 	const char *target = luaL_checkstring(L, 1);
+ 
+ 	if (swupdate_umount(target) == -1) {
+-		TRACE("Unable to unmount %s: %s\n", target, strerror(errno));
++		TRACE("Unable to unmount %s: %s", target, strerror(errno));
+ 		goto l_umount_exit;
+ 	}
+ 
+ 	if (rmdir(target) == -1) {
+-		TRACE("Unable to remove directory %s: %s\n", target, strerror(errno));
++		TRACE("Unable to remove directory %s: %s", target, strerror(errno));
+ 		goto l_umount_exit;
+ 	}
+ 
+@@ -926,7 +926,7 @@ static int l_handler_wrapper(struct img_type *img, void *data) {
+ 	image2table(gL, img);
+ 
+ 	if (LUA_OK != (res = lua_pcall(gL, 1, 1, 0))) {
+-		ERROR("error while executing the Lua callback: %d\n",res);
++		ERROR("error while executing the Lua callback: %d",res);
+ 		puts(lua_tostring(gL, -1));
+ 		return -1;
+ 	}
+@@ -938,7 +938,7 @@ static int l_handler_wrapper(struct img_type *img, void *data) {
+ 	}
+ 
+ 	result = lua_tonumber(gL, -1);
+-	TRACE("[Lua handler] returned: %d\n",(int)result);
++	TRACE("[Lua handler] returned: %d",(int)result);
+ 
+ 	return (int) result;
+ }
+@@ -955,7 +955,7 @@ static int l_handler_wrapper(struct img_type *img, void *data) {
+ static int l_register_handler( lua_State *L ) {
+ 	int *l_func_ref = malloc(sizeof(int));
+ 	if(!l_func_ref) {
+-		ERROR("Lua handler: unable to allocate memory\n");
++		ERROR("Lua handler: unable to allocate memory");
+ 		lua_pop(L, 2);
+ 		return 0;
+ 	} else {
+@@ -1061,7 +1061,7 @@ int lua_handlers_init(void)
+ 		}
+ #endif
+ 	} else	{
+-		WARN("Unable to register Lua context for callbacks\n");
++		WARN("Unable to register Lua context for callbacks");
+ 	}
+ 
+ 	return ret;
+diff --git a/corelib/mtd-interface.c b/corelib/mtd-interface.c
+index d9bd6d5..7ea9bb4 100644
+--- a/corelib/mtd-interface.c
++++ b/corelib/mtd-interface.c
+@@ -40,7 +40,7 @@ int flash_erase(int mtdnum)
+ 	struct flash_description *flash = get_flash_info();
+ 
+ 	if  (!mtd_dev_present(flash->libmtd, mtdnum)) {
+-			ERROR("MTD %d does not exist\n", mtdnum);
++			ERROR("MTD %d does not exist", mtdnum);
+ 			return -ENODEV;
+ 	}
+ 	mtd = &flash->mtd_info[mtdnum].mtd;
+@@ -172,7 +172,7 @@ int get_mtd_from_device(char *s) {
+ 			return -1;
+ 	}
+ 
+-	TRACE("mtd name [%s] resolved to [%s]\n", s, real_s);
++	TRACE("mtd name [%s] resolved to [%s]", s, real_s);
+ 	ret = sscanf(real_s, "mtd%d", &mtdnum);
+ 	if (ret <= 0)
+ 		ret = sscanf(real_s, "/dev/mtd%d", &mtdnum);
+@@ -252,7 +252,7 @@ static void scan_ubi_volumes(struct mtd_ubi_info *info)
+ 	     i <= info->dev_info.highest_vol_id; i++) {
+ 		ubi_part = (struct ubi_part *)calloc(1, sizeof(struct ubi_part));
+ 		if (!ubi_part) {
+-			ERROR("No memory: malloc failed\n");
++			ERROR("No memory: malloc failed");
+ 			return;
+ 		}
+ 
+diff --git a/corelib/parsing_library.c b/corelib/parsing_library.c
+index 767d30d..e9739fe 100644
+--- a/corelib/parsing_library.c
++++ b/corelib/parsing_library.c
+@@ -25,11 +25,11 @@ void check_field_string(const char *src, char *dst, const size_t max_len)
+ 	size_t act_len = strnlen(src, SWUPDATE_GENERAL_STRING_SIZE);
+ 	if (act_len > max_len) {
+ 		((char*)dst)[max_len-1] = '\0';
+-		WARN("Configuration Key '%s...' is > %u chars, cropping it.\n",
++		WARN("Configuration Key '%s...' is > %u chars, cropping it.",
+ 			(char*)dst, (unsigned int)max_len - 1);
+ 	}
+ 	if (act_len == 0) {
+-		WARN("Configuration Key is empty!\n");
++		WARN("Configuration Key is empty!");
+ 	}
+ }
+ 
+diff --git a/corelib/stream_interface.c b/corelib/stream_interface.c
+index d9375c1..a386837 100644
+--- a/corelib/stream_interface.c
++++ b/corelib/stream_interface.c
+@@ -105,7 +105,7 @@ static int extract_file_to_tmp(int fd, const char *fname, unsigned long *poffs)
+ 	}
+ 	if (checksum != (uint32_t)fdh.chksum) {
+ 		close(fdout);
+-		ERROR("Checksum WRONG ! Computed 0x%ux, it should be 0x%ux\n",
++		ERROR("Checksum WRONG ! Computed 0x%ux, it should be 0x%ux",
+ 			(unsigned int)checksum, (unsigned int)fdh.chksum);
+ 			return -1;
+ 	}
+@@ -158,7 +158,7 @@ static int extract_files(int fd, struct swupdate_cfg *software)
+ 			}
+ 
+ 			if (check_hw_compatibility(software)) {
+-				ERROR("SW not compatible with hardware\n");
++				ERROR("SW not compatible with hardware");
+ 				return -1;
+ 			}
+ 			status = STREAM_DATA;
+@@ -228,7 +228,7 @@ static int extract_files(int fd, struct swupdate_cfg *software)
+ 				}
+ 				break;
+ 			case INSTALL_FROM_STREAM:
+-				TRACE("Installing STREAM %s, %lld bytes\n", img->fname, img->size);
++				TRACE("Installing STREAM %s, %lld bytes", img->fname, img->size);
+ 				/*
+ 				 * If we are streaming data to store in a UBI volume, make
+ 				 * sure that the UBI partitions are adjusted beforehand
+diff --git a/corelib/swupdate_decrypt.c b/corelib/swupdate_decrypt.c
+index 1360aec..273196e 100644
+--- a/corelib/swupdate_decrypt.c
++++ b/corelib/swupdate_decrypt.c
+@@ -71,7 +71,7 @@ struct swupdate_digest *swupdate_DECRYPT_init(unsigned char *key, unsigned char
+ 	ret = EVP_DecryptInit_ex(SSL_GET_CTXDEC(dgst), cipher, NULL, key, iv);
+ 	if (ret != 1) {
+ 		const char *reason = ERR_reason_error_string(ERR_peek_error());
+-		ERROR("Decrypt Engine not initialized, error 0x%lx, reason: %s\n", ERR_get_error(),
++		ERROR("Decrypt Engine not initialized, error 0x%lx, reason: %s", ERR_get_error(),
+ 			reason != NULL ? reason : "unknown");
+ 		free(dgst);
+ 		return NULL;
+@@ -85,7 +85,7 @@ int swupdate_DECRYPT_update(struct swupdate_digest *dgst, unsigned char *buf,
+ {
+ 	if (EVP_DecryptUpdate(SSL_GET_CTXDEC(dgst), buf, outlen, cryptbuf, inlen) != 1) {
+ 		const char *reason = ERR_reason_error_string(ERR_peek_error());
+-		ERROR("Update: Decryption error 0x%lx, reason: %s\n", ERR_get_error(),
++		ERROR("Update: Decryption error 0x%lx, reason: %s", ERR_get_error(),
+ 			reason != NULL ? reason : "unknown");
+ 		return -EFAULT;
+ 	}
+@@ -101,7 +101,7 @@ int swupdate_DECRYPT_final(struct swupdate_digest *dgst, unsigned char *buf,
+ 
+ 	if (EVP_DecryptFinal_ex(SSL_GET_CTXDEC(dgst), buf, outlen) != 1) {
+ 		const char *reason = ERR_reason_error_string(ERR_peek_error());
+-		ERROR("Final: Decryption error 0x%lx, reason: %s\n", ERR_get_error(),
++		ERROR("Final: Decryption error 0x%lx, reason: %s", ERR_get_error(),
+ 			reason != NULL ? reason : "unknown");
+ 		return -EFAULT;
+ 	}
+diff --git a/corelib/swupdate_settings.c b/corelib/swupdate_settings.c
+index ec726f2..ea0b4e1 100644
+--- a/corelib/swupdate_settings.c
++++ b/corelib/swupdate_settings.c
+@@ -80,7 +80,7 @@ int read_module_settings(const char *filename, const char *module, settings_call
+ 	/* Read the file. If there is an error, report it and exit. */
+ 	if (read_settings_file(&cfg, filename) != CONFIG_TRUE) {
+ 		config_destroy(&cfg);
+-		ERROR("Error reading configuration file, skipping....\n");
++		ERROR("Error reading configuration file, skipping....");
+ 		return -EINVAL;
+ 	}
+ 
+diff --git a/corelib/verify_signature.c b/corelib/verify_signature.c
+index 5bb433b..6ddfa42 100644
+--- a/corelib/verify_signature.c
++++ b/corelib/verify_signature.c
+@@ -24,7 +24,7 @@ static int dgst_init(struct swupdate_digest *dgst, const EVP_MD *md)
+ 	ERR_clear_error();
+ 	rc = EVP_DigestInit_ex(dgst->ctx, md, NULL);
+ 	if (rc != 1) {
+-		ERROR("EVP_DigestInit_ex failed: %s\n", ERR_error_string(ERR_get_error(), NULL));
++		ERROR("EVP_DigestInit_ex failed: %s", ERR_error_string(ERR_get_error(), NULL));
+ 		return -EINVAL; /* failed */
+ 	}
+ 
+@@ -43,7 +43,7 @@ static EVP_PKEY *load_pubkey(const char *file)
+ 
+ 	if (file == NULL)
+ 	{
+-		ERROR("no keyfile specified\n");
++		ERROR("no keyfile specified");
+ 		goto end;
+ 	}
+ 
+@@ -63,7 +63,7 @@ static EVP_PKEY *load_pubkey(const char *file)
+ end:
+ 	if (key != NULL) BIO_free(key);
+ 	if (pkey == NULL)
+-		ERROR("unable to load key filename %s\n", file);
++		ERROR("unable to load key filename %s", file);
+ 	return(pkey);
+ }
+ 
+@@ -73,7 +73,7 @@ static int dgst_verify_init(struct swupdate_digest *dgst)
+ 
+ 	rc = EVP_DigestVerifyInit(dgst->ctx, NULL, EVP_sha256(), NULL, dgst->pkey);
+ 	if (rc != 1) {
+-		ERROR("EVP_DigestVerifyInit failed, error 0x%lx\n", ERR_get_error());
++		ERROR("EVP_DigestVerifyInit failed, error 0x%lx", ERR_get_error());
+ 		return -EFAULT; /* failed */
+ 	}
+ 
+@@ -86,7 +86,7 @@ static int verify_update(struct swupdate_digest *dgst, char *msg, unsigned int m
+ 
+ 	rc = EVP_DigestVerifyUpdate(dgst->ctx, msg, mlen);
+ 	if(rc != 1) {
+-		ERROR("EVP_DigestVerifyUpdate failed, error 0x%lx\n", ERR_get_error());
++		ERROR("EVP_DigestVerifyUpdate failed, error 0x%lx", ERR_get_error());
+ 		return -EFAULT;
+ 	}
+ 
+@@ -101,7 +101,7 @@ static int verify_final(struct swupdate_digest *dgst, unsigned char *sig, unsign
+ 	ERR_clear_error();
+ 	rc = EVP_DigestVerifyFinal(dgst->ctx, sig, slen);
+ 	if(rc != 1) {
+-		ERROR("EVP_DigestVerifyFinal failed, error 0x%lx %d\n", ERR_get_error(), rc);
++		ERROR("EVP_DigestVerifyFinal failed, error 0x%lx %d", ERR_get_error(), rc);
+ 		return -1;
+ 	}
+ 
+@@ -141,7 +141,7 @@ int swupdate_verify_file(struct swupdate_digest *dgst, const char *sigfile,
+ 	BIO_free(sigbio);
+ 
+ 	if(siglen <= 0) {
+-		ERROR("Error reading signature file %s\n", sigfile);
++		ERROR("Error reading signature file %s", sigfile);
+ 		status = -ENOKEY;
+ 		goto out;
+ 	}
+@@ -153,7 +153,7 @@ int swupdate_verify_file(struct swupdate_digest *dgst, const char *sigfile,
+ 
+ 	fp = fopen(file, "r");
+ 	if (!fp) {
+-		ERROR("%s cannot be opened\n", file);
++		ERROR("%s cannot be opened", file);
+ 		status = -EBADF;
+ 		goto out;
+ 	}
+@@ -170,16 +170,16 @@ int swupdate_verify_file(struct swupdate_digest *dgst, const char *sigfile,
+ 			break;
+ 	}
+ 
+-	TRACE("Verify signed image: Read %d bytes\n", size);
++	TRACE("Verify signed image: Read %d bytes", size);
+ 	i = verify_final(dgst, sigbuf, (unsigned int)siglen);
+ 	if(i > 0) {
+-		TRACE("Verified OK\n");
++		TRACE("Verified OK");
+ 		status = 0;
+ 	} else if(i == 0) {
+-		TRACE("Verification Failure\n");
++		TRACE("Verification Failure");
+ 		status = -EBADMSG;
+ 	} else {
+-		TRACE("Error Verifying Data\n");
++		TRACE("Error Verifying Data");
+ 		status = -EFAULT;
+ 	}
+ 
+@@ -306,7 +306,7 @@ int swupdate_verify_file(struct swupdate_digest *dgst, const char *sigfile,
+ 		goto out;
+ 	}
+ 
+-	TRACE("Verified OK\n");
++	TRACE("Verified OK");
+ 
+ 	/* Signature is valid */
+ 	status = 0;
+@@ -342,7 +342,7 @@ struct swupdate_digest *swupdate_HASH_init(const char *SHAlength)
+ 
+  	dgst->ctx = EVP_MD_CTX_create();
+ 	if(dgst->ctx == NULL) {
+-		ERROR("EVP_MD_CTX_create failed, error 0x%lx\n", ERR_get_error());
++		ERROR("EVP_MD_CTX_create failed, error 0x%lx", ERR_get_error());
+ 		free(dgst);
+ 		return NULL;
+ 	}
+@@ -448,7 +448,7 @@ int swupdate_dgst_init(struct swupdate_cfg *sw, const char *keyfile)
+ 	 */
+ 	dgst->ctx = EVP_MD_CTX_create();
+ 	if(dgst->ctx == NULL) {
+-		ERROR("EVP_MD_CTX_create failed, error 0x%lx\n", ERR_get_error());
++		ERROR("EVP_MD_CTX_create failed, error 0x%lx", ERR_get_error());
+ 		ret = -ENOMEM;
+ 		goto dgst_init_error;
+ 	}
+diff --git a/handlers/archive_handler.c b/handlers/archive_handler.c
+index 4999f73..a44819d 100644
+--- a/handlers/archive_handler.c
++++ b/handlers/archive_handler.c
+@@ -57,7 +57,7 @@ copy_data(struct archive *ar, struct archive *aw)
+ 			return (r);
+ 		r = archive_write_data_block(aw, buff, size, offset);
+ 		if (r != ARCHIVE_OK) {
+-			TRACE("archive_write_data_block(): %s\n",
++			TRACE("archive_write_data_block(): %s",
+ 			    archive_error_string(aw));
+ 			return (r);
+ 		}
+@@ -95,7 +95,7 @@ extract(void *p)
+ 	char* FIFO = alloca(strlen(get_tmpdir())+strlen(FIFO_FILE_NAME)+1);
+ 	sprintf(FIFO, "%s%s", get_tmpdir(), FIFO_FILE_NAME);
+ 	if ((r = archive_read_open_filename(a, FIFO, 4096))) {
+-		ERROR("archive_read_open_filename(): %s %d\n",
++		ERROR("archive_read_open_filename(): %s %d",
+ 		    archive_error_string(a), r);
+ 		pthread_exit((void *)-1);
+ 	}
+@@ -104,23 +104,23 @@ extract(void *p)
+ 		if (r == ARCHIVE_EOF)
+ 			break;
+ 		if (r != ARCHIVE_OK) {
+-			ERROR("archive_read_next_header(): %s %d\n",
++			ERROR("archive_read_next_header(): %s %d",
+ 			    archive_error_string(a), 1);
+ 			pthread_exit((void *)-1);
+ 		}
+ 
+ 		if (debug)
+-			TRACE("Extracting %s\n", archive_entry_pathname(entry));
++			TRACE("Extracting %s", archive_entry_pathname(entry));
+ 
+ 		r = archive_write_header(ext, entry);
+ 		if (r != ARCHIVE_OK)
+-			TRACE("archive_write_header(): %s\n",
++			TRACE("archive_write_header(): %s",
+ 			    archive_error_string(ext));
+ 		else {
+ 			copy_data(a, ext);
+ 			r = archive_write_finish_entry(ext);
+ 			if (r != ARCHIVE_OK)  {
+-				ERROR("archive_write_finish_entry(): %s\n",
++				ERROR("archive_write_finish_entry(): %s",
+ 				    archive_error_string(ext));
+ 				pthread_exit((void *)-1);
+ 			}
+@@ -181,7 +181,7 @@ static int install_archive_image(struct img_type *img,
+ 	unlink(FIFO);
+ 	ret = mkfifo(FIFO, 0666);
+ 	if (ret) {
+-		ERROR("FIFO cannot be created in archive handler\n");
++		ERROR("FIFO cannot be created in archive handler");
+ 		return -1;
+ 	}
+ 	if (!getcwd(pwd, sizeof(pwd)))
+@@ -192,11 +192,11 @@ static int install_archive_image(struct img_type *img,
+ 	 */
+ 	ret = chdir(path);
+ 	if (ret) {
+-		ERROR("Fault: chdir not possible\n");
++		ERROR("Fault: chdir not possible");
+ 		return -EFAULT;
+ 	}
+ 
+-	TRACE("Installing file %s on %s, %s attributes\n",
++	TRACE("Installing file %s on %s, %s attributes",
+ 		img->fname, path,
+ 		img->preserve_attributes ? "preserving" : "ignoring");
+ 
+@@ -210,7 +210,7 @@ static int install_archive_image(struct img_type *img,
+ 
+ 	ret = pthread_create(&extract_thread, &attr, extract, &tf);
+ 	if (ret) {
+-		ERROR("Code from pthread_create() is %d\n",
++		ERROR("Code from pthread_create() is %d",
+ 			 ret);
+ 		return -EFAULT;
+ 	}
+@@ -219,7 +219,7 @@ static int install_archive_image(struct img_type *img,
+ 
+ 	ret = copyimage(&fdout, img, NULL);
+ 	if (ret< 0) {
+-		ERROR("Error copying extracted file\n");
++		ERROR("Error copying extracted file");
+ 		return -EFAULT;
+ 	}
+ 
+@@ -227,7 +227,7 @@ static int install_archive_image(struct img_type *img,
+ 
+ 	ret = pthread_join(extract_thread, &status);
+ 	if (ret) {
+-		ERROR("return code from pthread_join() is %d\n", ret);
++		ERROR("return code from pthread_join() is %d", ret);
+ 		return -EFAULT;
+ 	}
+ 
+@@ -236,7 +236,7 @@ static int install_archive_image(struct img_type *img,
+ 	ret = chdir(pwd);
+ 
+ 	if (ret) {
+-		TRACE("Fault: chdir not possible\n");
++		TRACE("Fault: chdir not possible");
+ 	}
+ 
+ 	if (use_mount) {
+diff --git a/handlers/flash_handler.c b/handlers/flash_handler.c
+index 020ca2a..f3b5bcc 100644
+--- a/handlers/flash_handler.c
++++ b/handlers/flash_handler.c
+@@ -109,13 +109,13 @@ static int flash_write_nand(int mtdnum, struct img_type *img)
+ 	snprintf(mtd_device, sizeof(mtd_device), "/dev/mtd%d", mtdnum);
+ 
+ 	if ((imglen / pagelen) * mtd->min_io_size > mtd->size) {
+-		ERROR("Image %s does not fit into mtd%d\n", img->fname, mtdnum);
++		ERROR("Image %s does not fit into mtd%d", img->fname, mtdnum);
+ 		return -EIO;
+ 	}
+ 
+ 	/* Flashing to NAND is currently not streamable */
+ 	if (img->install_directly) {
+-		ERROR("Raw NAND not streamable\n");
++		ERROR("Raw NAND not streamable");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -247,7 +247,7 @@ static int flash_write_nand(int mtdnum, struct img_type *img)
+ 				}
+ 			}
+ 
+-			TRACE("Marking block at %08llx bad\n",
++			TRACE("Marking block at %08llx bad",
+ 					mtdoffset & (~mtd->eb_size + 1));
+ 			if (mtd_mark_bad(mtd, fd, mtdoffset / mtd->eb_size)) {
+ 				ERROR("mtd%d: MTD Mark bad block failure", mtdnum);
+@@ -274,7 +274,7 @@ closeall:
+ 	close(fd);
+ 
+ 	if (failed) {
+-		ERROR("Installing image %s into mtd%d failed\n",
++		ERROR("Installing image %s into mtd%d failed",
+ 			img->fname,
+ 			mtdnum);
+ 		return -1;
+@@ -291,7 +291,7 @@ static int flash_write_nor(int mtdnum, struct img_type *img)
+ 	struct flash_description *flash = get_flash_info();
+ 
+ 	if  (!mtd_dev_present(flash->libmtd, mtdnum)) {
+-		ERROR("MTD %d does not exist\n", mtdnum);
++		ERROR("MTD %d does not exist", mtdnum);
+ 		return -ENODEV;
+ 	}
+ 
+diff --git a/handlers/raw_handler.c b/handlers/raw_handler.c
+index 7093425..95bb9b1 100644
+--- a/handlers/raw_handler.c
++++ b/handlers/raw_handler.c
+@@ -124,16 +124,16 @@ static int install_raw_file(struct img_type *img,
+ 		}
+ 	}
+ 
+-	TRACE("Installing file %s on %s\n",
++	TRACE("Installing file %s on %s",
+ 		img->fname, path);
+ 
+ 	make_path = dict_get_value(&img->properties, "create-destination");
+ 
+ 	if (make_path != NULL && strcmp(make_path, "true") == 0) {
+-		TRACE("Creating path %s\n", path);
++		TRACE("Creating path %s", path);
+ 		fdout = mkpath(dirname(strdupa(path)), 0755);
+ 		if (fdout < 0) {
+-			ERROR("I cannot create path %s: %s\n", path, strerror(errno));
++			ERROR("I cannot create path %s: %s", path, strerror(errno));
+ 			return -1;
+ 		}
+ 	}
+@@ -141,7 +141,7 @@ static int install_raw_file(struct img_type *img,
+ 	fdout = openfileoutput(path);
+ 	ret = copyimage(&fdout, img, NULL);
+ 	if (ret< 0) {
+-		ERROR("Error copying extracted file\n");
++		ERROR("Error copying extracted file");
+ 	}
+ 	close(fdout);
+ 
+diff --git a/handlers/swuforward_handler.c b/handlers/swuforward_handler.c
+index 163185c..c08edcd 100644
+--- a/handlers/swuforward_handler.c
++++ b/handlers/swuforward_handler.c
+@@ -91,7 +91,7 @@ static size_t curl_read_data(void *buffer, size_t size, size_t nmemb, void *user
+ 	if (!nmemb)
+ 		return 0;
+ 	if (!userp) {
+-		ERROR("Failure IPC stream file descriptor \n");
++		ERROR("Failure IPC stream file descriptor ");
+ 		return -EFAULT;
+ 	}
+ 
+@@ -174,7 +174,7 @@ static json_object *parse_reqstatus(json_object *reply, const char **json_path)
+ 	json_data = json_get_path_key(reply, json_path);
+ 	if (json_data == NULL) {
+ 		ERROR("Got malformed JSON: Could not find path");
+-		DEBUG("Got JSON: %s\n", json_object_to_json_string(json_data));
++		DEBUG("Got JSON: %s", json_object_to_json_string(json_data));
+ 	}
+ 
+ 	return json_data;
+@@ -203,7 +203,7 @@ static int get_answer(struct curlconn *conn, RECOVERY_STATUS *result, bool ignor
+ 
+ 	if (asprintf(&channel_cfg.url, "%s%s",
+ 			 conn->url, STATUS_URL) < 0) {
+-		ERROR("Out of memory.\n");
++		ERROR("Out of memory.");
+ 		return -ENOMEM; 
+ 	}
+ 
+@@ -409,7 +409,7 @@ static int install_remote_swu(struct img_type *img,
+ 		CURL *eh = NULL;
+ 		int http_status_code=0;
+ 		if (msg->msg != CURLMSG_DONE) {
+-			ERROR("curl_multi_info_read(), CURLMsg=%d\n", msg->msg);
++			ERROR("curl_multi_info_read(), CURLMsg=%d", msg->msg);
+ 			ret = FAILURE;
+ 			break;
+ 		}
+diff --git a/handlers/ubivol_handler.c b/handlers/ubivol_handler.c
+index 909a215..8b204dd 100644
+--- a/handlers/ubivol_handler.c
++++ b/handlers/ubivol_handler.c
+@@ -111,7 +111,7 @@ static int update_volume(libubi_t libubi, struct img_type *img,
+ 		img->fname, node, img->volname);
+ 	notify(RUN, RECOVERY_NO_ERROR, INFOLEVEL, sbuf);
+ 
+-	TRACE("Updating UBI : %s %lld\n",
++	TRACE("Updating UBI : %s %lld",
+ 			img->fname, img->size);
+ 	if (copyimage(&fdout, img, NULL) < 0) {
+ 		ERROR("Error copying extracted file");
+@@ -215,7 +215,7 @@ static int adjust_volume(struct img_type *cfg,
+ 			ERROR("Volume %s cannot be dropped", ubivol->vol_info.name);
+ 			return -1;
+ 		}
+-		TRACE("Removed UBI Volume %s\n", ubivol->vol_info.name);
++		TRACE("Removed UBI Volume %s", ubivol->vol_info.name);
+ 
+ 		LIST_REMOVE(ubivol, next);
+ 		free(ubivol);
+@@ -246,7 +246,7 @@ static int adjust_volume(struct img_type *cfg,
+ 
+ 	ubivol = (struct ubi_part *)calloc(1, sizeof(struct ubi_part));
+ 	if (!ubivol) {
+-		ERROR("No memory: malloc failed\n");
++		ERROR("No memory: malloc failed");
+ 		return -ENOMEM;
+ 	}
+ 	err = ubi_get_vol_info1(nandubi->libubi,
+@@ -258,7 +258,7 @@ static int adjust_volume(struct img_type *cfg,
+ 		return err;
+ 	}
+ 	LIST_INSERT_HEAD(&mtd_info->ubi_partitions, ubivol, next);
+-	TRACE("Created UBI Volume %s of %lld bytes (requested %lld)\n",
++	TRACE("Created UBI Volume %s of %lld bytes (requested %lld)",
+ 		req.name, ubivol->vol_info.data_bytes, req.bytes);
+ 
+ 	return 0;
+diff --git a/parser/parse_external.c b/parser/parse_external.c
+index fbab38b..00a0c25 100644
+--- a/parser/parse_external.c
++++ b/parser/parse_external.c
+@@ -153,7 +153,7 @@ int parse_external(struct swupdate_cfg *software, const char *filename)
+ 			lua_pushnil(L);
+ 			image = (struct img_type *)calloc(1, sizeof(struct img_type));	
+ 			if (!image) {
+-				ERROR( "No memory: malloc failed\n");
++				ERROR( "No memory: malloc failed");
+ 				return -ENOMEM;
+ 			}
+ 			while (lua_next(L, -2) != 0) {
+diff --git a/parser/parser.c b/parser/parser.c
+index dfbd2f3..26cc5a4 100644
+--- a/parser/parser.c
++++ b/parser/parser.c
+@@ -177,7 +177,7 @@ static int parse_hw_compatibility(parsertype p, void *cfg, struct swupdate_cfg *
+ 
+ 	setting = find_node(p, cfg, "hardware-compatibility", swcfg);
+ 	if (setting == NULL) {
+-		ERROR("HW compatibility not found\n");
++		ERROR("HW compatibility not found");
+ 		return -1;
+ 	}
+ 
+@@ -196,7 +196,7 @@ static int parse_hw_compatibility(parsertype p, void *cfg, struct swupdate_cfg *
+ 
+ 		hwrev = (struct hw_type *)calloc(1, sizeof(struct hw_type));
+ 		if (!hwrev) {
+-			ERROR("No memory: malloc failed\n");
++			ERROR("No memory: malloc failed");
+ 			return -1;
+ 		}
+ 
+@@ -291,7 +291,7 @@ static int parse_partitions(parsertype p, void *cfg, struct swupdate_cfg *swcfg)
+ 
+ 		partition = (struct img_type *)calloc(1, sizeof(struct img_type));
+ 		if (!partition) {
+-			ERROR("No memory: malloc failed\n");
++			ERROR("No memory: malloc failed");
+ 			return -ENOMEM;
+ 		}
+ 		if (parse_common_attributes(p, elem, partition) < 0) {
+@@ -314,7 +314,7 @@ static int parse_partitions(parsertype p, void *cfg, struct swupdate_cfg *swcfg)
+ 
+ 		get_field(p, elem, "size", &partition->partsize);
+ 
+-		TRACE("Partition: %s new size %lld bytes\n",
++		TRACE("Partition: %s new size %lld bytes",
+ 			partition->volname,
+ 			partition->partsize);
+ 
+@@ -356,7 +356,7 @@ static int parse_scripts(parsertype p, void *cfg, struct swupdate_cfg *swcfg, lu
+ 
+ 		script = (struct img_type *)calloc(1, sizeof(struct img_type));
+ 		if (!script) {
+-			ERROR( "No memory: malloc failed\n");
++			ERROR( "No memory: malloc failed");
+ 			return -ENOMEM;
+ 		}
+ 
+@@ -379,7 +379,7 @@ static int parse_scripts(parsertype p, void *cfg, struct swupdate_cfg *swcfg, lu
+ 			return -1;
+ 		}
+ 
+-		TRACE("%s Script: %s\n",
++		TRACE("%s Script: %s",
+ 			skip ? "Skip" : "Found",
+ 			script->fname);
+ 
+@@ -427,7 +427,7 @@ static int parse_bootloader(parsertype p, void *cfg, struct swupdate_cfg *swcfg)
+ 			GET_FIELD_STRING(p, elem, "name", name);
+ 			GET_FIELD_STRING(p, elem, "value", value);
+ 			dict_set_value(&swcfg->bootloader, name, value);
+-			TRACE("Bootloader var: %s = %s\n",
++			TRACE("Bootloader var: %s = %s",
+ 				name,
+ 				dict_get_value(&swcfg->bootloader, name));
+ 			continue;
+@@ -442,7 +442,7 @@ static int parse_bootloader(parsertype p, void *cfg, struct swupdate_cfg *swcfg)
+ 		}
+ 		script = (struct img_type *)calloc(1, sizeof(struct img_type));
+ 		if (!script) {
+-			ERROR( "No memory: malloc failed\n");
++			ERROR( "No memory: malloc failed");
+ 			return -ENOMEM;
+ 		}
+ 
+@@ -455,7 +455,7 @@ static int parse_bootloader(parsertype p, void *cfg, struct swupdate_cfg *swcfg)
+ 
+ 		LIST_INSERT_HEAD(&swcfg->bootscripts, script, next);
+ 
+-		TRACE("Found U-Boot Script: %s\n",
++		TRACE("Found U-Boot Script: %s",
+ 			script->fname);
+ 	}
+ 
+@@ -491,7 +491,7 @@ static int parse_images(parsertype p, void *cfg, struct swupdate_cfg *swcfg, lua
+ 
+ 		image = (struct img_type *)calloc(1, sizeof(struct img_type));
+ 		if (!image) {
+-			ERROR( "No memory: malloc failed\n");
++			ERROR( "No memory: malloc failed");
+ 			return -ENOMEM;
+ 		}
+ 
+@@ -516,7 +516,7 @@ static int parse_images(parsertype p, void *cfg, struct swupdate_cfg *swcfg, lua
+ 			return -1;
+ 		}
+ 
+-		TRACE("%s %sImage%s%s%s%s: %s in %s : %s for handler %s%s%s\n",
++		TRACE("%s %sImage%s%s%s%s: %s in %s : %s for handler %s%s%s",
+ 			skip ? "Skip" : "Found",
+ 			image->compressed ? "compressed " : "",
+ 			strlen(image->id.name) ? " " : "", image->id.name,
+@@ -571,7 +571,7 @@ static int parse_files(parsertype p, void *cfg, struct swupdate_cfg *swcfg, lua_
+ 
+ 		file = (struct img_type *)calloc(1, sizeof(struct img_type));
+ 		if (!file) {
+-			ERROR( "No memory: malloc failed\n");
++			ERROR( "No memory: malloc failed");
+ 			return -ENOMEM;
+ 		}
+ 
+@@ -592,7 +592,7 @@ static int parse_files(parsertype p, void *cfg, struct swupdate_cfg *swcfg, lua_
+ 			return -1;
+ 		}
+ 
+-		TRACE("%s %sFile%s%s%s%s: %s --> %s (%s)%s\n",
++		TRACE("%s %sFile%s%s%s%s: %s --> %s (%s)%s",
+ 			skip ? "Skip" : "Found",
+ 			file->compressed ? "compressed " : "",
+ 			strlen(file->id.name) ? " " : "", file->id.name,
+@@ -628,7 +628,7 @@ static int parser(parsertype p, void *cfg, struct swupdate_cfg *swcfg)
+ 	}
+ 
+ 	if (swcfg->embscript) {
+-		TRACE("Found Lua Software:\n%s\n", swcfg->embscript);
++		TRACE("Found Lua Software:\n%s", swcfg->embscript);
+ 		L = lua_parser_init(swcfg->embscript, &swcfg->bootloader);
+ 		if (!L) {
+ 			ERROR("Required embedded script that cannot be loaded");
+@@ -656,7 +656,7 @@ static int parser(parsertype p, void *cfg, struct swupdate_cfg *swcfg)
+ 	if (LIST_EMPTY(&swcfg->images) &&
+ 	    LIST_EMPTY(&swcfg->scripts) &&
+ 	    LIST_EMPTY(&swcfg->bootloader)) {
+-		ERROR("Found nothing to install\n");
++		ERROR("Found nothing to install");
+ 		return -1;
+ 	}
+ 
+@@ -686,12 +686,12 @@ int parse_cfg (struct swupdate_cfg *swcfg, const char *filename)
+ 		fprintf(stderr, "%s:%d - %s\n", config_error_file(&cfg),
+ 			config_error_line(&cfg), config_error_text(&cfg));
+ 		config_destroy(&cfg);
+-		ERROR(" ..exiting\n");
++		ERROR(" ..exiting");
+ 		return -1;
+ 	}
+ 
+ 	if((setting = find_node(p, &cfg, "version", swcfg)) == NULL) {
+-		ERROR("Missing version in configuration file\n");
++		ERROR("Missing version in configuration file");
+ 		return -1;
+ 	} else {
+ 		GET_FIELD_STRING(p, setting, NULL, swcfg->version);
+@@ -706,7 +706,7 @@ int parse_cfg (struct swupdate_cfg *swcfg, const char *filename)
+ 	snprintf(node, sizeof(node), "%s.embedded-script",
+ 			NODEROOT);
+ 	if (config_lookup_string(&cfg, node, &str)) {
+-		TRACE("Found Lua Software:\n%s\n", str);
++		TRACE("Found Lua Software:\n%s", str);
+ 	}
+ 
+ 	ret = parser(p, &cfg, swcfg);
+@@ -755,13 +755,13 @@ int parse_json(struct swupdate_cfg *swcfg, const char *filename)
+ 
+ 	cfg = json_tokener_parse(string);
+ 	if (!cfg) {
+-		ERROR("JSON File corrupted\n");
++		ERROR("JSON File corrupted");
+ 		free(string);
+ 		return -1;
+ 	}
+ 
+ 	if((setting = find_node(p, cfg, "version", swcfg)) == NULL) {
+-		ERROR("Missing version in configuration file\n");
++		ERROR("Missing version in configuration file");
+ 		free(string);
+ 		return -1;
+ 	} else {
+diff --git a/suricatta/server_hawkbit.c b/suricatta/server_hawkbit.c
+index b4e10df..00d9fc3 100644
+--- a/suricatta/server_hawkbit.c
++++ b/suricatta/server_hawkbit.c
+@@ -327,7 +327,7 @@ server_op_res_t server_send_cancel_reply(channel_t *channel, const int action_id
+ 	if (ENOMEM_ASPRINTF ==
+ 	    asprintf(&url, "%s/feedback",
+ 		     server_hawkbit.cancel_url)) {
+-		ERROR("hawkBit server reply cannot be sent because of OOM.\n");
++		ERROR("hawkBit server reply cannot be sent because of OOM.");
+ 		result = SERVER_EINIT;
+ 		goto cleanup;
+ 	}
+@@ -340,7 +340,7 @@ server_op_res_t server_send_cancel_reply(channel_t *channel, const int action_id
+ 		     stop_id, fdate, reply_status_result_finished.success,
+ 		     reply_status_execution.closed,
+ 		     "cancellation acknowledged.")) {
+-		ERROR("hawkBit server reply cannot be sent because of OOM.\n");
++		ERROR("hawkBit server reply cannot be sent because of OOM.");
+ 		result = SERVER_EINIT;
+ 		goto cleanup;
+ 	}
+@@ -359,7 +359,7 @@ cleanup:
+ 	if (channel_data_reply.json_reply != NULL &&
+ 	    json_object_put(channel_data_reply.json_reply) !=
+ 		JSON_OBJECT_FREED) {
+-		ERROR("JSON object should be freed but was not.\n");
++		ERROR("JSON object should be freed but was not.");
+ 	}
+ 
+ 	/*
+@@ -397,7 +397,7 @@ static char *server_create_details(int numdetails, const char *details[])
+ 		prev = next;
+ 	}
+ 
+-	TRACE("Final details: %s\n", next);
++	TRACE("Final details: %s", next);
+ 
+ 	return next;
+ }
+@@ -418,7 +418,7 @@ server_send_deployment_reply(const int action_id, const int job_cnt_max,
+ 
+ 	char *detail = server_create_details(numdetails, details);
+ 
+-	TRACE("Reporting Installation progress for ID %d: %s / %s / %s \n",
++	TRACE("Reporting Installation progress for ID %d: %s / %s / %s",
+ 	      action_id, finished, execution_status, detail);
+ 	/* clang-format off */
+ 	static const char* const json_hawkbit_deployment_feedback = STRINGIFY(
+@@ -450,7 +450,7 @@ server_send_deployment_reply(const int action_id, const int job_cnt_max,
+ 	    asprintf(&json_reply_string, json_hawkbit_deployment_feedback,
+ 		     action_id, fdate, job_cnt_cur, job_cnt_max, finished,
+ 		     execution_status, detail ? detail : " ")) {
+-		ERROR("hawkBit server reply cannot be sent because of OOM.\n");
++		ERROR("hawkBit server reply cannot be sent because of OOM.");
+ 		result = SERVER_EINIT;
+ 		goto cleanup;
+ 	}
+@@ -458,13 +458,13 @@ server_send_deployment_reply(const int action_id, const int job_cnt_max,
+ 	    asprintf(&url, "%s/%s/controller/v1/%s/deploymentBase/%d/feedback",
+ 		     server_hawkbit.url, server_hawkbit.tenant,
+ 		     server_hawkbit.device_id, action_id)) {
+-		ERROR("hawkBit server reply cannot be sent because of OOM.\n");
++		ERROR("hawkBit server reply cannot be sent because of OOM.");
+ 		result = SERVER_EINIT;
+ 		goto cleanup;
+ 	}
+ 	channel_data.url = url;
+ 	channel_data.request_body = json_reply_string;
+-	TRACE("PUTing to %s: %s\n", channel_data.url, channel_data.request_body);
++	TRACE("PUTing to %s: %s", channel_data.url, channel_data.request_body);
+ 	channel_data.method = CHANNEL_POST;
+ 	result = map_channel_retcode(channel->put(channel, (void *)&channel_data));
+ 
+@@ -479,7 +479,7 @@ cleanup:
+ 	}
+ 	if (channel_data.json_reply != NULL &&
+ 	    json_object_put(channel_data.json_reply) != JSON_OBJECT_FREED) {
+-		ERROR("JSON object should be freed but was not.\n");
++		ERROR("JSON object should be freed but was not.");
+ 	}
+ 	return result;
+ }
+@@ -497,16 +497,16 @@ server_op_res_t server_set_polling_interval(json_object *json_root)
+ 	    json_root, (const char *[]){"config", "polling", "sleep", NULL});
+ 	if (json_data == NULL) {
+ 		ERROR("Got malformed JSON: Could not find field "
+-		      "config->polling->sleep.\n");
+-		DEBUG("Got JSON: %s\n", json_object_to_json_string(json_data));
++		      "config->polling->sleep.");
++		DEBUG("Got JSON: %s", json_object_to_json_string(json_data));
+ 		return SERVER_EBADMSG;
+ 	}
+ 	static struct tm timedate;
+ 	if (strptime(json_object_get_string(json_data), "%H:%M:%S",
+ 		     &timedate) == NULL) {
+ 		ERROR("Got malformed JSON: Could not convert field "
+-		      "config->polling->sleep to int.\n");
+-		DEBUG("Got JSON: %s\n", json_object_to_json_string(json_data));
++		      "config->polling->sleep to int.");
++		DEBUG("Got JSON: %s", json_object_to_json_string(json_data));
+ 		return SERVER_EBADMSG;
+ 	}
+ 	unsigned int polling_interval =
+@@ -523,7 +523,7 @@ server_op_res_t server_set_polling_interval(json_object *json_root)
+ 
+ 	server_hawkbit.polling_interval =
+ 	    polling_interval == 0 ? DEFAULT_POLLING_INTERVAL : polling_interval;
+-	DEBUG("Set polling interval to %ds as announced by server.\n",
++	DEBUG("Set polling interval to %ds as announced by server.",
+ 	      server_hawkbit.polling_interval);
+ 	return SERVER_OK;
+ }
+@@ -554,7 +554,7 @@ server_op_res_t server_set_config_data(json_object *json_root)
+ 			free(server_hawkbit.configData_url);
+ 		server_hawkbit.configData_url = tmp;
+ 		server_hawkbit.has_to_send_configData = (get_target_data_length() > 0) ? true : false;
+-		TRACE("ConfigData: %s\n", server_hawkbit.configData_url);
++		TRACE("ConfigData: %s", server_hawkbit.configData_url);
+ 	}
+ 	return SERVER_OK;
+ }
+@@ -566,14 +566,14 @@ static server_op_res_t server_get_device_info(channel_t *channel, channel_data_t
+ 	assert(server_hawkbit.url != NULL);
+ 	assert(server_hawkbit.tenant != NULL);
+ 	assert(server_hawkbit.device_id != NULL);
+-	DEBUG("Getting information for device '%s'\n",
++	DEBUG("Getting information for device '%s'",
+ 	      server_hawkbit.device_id);
+ 	server_op_res_t result = SERVER_OK;
+ 	if (ENOMEM_ASPRINTF ==
+ 	    asprintf(&channel_data->url, "%s/%s/controller/v1/%s",
+ 		     server_hawkbit.url, server_hawkbit.tenant,
+ 		     server_hawkbit.device_id)) {
+-		ERROR("hawkBit server cannot be queried because of OOM.\n");
++		ERROR("hawkBit server cannot be queried because of OOM.");
+ 		result = SERVER_EINIT;
+ 		goto cleanup;
+ 	}
+@@ -620,15 +620,15 @@ static server_op_res_t server_get_deployment_info(channel_t *channel, channel_da
+ 		if (server_hawkbit.cancel_url)
+ 			free(server_hawkbit.cancel_url);
+ 		server_hawkbit.cancel_url = strdup(url_cancel);
+-		TRACE("Cancel action available at %s\n", url_cancel);
++		TRACE("Cancel action available at %s", url_cancel);
+ 	} else if ((url_deployment_base =
+ 			json_get_data_url(channel_data_device_info.json_reply,
+ 					  "deploymentBase")) != NULL) {
+ 		update_status = SERVER_UPDATE_AVAILABLE;
+ 		channel_data->url = url_deployment_base;
+-		TRACE("Update action available at %s\n", url_deployment_base);
++		TRACE("Update action available at %s", url_deployment_base);
+ 	} else {
+-		TRACE("No pending action on server.\n");
++		TRACE("No pending action on server.");
+ 		result = SERVER_NO_UPDATE_AVAILABLE;
+ 		goto cleanup;
+ 	}
+@@ -639,8 +639,8 @@ static server_op_res_t server_get_deployment_info(channel_t *channel, channel_da
+ 	json_object *json_data = json_get_path_key(
+ 	    channel_data->json_reply, (const char *[]){"id", NULL});
+ 	if (json_data == NULL) {
+-		ERROR("Got malformed JSON: Could not find field 'id'.\n");
+-		DEBUG("Got JSON: %s\n",
++		ERROR("Got malformed JSON: Could not find field 'id'.");
++		DEBUG("Got JSON: %s",
+ 		      json_object_to_json_string(channel_data->json_reply));
+ 		result = SERVER_EBADMSG;
+ 		goto cleanup;
+@@ -655,21 +655,21 @@ static server_op_res_t server_get_deployment_info(channel_t *channel, channel_da
+ 		json_data = json_get_path_key(
+ 		    channel_data->json_reply, (const char *[]){"cancelAction", "stopId", NULL});
+ 		if (json_data == NULL) {
+-			ERROR("Got malformed JSON: Could not find field 'stopId', reuse actionId.\n");
+-			DEBUG("Got JSON: %s\n",
++			ERROR("Got malformed JSON: Could not find field 'stopId', reuse actionId.");
++			DEBUG("Got JSON: %s",
+ 			      json_object_to_json_string(channel_data->json_reply));
+ 		} else {
+ 			server_hawkbit.stop_id = json_object_get_int(json_data);
+ 		}
+ 	}
+-	TRACE("Associated Action ID for Update Action is %d\n", *action_id);
++	TRACE("Associated Action ID for Update Action is %d", *action_id);
+ 	result = update_status == SERVER_OK ? result : update_status;
+ 
+ cleanup:
+ 	if (channel_data_device_info.json_reply != NULL &&
+ 	    json_object_put(channel_data_device_info.json_reply) !=
+ 		JSON_OBJECT_FREED) {
+-		ERROR("JSON object should be freed but was not.\n");
++		ERROR("JSON object should be freed but was not.");
+ 	}
+ 	if (url_cancel != NULL) {
+ 		free(url_cancel);
+@@ -738,7 +738,7 @@ static int server_check_during_dwl(void)
+ 	/* Cleanup and free resources */
+ 	if (channel_data.json_reply != NULL &&
+ 	    json_object_put(channel_data.json_reply) != JSON_OBJECT_FREED) {
+-		ERROR("JSON object should be freed but was not.\n");
++		ERROR("JSON object should be freed but was not.");
+ 	}
+ 	channel->close(channel);
+ 	free(channel);
+@@ -766,10 +766,10 @@ server_op_res_t server_has_pending_action(int *action_id)
+ 	 *      server_install_update() */
+ 	if (channel_data.json_reply != NULL &&
+ 	    json_object_put(channel_data.json_reply) != JSON_OBJECT_FREED) {
+-		ERROR("JSON object should be freed but was not.\n");
++		ERROR("JSON object should be freed but was not.");
+ 	}
+ 	if (result == SERVER_UPDATE_CANCELED) {
+-		DEBUG("Acknowledging cancelled update.\n");
++		DEBUG("Acknowledging cancelled update.");
+ 		(void)server_send_cancel_reply(server_hawkbit.channel, *action_id);
+ 		/* Inform the installer that a CANCEL was received */
+ 		return SERVER_OK;
+@@ -809,10 +809,10 @@ static update_state_t get_state(void) {
+ 	update_state_t state;
+ 
+ 	if (read_state((char *)STATE_KEY, &state) != SERVER_OK) {
+-		ERROR("Cannot read stored update state.\n");
++		ERROR("Cannot read stored update state.");
+ 		return STATE_ERROR;
+ 	}
+-	TRACE("Read state=%c from persistent storage.\n", state);
++	TRACE("Read state=%c from persistent storage.", state);
+ 
+ 	return is_state_valid(state) ? state : STATE_ERROR;
+ }
+@@ -864,7 +864,7 @@ static server_op_res_t handle_feedback(int action_id, server_op_res_t result,
+ 	if (server_send_deployment_reply(action_id, 0, 0, reply_result,
+ 					 reply_execution,
+ 					 numdetails, details) != SERVER_OK) {
+-		ERROR("Error while reporting installation status to server.\n");
++		ERROR("Error while reporting installation status to server.");
+ 		return SERVER_EAGAIN;
+ 	}
+ 
+@@ -878,7 +878,7 @@ server_op_res_t server_handle_initial_state(update_state_t stateovrrd)
+ 	update_state_t state = STATE_OK;
+ 	if (stateovrrd != STATE_NOT_AVAILABLE) {
+ 		state = stateovrrd;
+-		TRACE("Got state=%c from command line.\n", state);
++		TRACE("Got state=%c from command line.", state);
+ 		if (!is_state_valid(state)) {
+ 			return SERVER_EINIT;
+ 		}
+@@ -977,7 +977,7 @@ server_op_res_t server_process_update_artifact(int action_id,
+ 	     json_data_artifact_count++) {
+ 		json_data_artifact_item = array_list_get_idx(
+ 		    json_data_artifact_array, json_data_artifact_count);
+-		TRACE("Iterating over JSON, key=%s\n",
++		TRACE("Iterating over JSON, key=%s",
+ 		      json_object_to_json_string(json_data_artifact_item));
+ 		json_object *json_data_artifact_filename =
+ 		    json_get_path_key(json_data_artifact_item,
+@@ -1022,7 +1022,7 @@ server_op_res_t server_process_update_artifact(int action_id,
+ 			server_hawkbit_error(
+ 			    "Got malformed JSON: Could not find fields "
+ 			    "'filename', 'hashes->sha1', or 'size' in JSON.\n");
+-			DEBUG("Got JSON: %s\n", json_object_to_json_string(
++			DEBUG("Got JSON: %s", json_object_to_json_string(
+ 						    json_data_artifact_item));
+ 			result = SERVER_EBADMSG;
+ 			goto cleanup;
+@@ -1048,7 +1048,7 @@ server_op_res_t server_process_update_artifact(int action_id,
+ 			continue;
+ 		}
+ 
+-		DEBUG("Processing '%s' from '%s'\n",
++		DEBUG("Processing '%s' from '%s'",
+ 		      json_object_get_string(json_data_artifact_filename),
+ 		      json_object_get_string(json_data_artifact_url));
+ 
+@@ -1072,7 +1072,7 @@ server_op_res_t server_process_update_artifact(int action_id,
+ 			    part,
+ 			    version,
+ 			    name, action_id)) {
+-			ERROR("hawkBit server reply cannot be sent because of OOM.\n");
++			ERROR("hawkBit server reply cannot be sent because of OOM.");
+ 			result = SERVER_EBADMSG;
+ 			goto cleanup_loop;
+ 		}
+@@ -1193,7 +1193,7 @@ server_op_res_t server_install_update(void)
+ 	if (json_data_chunk == NULL) {
+ 		server_hawkbit_error("Got malformed JSON: Could not find field "
+ 		      "deployment->chunks.");
+-		DEBUG("Got JSON: %s\n",
++		DEBUG("Got JSON: %s",
+ 		      json_object_to_json_string(channel_data.json_reply));
+ 		result = SERVER_EBADMSG;
+ 		goto cleanup;
+@@ -1215,7 +1215,7 @@ server_op_res_t server_install_update(void)
+ 	     json_data_chunk_count++) {
+ 		json_data_chunk_item = array_list_get_idx(
+ 		    json_data_chunk_array, json_data_chunk_count);
+-		TRACE("Iterating over JSON, key=%s\n",
++		TRACE("Iterating over JSON, key=%s",
+ 		      json_object_to_json_string(json_data_chunk_item));
+ 		json_object *json_data_chunk_part = json_get_path_key(
+ 		    json_data_chunk_item, (const char *[]){"part", NULL});
+@@ -1228,7 +1228,7 @@ server_op_res_t server_install_update(void)
+ 		    (json_data_chunk_name == NULL)) {
+ 			server_hawkbit_error("Got malformed JSON: Could not find fields "
+ 			      "'part', 'version', or 'name'.");
+-			DEBUG("Got JSON: %s\n", json_object_to_json_string(
++			DEBUG("Got JSON: %s", json_object_to_json_string(
+ 						    channel_data.json_reply));
+ 			result = SERVER_EBADMSG;
+ 			goto cleanup;
+@@ -1239,7 +1239,7 @@ server_op_res_t server_install_update(void)
+ 		       json_type_string);
+ 		assert(json_object_get_type(json_data_chunk_version) ==
+ 		       json_type_string);
+-		DEBUG("Processing Update Chunk '%s', version %s, part %s\n",
++		DEBUG("Processing Update Chunk '%s', version %s, part %s",
+ 		      json_object_get_string(json_data_chunk_name),
+ 		      json_object_get_string(json_data_chunk_version),
+ 		      json_object_get_string(json_data_chunk_part));
+@@ -1249,7 +1249,7 @@ server_op_res_t server_install_update(void)
+ 		if (json_data_chunk_artifacts == NULL) {
+ 			server_hawkbit_error("Got malformed JSON: Could not find field "
+ 			      "deployment->chunks->artifacts.");
+-			DEBUG("Got JSON: %s\n", json_object_to_json_string(
++			DEBUG("Got JSON: %s", json_object_to_json_string(
+ 						    channel_data.json_reply));
+ 			result = SERVER_EBADMSG;
+ 			goto cleanup;
+@@ -1279,7 +1279,7 @@ server_op_res_t server_install_update(void)
+ 
+ 			/* Check if failed because it was cancelled */
+ 			if (server_hawkbit.cancelDuringUpdate) {
+-				TRACE("Acknowledging cancelled update.\n");
++				TRACE("Acknowledging cancelled update.");
+ 				(void)server_send_cancel_reply(server_hawkbit.channel, action_id);
+ 				/* Inform the installer that a CANCEL was received */
+ 			} else {
+@@ -1313,7 +1313,7 @@ server_op_res_t server_install_update(void)
+ 
+ 	if ((result = save_state((char *)STATE_KEY, STATE_INSTALLED)) !=
+ 	    SERVER_OK) {
+-		ERROR("Cannot persistently store update state.\n");
++		ERROR("Cannot persistently store update state.");
+ 		goto cleanup;
+ 	}
+ 
+@@ -1335,16 +1335,16 @@ cleanup:
+ 	}
+ 	if (channel_data.json_reply != NULL &&
+ 	    json_object_put(channel_data.json_reply) != JSON_OBJECT_FREED) {
+-		ERROR("JSON object should be freed but was not.\n");
++		ERROR("JSON object should be freed but was not.");
+ 	}
+ 	if (result == SERVER_OK) {
+-		INFO("Update successful, executing post-update actions.\n");
++		INFO("Update successful, executing post-update actions.");
+ 		ipc_message msg;
+ 		if (ipc_postupdate(&msg) != 0) {
+ 			result = SERVER_EERR;
+ 		} else {
+ 			result = msg.type == ACK ? SERVER_OK : SERVER_EERR;
+-			DEBUG("%s\n", msg.data.msg);
++			DEBUG("%s", msg.data.msg);
+ 		}
+ 	}
+ 	return result;
+@@ -1398,7 +1398,7 @@ server_op_res_t server_send_target_data(void)
+ 				((first) ? ' ' : ','),
+ 				key,
+ 				value)) {
+-			ERROR("hawkBit server reply cannot be sent because of OOM.\n");
++			ERROR("hawkBit server reply cannot be sent because of OOM.");
+ 			result = SERVER_EINIT;
+ 			goto cleanup;
+ 		}
+@@ -1440,7 +1440,7 @@ server_op_res_t server_send_target_data(void)
+ 		     "", fdate, reply_status_result_finished.success,
+ 		     reply_status_execution.closed,
+ 		     "", configData)) {
+-		ERROR("hawkBit server reply cannot be sent because of OOM.\n");
++		ERROR("hawkBit server reply cannot be sent because of OOM.");
+ 		result = SERVER_EINIT;
+ 		goto cleanup;
+ 	}
+@@ -1448,7 +1448,7 @@ server_op_res_t server_send_target_data(void)
+ 	    asprintf(&url, "%s/%s/controller/v1/%s/configData",
+ 		     server_hawkbit.url, server_hawkbit.tenant,
+ 		     server_hawkbit.device_id)) {
+-		ERROR("hawkBit server reply cannot be sent because of OOM.\n");
++		ERROR("hawkBit server reply cannot be sent because of OOM.");
+ 		result = SERVER_EINIT;
+ 		goto cleanup;
+ 	}
+@@ -1578,7 +1578,7 @@ static int suricatta_configdata_settings(void *settings, void  __attribute__ ((_
+ 		GET_FIELD_STRING(LIBCFG_PARSER, elem, "name", name);
+ 		GET_FIELD_STRING(LIBCFG_PARSER, elem, "value", value);
+ 		dict_set_value(&server_hawkbit.configdata, name, value);
+-		TRACE("Identify for configData: %s --> %s\n",
++		TRACE("Identify for configData: %s --> %s",
+ 				name, value);
+ 	}
+ 
+@@ -1752,7 +1752,7 @@ server_op_res_t server_start(char *fname, int argc, char *argv[])
+ 		while ((state_handled = server_handle_initial_state(update_state)) !=
+ 		       SERVER_OK) {
+ 			if (state_handled == SERVER_EAGAIN) {
+-				INFO("Sleeping for %ds until retrying...\n",
++				INFO("Sleeping for %ds until retrying...",
+ 				     INITIAL_STATUS_REPORT_WAIT_DELAY);
+ 				sleep(INITIAL_STATUS_REPORT_WAIT_DELAY);
+ 				continue;
+@@ -1786,7 +1786,7 @@ static struct json_object *server_tokenize_msg(char *buf, size_t size)
+ 	} while ((json_res = json_tokener_get_error(json_tokenizer)) ==
+ 		 json_tokener_continue);
+ 	if (json_res != json_tokener_success) {
+-		ERROR("Error while parsing channel's returned JSON data: %s\n",
++		ERROR("Error while parsing channel's returned JSON data: %s",
+ 		      json_tokener_error_desc(json_res));
+ 		json_tokener_free(json_tokenizer);
+ 		return NULL;
+@@ -1812,7 +1812,7 @@ static server_op_res_t server_activation_ipc(ipc_message *msg)
+ 	    json_root, (const char *[]){"id", NULL});
+ 	if (json_data == NULL) {
+ 		ERROR("Got malformed JSON: Could not find action id");
+-		DEBUG("Got JSON: %s\n", json_object_to_json_string(json_data));
++		DEBUG("Got JSON: %s", json_object_to_json_string(json_data));
+ 		return SERVER_EERR;
+ 	}
+ 	int action_id = json_object_get_int(json_data);
+@@ -1821,7 +1821,7 @@ static server_op_res_t server_activation_ipc(ipc_message *msg)
+ 	    json_root, (const char *[]){"status", NULL});
+ 	if (json_data == NULL) {
+ 		ERROR("Got malformed JSON: Could not find field status");
+-		DEBUG("Got JSON: %s\n", json_object_to_json_string(json_data));
++		DEBUG("Got JSON: %s", json_object_to_json_string(json_data));
+ 		return SERVER_EERR;
+ 	}
+ 	update_state = (unsigned int)*json_object_get_string(json_data);
+@@ -1859,7 +1859,7 @@ static server_op_res_t server_activation_ipc(ipc_message *msg)
+ 	server_op_res_t response = SERVER_OK;
+ 
+ 	if (result == SERVER_UPDATE_CANCELED) {
+-		DEBUG("Acknowledging cancelled update.\n");
++		DEBUG("Acknowledging cancelled update.");
+ 		(void)server_send_cancel_reply(server_hawkbit.channel, server_action_id);
+ 	}
+ 
+diff --git a/suricatta/state.c b/suricatta/state.c
+index 935475b..d8dbf07 100644
+--- a/suricatta/state.c
++++ b/suricatta/state.c
+@@ -28,7 +28,7 @@
+ 
+ bool is_state_valid(update_state_t state) {
+ 	if ((state < STATE_OK) || (state > STATE_ERROR)) {
+-		ERROR("Unknown update state=%c\n", state);
++		ERROR("Unknown update state=%c", state);
+ 		return false;
+ 	}
+ 	return true;
+@@ -83,7 +83,7 @@ server_op_res_t read_state(char *key, update_state_t *value)
+ 
+ 	envval = bootloader_env_get(key);
+ 	if (envval == NULL) {
+-		INFO("Key '%s' not found in Bootloader's environment.\n", key);
++		INFO("Key '%s' not found in Bootloader's environment.", key);
+ 		*value = STATE_NOT_AVAILABLE;
+ 		return SERVER_OK;
+ 	}
+diff --git a/suricatta/suricatta.c b/suricatta/suricatta.c
+index 0ca5142..22fe321 100644
+--- a/suricatta/suricatta.c
++++ b/suricatta/suricatta.c
+@@ -27,10 +27,10 @@ int suricatta_wait(int seconds)
+ 	tv.tv_usec = 0;
+ 	FD_ZERO(&readfds);
+ 	FD_SET(sw_sockfd, &readfds);
+-	DEBUG("Sleeping for %ld seconds.\n", tv.tv_sec);
++	DEBUG("Sleeping for %ld seconds.", tv.tv_sec);
+ 	retval = select(sw_sockfd + 1, &readfds, NULL, NULL, &tv);
+ 	if (retval < 0) {
+-		TRACE("Suricatta awakened because of: %s\n", strerror(errno));
++		TRACE("Suricatta awakened because of: %s", strerror(errno));
+ 		return 0;
+ 	}
+ 	if (retval && FD_ISSET(sw_sockfd, &readfds)) {
+@@ -57,11 +57,11 @@ int start_suricatta(const char *cfgfname, int argc, char *argv[])
+ 		exit(EXIT_FAILURE);
+ 	}
+ 
+-	TRACE("Server initialized, entering suricatta main loop.\n");
++	TRACE("Server initialized, entering suricatta main loop.");
+ 	while (true) {
+ 		switch (server.has_pending_action(&action_id)) {
+ 		case SERVER_UPDATE_AVAILABLE:
+-			DEBUG("About to process available update.\n");
++			DEBUG("About to process available update.");
+ 			server.install_update();
+ 			break;
+ 		case SERVER_ID_REQUESTED:
+@@ -71,7 +71,7 @@ int start_suricatta(const char *cfgfname, int argc, char *argv[])
+ 			break;
+ 		case SERVER_OK:
+ 		default:
+-			DEBUG("No pending action to process.\n");
++			DEBUG("No pending action to process.");
+ 			break;
+ 		}
+ 
+@@ -81,6 +81,6 @@ int start_suricatta(const char *cfgfname, int argc, char *argv[])
+ 			wait_seconds = suricatta_wait(wait_seconds);
+ 		}
+ 
+-		TRACE("Suricatta awakened.\n");
++		TRACE("Suricatta awakened.");
+ 	}
+ }

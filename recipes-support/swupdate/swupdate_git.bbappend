@@ -2,18 +2,18 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRCREV = 'e42a4dcebeb026bc891c7af1304a9d3e9fb05f81'
 
-SRC_URI += " \
-    file://disable_webserver.cfg \
-    file://enable_download.cfg \
-    file://enable_sha256.cfg \
-    file://enable_signing_cms.cfg \
-    file://enable_systemd.cfg \
-    file://enable_ubi.cfg \
-    file://enable_bootloader.cfg \
-    file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
-    file://swupdate-check \
-    file://swupdate.cfg \
-"
+SRC_URI += "file://disable_webserver.cfg \
+            file://enable_download.cfg \
+            file://enable_sha256.cfg \
+            file://enable_signing_cms.cfg \
+            file://enable_systemd.cfg \
+            file://enable_ubi.cfg \
+            file://enable_bootloader.cfg \
+            file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
+            file://swupdate-check \
+            file://swupdate.cfg \
+            file://0001-Remove-doubled-newlines.patch \
+            "
 
 FILES_${PN} += " \
     /usr/share/swupdate/sw-update.cert.pem \
