@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRCREV = 'd8069ae82853c2dc6b8400a29ec51b1b556e4134'
+SRCREV = 'e42a4dcebeb026bc891c7af1304a9d3e9fb05f81'
 
 SRC_URI += " \
     file://disable_webserver.cfg \
