@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRCREV = 'e42a4dcebeb026bc891c7af1304a9d3e9fb05f81'
+SRCREV = 'be193ad2e19e8e81e6b1e0c6b194b8a7e18fad00'
 
 SRC_URI += "file://disable_webserver.cfg \
             file://enable_download.cfg \
@@ -12,7 +12,6 @@ SRC_URI += "file://disable_webserver.cfg \
             file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
             file://swupdate-check \
             file://swupdate.cfg \
-            file://0001-Remove-doubled-newlines.patch \
             "
 
 FILES_${PN} += " \
