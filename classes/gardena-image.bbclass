@@ -17,6 +17,7 @@ IMAGE_INSTALL += " \
     swupdate \
     u-boot \
     u-boot-fw-utils \
+    watchdog-keepalive \
 "
 
 IMAGE_FEATURES += " \
