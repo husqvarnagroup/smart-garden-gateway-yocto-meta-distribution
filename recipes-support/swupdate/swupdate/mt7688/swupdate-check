@@ -1,9 +1,0 @@
-#!/bin/sh
-
-bootslot=$(fw_printenv -n bootslot 2>&-)
-if [ $? -eq 0 ]; then
-    echo "Updating image"
-    swupdate -f /etc/swupdate.cfg -H smart_gateway_mt7688:0.5 -e stable,bootslot${bootslot} --download ''
-else
-    echo "Failed to extract bootslot_next variabel from U-Boot"
-fi
