@@ -2,14 +2,15 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRCREV = 'be193ad2e19e8e81e6b1e0c6b194b8a7e18fad00'
 
-SRC_URI += "file://disable_webserver.cfg \
+SRC_URI += " \
+            file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
+            file://disable_webserver.cfg \
+            file://enable_bootloader.cfg \
             file://enable_download.cfg \
             file://enable_sha256.cfg \
             file://enable_signing_cms.cfg \
             file://enable_systemd.cfg \
             file://enable_ubi.cfg \
-            file://enable_bootloader.cfg \
-            file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
             file://swupdate-check \
             file://swupdate.cfg \
             "
