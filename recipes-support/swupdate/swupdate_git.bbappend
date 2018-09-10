@@ -12,6 +12,7 @@ SRC_URI += " \
             file://enable_systemd.cfg \
             file://enable_ubi.cfg \
             file://set_hw_revision_file_path.cfg \
+            file://set_sw_versions_file_path.cfg \
             file://swupdate-check \
             file://swupdate.cfg \
             "
