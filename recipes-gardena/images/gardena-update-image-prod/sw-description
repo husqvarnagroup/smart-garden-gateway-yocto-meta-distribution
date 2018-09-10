@@ -2,7 +2,7 @@ software = {
 	version = "0.0.1";
 	description = "Linux Firmware for the Gardena smart Gateway MT7688";
 
-	smart_gateway_mt7688 = {
+	smart-gateway-mt7688 = {
 		hardware-compatibility: [ "0.5" ];
 
 		stable = {
