@@ -17,6 +17,8 @@ SRC_URI += " \
             file://set_sw_versions_file_path.cfg \
             file://swupdate.cfg \
             file://swupdate-check \
+            file://swupdate-check.service \
+            file://swupdate-check.timer \
             file://update-hw-revision \
             file://update-hw-revision.service \
             file://update-sw-versions \
@@ -26,8 +28,10 @@ SRC_URI += " \
 FILES_${PN} += " \
     ${datadir}/${PN}/sw-update.cert.pem \
     ${sysconfdir}/swupdate.cfg \
-    ${systemd_unitdir}/update-hw-revision.service \
-    ${systemd_unitdir}/update-sw-versions.service \
+    ${systemd_unitdir}/system/update-hw-revision.service \
+    ${systemd_unitdir}/system/update-sw-versions.service \
+    ${systemd_unitdir}/system/swupdate-check.service \
+    ${systemd_unitdir}/system/swupdate-check.timer \
     ${bindir}/update-hw-revision \
     ${bindir}/update-sw-versions \
     ${bindir}/swupdate-check \
@@ -40,8 +44,9 @@ do_install_append () {
     install -d ${D}${sysconfdir}
     install -m 644 ${WORKDIR}/swupdate.cfg ${D}${sysconfdir}
 
-    install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/swupdate-check ${D}${bindir}
+    install -m 644 ${WORKDIR}/swupdate-check.service ${D}${systemd_unitdir}/system
+    install -m 644 ${WORKDIR}/swupdate-check.timer ${D}${systemd_unitdir}/system
 
     install -m 644 ${WORKDIR}/update-hw-revision.service ${D}${systemd_unitdir}/system
     install -m 755 ${WORKDIR}/update-hw-revision ${D}${bindir}
@@ -52,5 +57,6 @@ do_install_append () {
 
 SYSTEMD_SERVICE_${PN} += "update-hw-revision.service"
 SYSTEMD_SERVICE_${PN} += "update-sw-versions.service"
+SYSTEMD_SERVICE_${PN} += "swupdate-check.timer"
 
 DEPENDS += "systemd curl"
