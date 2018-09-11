@@ -2,6 +2,7 @@
 
 IMAGE_INSTALL += " \
     dhcpcd \
+    i2c-tools \
     initscripts-readonly-rootfs-overlay \
     iw \
     manufacturing-tools \
