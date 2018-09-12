@@ -1,0 +1,6 @@
+[Unit]
+Description=Fetch new Linux system images, install if applicable"
+
+[Service]
+ExecStart=/usr/bin/swupdate-check
+Type=oneshot

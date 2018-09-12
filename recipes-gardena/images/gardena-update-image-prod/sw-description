@@ -1,0 +1,71 @@
+software = {
+    version = "1.0.0";
+    description = "Linux System Firmware for the Gardena smart Gateway MT7688";
+
+    scripts = (
+        {
+            filename = "check_linux_system_version.sh";
+            type = "shellscript";
+            sha256 = "@check_linux_system_version.sh";
+            data = "1.0.0";
+        }
+    )
+
+    smart-gateway-mt7688 = {
+        hardware-compatibility: [ "0.5", "1.0" ];
+
+        stable = {
+            bootslot0 = {
+                images = (
+                    {
+                        filename = "gardena-image-prod-mt7688.squashfs-xz";
+                        volume = "rootfs1";
+                        sha256 = "@gardena-image-prod-mt7688.squashfs-xz";
+                    },
+                    {
+                        filename = "uImage.lzma-mt7688.bin";
+                        volume = "kernel1";
+                        sha256 = "@uImage.lzma-mt7688.bin";
+                    }
+                )
+
+                bootenv = (
+                    {
+                        name = "bootslot";
+                        value = "1";
+                    },
+                    {
+                        name = "linux_system_version";
+                        value = "1.0.0";
+                    }
+                )
+            }
+
+            bootslot1 = {
+                images = (
+                    {
+                        filename = "gardena-image-prod-mt7688.squashfs-xz";
+                        volume = "rootfs0";
+                        sha256 = "@gardena-image-prod-mt7688.squashfs-xz";
+                    },
+                    {
+                        filename = "uImage.lzma-mt7688.bin";
+                        volume = "kernel0";
+                        sha256 = "@uImage.lzma-mt7688.bin";
+                    }
+                )
+
+                bootenv = (
+                    {
+                        name = "bootslot";
+                        value = "0";
+                    },
+                    {
+                        name = "linux_system_version";
+                        value = "1.0.0";
+                    }
+                )
+            }
+        }
+    }
+}

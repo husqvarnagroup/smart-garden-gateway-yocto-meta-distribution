@@ -9,12 +9,15 @@ IMAGE_INSTALL += " \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \
+    os-release \
     packagegroup-core-boot \
     ppp \
     squashfs-tools \
     swdtool \
+    swupdate \
     u-boot \
     u-boot-fw-utils \
+    watchdog-keepalive \
 "
 
 IMAGE_FEATURES += " \
