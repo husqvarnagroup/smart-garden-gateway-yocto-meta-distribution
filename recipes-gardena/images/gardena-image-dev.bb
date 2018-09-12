@@ -4,7 +4,6 @@ SUMMARY = "The Gardena image with additional tools for developers"
 IMAGE_FEATURES += "tools-debug"
 IMAGE_INSTALL += " \
     cuitest \
-    i2c-tools \
     openssh-sftp-server \
     picocom \
     ssh-authorized-keys-dev \
