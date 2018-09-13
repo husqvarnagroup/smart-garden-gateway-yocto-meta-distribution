@@ -3,7 +3,7 @@
 set -u
 
 # Get update_url stored in U-Boot to allow using customized update servers
-update_url=$(fw_printenv -n update_url 2>/dev/null || echo https://sg-low-cost-gateway-dev.s3.amazonaws.com/images/ep1)
+update_url=$(fw_printenv -n update_url 2>/dev/null || echo http://sg-low-cost-gateway-dev.s3.amazonaws.com/images/ep1)
 
 # Get active bootslot
 # Warning: After a successfull update you should reboot immediatelly as a
