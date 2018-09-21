@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRCREV = 'be193ad2e19e8e81e6b1e0c6b194b8a7e18fad00'
 
-PR = "r1"
+PR = "r3"
 
 SRC_URI += " \
             file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
