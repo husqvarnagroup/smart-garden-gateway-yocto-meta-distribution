@@ -29,3 +29,6 @@ do_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory 
 
 ## Relevant for startup
 bootcmd=run do_update_u_boot_version; run do_ubi_setup; run do_flashing_setup; run do_set_bootargs; run do_factory_reset; run do_boot_from_flash
+
+## Relevant for initial configuration
+do_u_boot_init=led smartgw:internet:green on && run bootcmd
