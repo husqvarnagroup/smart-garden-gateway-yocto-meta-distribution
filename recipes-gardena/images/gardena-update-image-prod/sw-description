@@ -1,5 +1,5 @@
 software = {
-    version = "1.0.0";
+    version = "@@DISTRO_VERSION@@";
     description = "Linux System Firmware for the Gardena smart Gateway MT7688";
 
     scripts = (
@@ -7,25 +7,25 @@ software = {
             filename = "check_linux_system_version.sh";
             type = "shellscript";
             sha256 = "@check_linux_system_version.sh";
-            data = "1.0.0";
+            data = "@@DISTRO_VERSION@@";
         }
     )
 
-    smart-gateway-mt7688 = {
+    smart-gateway-@@MACHINE_ARCH@@ = {
         hardware-compatibility: [ "0.5", "1.0" ];
 
         stable = {
             bootslot0 = {
                 images = (
                     {
-                        filename = "gardena-image-prod-mt7688.squashfs-xz";
+                        filename = "gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
                         volume = "rootfs1";
-                        sha256 = "@gardena-image-prod-mt7688.squashfs-xz";
+                        sha256 = "@gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
                     },
                     {
-                        filename = "uImage.lzma-mt7688.bin";
+                        filename = "uImage.lzma-@@MACHINE_ARCH@@.bin";
                         volume = "kernel1";
-                        sha256 = "@uImage.lzma-mt7688.bin";
+                        sha256 = "@uImage.lzma-@@MACHINE_ARCH@@.bin";
                     }
                 )
 
@@ -36,7 +36,7 @@ software = {
                     },
                     {
                         name = "linux_system_version";
-                        value = "1.0.0";
+                        value = "@@DISTRO_VERSION@@";
                     }
                 )
             }
@@ -44,14 +44,14 @@ software = {
             bootslot1 = {
                 images = (
                     {
-                        filename = "gardena-image-prod-mt7688.squashfs-xz";
+                        filename = "gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
                         volume = "rootfs0";
-                        sha256 = "@gardena-image-prod-mt7688.squashfs-xz";
+                        sha256 = "@gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
                     },
                     {
-                        filename = "uImage.lzma-mt7688.bin";
+                        filename = "uImage.lzma-@@MACHINE_ARCH@@.bin";
                         volume = "kernel0";
-                        sha256 = "@uImage.lzma-mt7688.bin";
+                        sha256 = "@uImage.lzma-@@MACHINE_ARCH@@.bin";
                     }
                 )
 
@@ -62,7 +62,7 @@ software = {
                     },
                     {
                         name = "linux_system_version";
-                        value = "1.0.0";
+                        value = "@@DISTRO_VERSION@@";
                     }
                 )
             }
