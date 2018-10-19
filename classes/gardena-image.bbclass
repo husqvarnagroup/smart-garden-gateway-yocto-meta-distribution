@@ -18,6 +18,9 @@ IMAGE_INSTALL += " \
     u-boot \
     u-boot-fw-utils \
     watchdog-keepalive \
+    kernel-module-mt7603e \
+    linux-firmware-mt7628 \
+    wpa-supplicant \
 "
 
 IMAGE_FEATURES += " \
