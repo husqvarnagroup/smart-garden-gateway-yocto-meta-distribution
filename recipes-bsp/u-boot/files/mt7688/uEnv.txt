@@ -20,7 +20,7 @@ do_dev_led_on=led_state=on; run do_dev_led_set_state
 # Custom commands required for production and regular startup
 do_toggle_bootslot=if test ${bootslot} -eq 0; then setenv bootslot 1; else setenv bootslot 0;fi;
 do_update_u_boot_version=if test "${ver}" != "${u_boot_version}"; then echo "Persisting new U-Boot version" && setenv u_boot_version "${ver}" && saveenv; fi
-do_set_bootargs=setenv bootargs console=ttyS0,${baudrate} root=/dev/ubiblock0_${bootslot} rootrw=ubi0:overlay rootrwfstype=ubifs rootrwoptions=rw,noatime ubi.block=0,rootfs${bootslot} ubi.mtd=nand init=/init mtdparts="spi0.0:640k(uboot),64k(uboot_env0),64k(uboot_env1),-(factory);gd5f:-(nand)"
+do_set_bootargs=setenv bootargs root=/dev/ubiblock0_${bootslot} rootrw=ubi0:overlay rootrwfstype=ubifs rootrwoptions=rw,noatime ubi.block=0,rootfs${bootslot} ubi.mtd=nand init=/init mtdparts="spi0.0:640k(uboot),64k(uboot_env0),64k(uboot_env1),-(factory);gd5f:-(nand)"
 do_ubi_setup=if test ${ubi_setup_done} -ne 1; then mtd erase spi-nand0; ubi part nand && ubi create rootfs0 0x2815000 static 0 && ubi create rootfs1 0x2815000 static 1 && ubi create kernel0 0x41e000 static 2 && ubi create kernel1 0x41e000 static 3 && ubi create overlay 0x1e00000 dynamic 4 && setenv ubi_setup_done 1; else ubi part nand; fi
 do_flashing_inplace=dhcp uImage.lzma && echo "Writing to kernel${bootslot}" && ubi write ${fileaddr} kernel${bootslot} ${filesize} && dhcp gardena-image-prod-mt7688.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
 do_flashing_setup=if test ${flashing_done} -ne 1; then run do_toggle_bootslot && run do_flashing_inplace && setenv flashing_done 1 && saveenv && reset; fi
