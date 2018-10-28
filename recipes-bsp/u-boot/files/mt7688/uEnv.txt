@@ -2,6 +2,7 @@
 ## Never-changing variables, might go into the U-Boot default environment
 bootslot=0
 board_name=smart-gateway-mt7688
+baudrate=115200
 
 ## Board Revision dependent
 board_revision=1.0
