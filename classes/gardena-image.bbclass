@@ -5,21 +5,21 @@ IMAGE_INSTALL += " \
     i2c-tools \
     initscripts-readonly-rootfs-overlay \
     iw \
+    kernel-module-mt7603e \
+    linux-firmware-mt7628 \
     manufacturing-tools \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \
+    openocd \
     os-release \
     packagegroup-core-boot \
     ppp \
     squashfs-tools \
-    swdtool \
     swupdate \
     u-boot \
     u-boot-fw-utils \
     watchdog-keepalive \
-    kernel-module-mt7603e \
-    linux-firmware-mt7628 \
     wpa-supplicant \
 "
 
