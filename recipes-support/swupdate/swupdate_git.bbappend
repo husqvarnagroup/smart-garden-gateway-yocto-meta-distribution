@@ -1,12 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRCREV = 'be193ad2e19e8e81e6b1e0c6b194b8a7e18fad00'
+SRCREV = '69530c972c77a4315630f2be55f095ae927be263'
 
-PR = "r5"
+PR = "r6"
 
 SRC_URI += " \
             file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
-            file://disable_luascripts.cfg \
             file://disable_webserver.cfg \
             file://enable_bootloader.cfg \
             file://enable_download.cfg \
@@ -37,8 +36,6 @@ FILES_${PN} += " \
     ${bindir}/update-sw-versions \
     ${bindir}/swupdate-check \
 "
-
-EXTRA_OEMAKE_append_task-compile = " JOBS=1"
 
 do_install_append () {
     install -d ${D}${datadir}/${PN}
