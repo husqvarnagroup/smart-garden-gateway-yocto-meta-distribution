@@ -5,7 +5,7 @@ SRCREV = '69530c972c77a4315630f2be55f095ae927be263'
 PR = "r6"
 
 SRC_URI += " \
-            file://2018-09-03-smart_gateway_mt7688-sw-update.cert.pem \
+            file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
             file://disable_webserver.cfg \
             file://enable_bootloader.cfg \
             file://enable_download.cfg \
@@ -39,7 +39,7 @@ FILES_${PN} += " \
 
 do_install_append () {
     install -d ${D}${datadir}/${PN}
-    install -m 644 ${WORKDIR}/2018-09-03-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/${PN}/sw-update.cert.pem
+    install -m 644 ${WORKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/${PN}/sw-update.cert.pem
 
     install -d ${D}${sysconfdir}
     install -m 644 ${WORKDIR}/swupdate.cfg ${D}${sysconfdir}
