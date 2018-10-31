@@ -1,3 +1,2 @@
 #!/bin/sh
 ip -6 route add fc00::/0 dev $PPP_IFACE
-ip -6 route add default dev $PPP_IFACE
