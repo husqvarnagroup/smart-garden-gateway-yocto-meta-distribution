@@ -1,0 +1,11 @@
+[Unit]
+Description=PPP link to radio module
+Before=network.target
+
+[Service]
+ExecStart=@SBINDIR@/pppd local crtscts /dev/ttyS1 115200 +ipv6 noauth nodetach noip
+Restart=on-failure
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target
