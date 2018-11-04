@@ -219,4 +219,4 @@ PACKAGECONFIG_append_pn-nativesdk-qemu = " sdl"
 CONF_VERSION = "1"
 
 # Query the National Vulnerability Database (NVD) for known security issues.
-INHERIT += "cve-check"
+#INHERIT += "cve-check"
