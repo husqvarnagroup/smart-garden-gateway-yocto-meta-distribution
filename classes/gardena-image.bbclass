@@ -32,7 +32,7 @@ IMAGE_FEATURES += " \
 IMAGE_LINGUAS = " "
 
 # The rootfs is (will be) a read only squashfs in an UBI container
-IMAGE_FSTYPES += " squashfs-xz"
+IMAGE_FSTYPES = "tar.bz2 squashfs-xz"
 
 LICENSE = "MIT"
 
