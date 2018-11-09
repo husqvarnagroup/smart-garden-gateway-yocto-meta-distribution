@@ -7,13 +7,13 @@ BBFILES ?= ""
 
 BBLAYERS ?= " \
   ##OEROOT##/meta \
-  ##OEROOT##/meta-mediatek \
-  ##OEROOT##/meta-distribution \
-  ##OEROOT##/meta-gardena \
-  ##OEROOT##/meta-lemonbeat-firmware \
-  ##OEROOT##/meta-openembedded/meta-oe \
-  ##OEROOT##/meta-openembedded/meta-python \
-  ##OEROOT##/meta-openembedded/meta-networking \
-  ##OEROOT##/meta-readonly-rootfs-overlay \
-  ##OEROOT##/meta-swupdate \
+  ##OEROOT##/../meta-mediatek \
+  ##OEROOT##/../meta-distribution \
+  ##OEROOT##/../meta-gardena \
+  ##OEROOT##/../meta-lemonbeat-firmware \
+  ##OEROOT##/../meta-openembedded/meta-oe \
+  ##OEROOT##/../meta-openembedded/meta-python \
+  ##OEROOT##/../meta-openembedded/meta-networking \
+  ##OEROOT##/../meta-readonly-rootfs-overlay \
+  ##OEROOT##/../meta-swupdate \
   "
