@@ -8,6 +8,8 @@ IMAGE_INSTALL += " \
     openssh-sftp-server \
     picocom \
     ssh-authorized-keys-dev \
+    wifi-testsuite \
+    wpa-supplicant-cli \
 "
 
 # Useful for nfsroot
