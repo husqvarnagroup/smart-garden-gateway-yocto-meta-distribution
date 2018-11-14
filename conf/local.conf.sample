@@ -220,3 +220,7 @@ CONF_VERSION = "1"
 
 # Query the National Vulnerability Database (NVD) for known security issues.
 #INHERIT += "cve-check"
+
+# Store information about builds, allow to analyze changes
+INHERIT += "buildhistory"
+BUILDHISTORY_COMMIT = "1"
