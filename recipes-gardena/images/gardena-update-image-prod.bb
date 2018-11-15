@@ -8,12 +8,13 @@ SRC_URI = "\
     file://check_linux_system_version.sh \
 "
 
-# images to build before building swupdate image
+# Images to build before building swupdate image
 IMAGE_DEPENDS = "gardena-image-prod u-boot virtual/kernel"
 
-# images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "gardena-image-prod u-boot uImage.lzma"
+# Images and files that will be included in the .swu image
+SWUPDATE_IMAGES = "gardena-image-prod uImage.lzma"
 
+# Configure file extensions of the images (potentially) used in SWUPDATE_IMAGES
 SWUPDATE_IMAGES_FSTYPES[gardena-image-prod] = ".squashfs-xz"
 SWUPDATE_IMAGES_FSTYPES[uImage.lzma] = ".bin"
 SWUPDATE_IMAGES_FSTYPES[u-boot] = ".bin"
