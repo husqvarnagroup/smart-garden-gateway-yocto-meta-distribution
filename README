@@ -5,10 +5,10 @@ Please see the corresponding sections below for details.
 Dependencies
 ============
 
-  URI: ../smart-garden-low-cost-gateway-yocto-meta-mediatek.git
+  URI: ../smart-garden-gateway-yocto-meta-mediatek.git
   branch: master
 
-  URI: ../smart-garden-low-cost-gateway-yocto-meta-openembedded.git
+  URI: ../smart-garden-gateway-yocto-meta-openembedded.git
   branch: sumo
 
 Table of Contents
