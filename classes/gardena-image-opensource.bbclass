@@ -1,4 +1,4 @@
-# Base for all Gardena images
+# Base for all Gardena images; Open Source software only
 
 IMAGE_INSTALL += " \
     dhcpcd \
@@ -7,7 +7,6 @@ IMAGE_INSTALL += " \
     iw \
     kernel-module-mt7603e \
     linux-firmware-mt7628 \
-    manufacturing-tools \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \

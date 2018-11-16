@@ -26,4 +26,4 @@ IMAGE_INSTALL += " \
 # Useful for nfsroot
 IMAGE_FSTYPES += "tar.bz2"
 
-inherit gardena-image
+inherit gardena-image-proprietary
