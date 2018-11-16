@@ -6,4 +6,4 @@ IMAGE_INSTALL += " \
     ssh-authorized-keys-prod \
 "
 
-inherit gardena-image
+inherit gardena-image-proprietary
