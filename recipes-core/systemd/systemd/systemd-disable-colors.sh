@@ -1,0 +1,1 @@
+export SYSTEMD_COLORS=0
