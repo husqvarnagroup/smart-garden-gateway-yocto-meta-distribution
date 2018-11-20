@@ -6,6 +6,7 @@ PR = "r6"
 
 SRC_URI += " \
             file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
+            file://disable_ubi_attach.cfg \
             file://disable_webserver.cfg \
             file://enable_bootloader.cfg \
             file://enable_download.cfg \
