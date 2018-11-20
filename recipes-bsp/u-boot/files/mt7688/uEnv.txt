@@ -30,7 +30,8 @@ do_if_ubi_setup=if test ${ubi_setup_done} -ne 1; then mtd erase spi-nand0; ubi p
 do_flashing_inplace=dhcp uImage.lzma && echo "Writing to kernel${bootslot}" && ubi write ${fileaddr} kernel${bootslot} ${filesize} && dhcp gardena-image-prod-mt7688.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
 do_if_flashing_setup=if test ${flashing_done} -ne 1; then run do_toggle_bootslot && run do_flashing_inplace && setenv flashing_done 1 && saveenv && reset; fi
 do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
-do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; setenv bootargs "${bootargs} rootrwreset=yes"; fi
+do_factory_reset=setenv bootargs "${bootargs} rootrwreset=yes"
+do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; fi
 do_start_over=env default -f -a && saveenv && reset
 
 ## Relevant for startup
