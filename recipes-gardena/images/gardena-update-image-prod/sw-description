@@ -37,6 +37,10 @@ software = {
                     {
                         name = "linux_system_version";
                         value = "@@DISTRO_VERSION@@";
+                    },
+                    {
+                        name = "swupdate_done";
+                        value = "1";
                     }
                 )
             }
@@ -63,6 +67,10 @@ software = {
                     {
                         name = "linux_system_version";
                         value = "@@DISTRO_VERSION@@";
+                    },
+                    {
+                        name = "swupdate_done";
+                        value = "1";
                     }
                 )
             }
