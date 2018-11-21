@@ -32,7 +32,7 @@ do_if_flashing_setup=if test ${flashing_done} -ne 1; then run do_toggle_bootslot
 do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
 do_factory_reset=setenv bootargs "${bootargs} rootrwreset=yes"
 do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; fi
-do_if_post_linux_system_upgrade=if env exists swupdate_done; then run do_factory_reset; fi
+do_if_post_linux_system_upgrade=if test ${swupdate_done} -eq 1; then run do_factory_reset; fi
 do_start_over=env default -f -a && saveenv && reset
 
 ## Relevant for startup
