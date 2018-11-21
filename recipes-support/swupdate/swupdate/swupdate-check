@@ -3,7 +3,7 @@
 set -u
 
 # Get update_url stored in U-Boot to allow using customized update servers
-update_url=$(fw_printenv -n update_url 2>/dev/null || echo http://sg-low-cost-gateway-dev.s3.amazonaws.com/images/ep1)
+update_url=$(fw_printenv -n update_url 2>/dev/null || echo http://sg-low-cost-gateway-dev.s3.amazonaws.com/images/ep1/gardena-update-image-prod-mt7688.swu)
 
 # Get active bootslot
 # Warning: After a successfull update you should reboot immediatelly as a
@@ -13,7 +13,7 @@ update_url=$(fw_printenv -n update_url 2>/dev/null || echo http://sg-low-cost-ga
 bootslot=$(fw_printenv -n bootslot 2>&-)
 if [ $? -eq 0 ]; then
     echo "Updating image"
-    swupdate -f /etc/swupdate.cfg -e stable,bootslot"${bootslot}" --download "-u ${update_url}/gardena-update-image-prod-mt7688.swu"
+    swupdate -f /etc/swupdate.cfg -e stable,bootslot"${bootslot}" --download "-u ${update_url}"
 else
     echo "Failed to extract bootslot value from U-Boot"
 fi
