@@ -15,6 +15,7 @@ linux_system_version=1.0.0
 #          Productive gateways must not use any of those commands!
 do_dev_u_boot_upgrade=dhcp u-boot.bin-rom && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
 do_dev_import_default_env=dhcp uEnv.txt && env import -t ${fileaddr} ${filesize}
+do_dev_reset_overlay=ubi part nand && ubi remove overlay && ubi create overlay 0x1e00000 dynamic 4
 
 do_dev_led_set_state=for color in blue green red; do led smartgw:${led_name}:${color} ${led_state}; done
 do_dev_led_off=led_state=off; run do_dev_led_set_state
