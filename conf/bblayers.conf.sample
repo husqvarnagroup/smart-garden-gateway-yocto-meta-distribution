@@ -16,5 +16,6 @@ BBLAYERS ?= " \
   ##OEROOT##/../meta-openembedded/meta-python \
   ##OEROOT##/../meta-openembedded/meta-networking \
   ##OEROOT##/../meta-readonly-rootfs-overlay \
+  ##OEROOT##/../meta-shadoway \
   ##OEROOT##/../meta-swupdate \
   "
