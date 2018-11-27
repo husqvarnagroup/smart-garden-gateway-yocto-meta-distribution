@@ -6,12 +6,6 @@ SRC_URI += " \
     file://dhcpcd.service \
 "
 
-FILES_${PN} += " \
-    ${libdir} \
-    ${sysconfdir} \
-    ${systemd_unitdir}/system/ \
-"
-
 do_install_append() {
     install -d ${D}${sysconfdir}
     install -m 0644 ${WORKDIR}/dhcpcd.conf ${D}${sysconfdir}/dhcpcd.conf
