@@ -1,6 +1,8 @@
 [Unit]
 Description=PPP link to radio module
 Before=network.target
+After=fctcheck.service
+ConditionPathExists=/etc/fct_finalized
 
 [Service]
 ExecStart=@SBINDIR@/pppd local crtscts /dev/ttyS1 115200 +ipv6 noauth nodetach noip
