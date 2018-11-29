@@ -1,7 +1,10 @@
 # Base for all Gardena images; Open Source software only
 
 IMAGE_INSTALL += " \
+    crda \
     dhcpcd \
+    dnsmasq \
+    hostapd \
     i2c-tools \
     initscripts-readonly-rootfs-overlay \
     iw \
@@ -14,6 +17,7 @@ IMAGE_INSTALL += " \
     os-release \
     packagegroup-core-boot \
     ppp \
+    rfkill \
     squashfs-tools \
     swupdate \
     u-boot \
