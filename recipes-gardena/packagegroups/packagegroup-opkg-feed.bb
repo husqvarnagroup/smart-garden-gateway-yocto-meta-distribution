@@ -9,6 +9,8 @@ RDEPENDS_packagegroup-opkg-feed = "\
     bash \
     cuitest \
     curl \
+    gdb \
+    gdbserver \
     htop \
     i2c-tools \
     iftop \
