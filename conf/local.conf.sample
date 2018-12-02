@@ -224,3 +224,15 @@ CONF_VERSION = "1"
 # Store information about builds, allow to analyze changes
 INHERIT += "buildhistory"
 BUILDHISTORY_COMMIT = "1"
+
+# Copy license files to /usr/share/common-licenses in the image
+# This fullfills a requirement of various BSD licenses for binary distribution
+COPY_LIC_MANIFEST = "1"
+COPY_LIC_DIRS = "1"
+
+# Build an additional -lic package for every package build.
+# We do not need this as we have COPY_LIC_MANIFEST/COPY_LIC_DIRS enabled which
+# covers all packages ending in up in the production image. All other packages,
+# namely the ones we build for the OPKG feed, will never be delivered to
+# customers.
+#LICENSE_CREATE_PACKAGE = "1"
