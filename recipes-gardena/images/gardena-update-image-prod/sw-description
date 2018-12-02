@@ -26,6 +26,11 @@ software = {
                         filename = "uImage.lzma-@@MACHINE_ARCH@@.bin";
                         volume = "kernel1";
                         sha256 = "@uImage.lzma-@@MACHINE_ARCH@@.bin";
+                    },
+                    {
+                        filename = "uEnv-@@MACHINE_ARCH@@.txt";
+                        type = "bootloader";
+                        sha256 = "@uEnv-@@MACHINE_ARCH@@.txt";
                     }
                 )
 
@@ -56,6 +61,11 @@ software = {
                         filename = "uImage.lzma-@@MACHINE_ARCH@@.bin";
                         volume = "kernel0";
                         sha256 = "@uImage.lzma-@@MACHINE_ARCH@@.bin";
+                    },
+                    {
+                        filename = "uEnv-@@MACHINE_ARCH@@.txt";
+                        type = "bootloader";
+                        sha256 = "@uEnv-@@MACHINE_ARCH@@.txt";
                     }
                 )
 
