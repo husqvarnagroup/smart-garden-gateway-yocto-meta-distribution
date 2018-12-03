@@ -18,4 +18,10 @@ do_install_append() {
 	# Disable colorized output of system tools (systemctl, etc.)
 	install -d ${D}${sysconfdir}/profile.d
 	install -m 0644 ${WORKDIR}/systemd-disable-colors.sh ${D}${sysconfdir}/profile.d
+
+	# journald: Log to RAM, not storage
+	sed -i -e 's/.*Storage=.*/Storage=volatile/' ${D}${sysconfdir}/systemd/journald.conf
+
+	# journald: Set the maximium amount of memory for storing logs to 8M
+	sed -i -e 's/.*RuntimeMaxUse.*/RuntimeMaxUse=8M/' ${D}${sysconfdir}/systemd/journald.conf
 }
