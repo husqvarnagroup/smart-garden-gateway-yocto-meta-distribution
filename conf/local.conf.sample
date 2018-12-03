@@ -240,3 +240,12 @@ COPY_LIC_DIRS = "1"
 # namely the ones we build for the OPKG feed, will never be delivered to
 # customers.
 #LICENSE_CREATE_PACKAGE = "1"
+
+# Flags to allow remote debugging via GDB
+# More information: https://www.yoctoproject.org/docs/latest/dev-manual/dev-manual.html#platdev-gdb-remotedebug
+#IMAGE_GEN_DEBUGFS = "1"
+#IMAGE_FSTYPES_DEBUGFS = "tar.bz2"
+#IMAGE_INSTALL_append = " gdbserver"
+
+# Optional: Lower optimization to improve debugability
+#DEBUG_BUILD = "1"
