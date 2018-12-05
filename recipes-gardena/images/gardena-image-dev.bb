@@ -5,6 +5,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 # tools-profile would be nice to have, but pulls in (too) many X11 dependencies
 IMAGE_FEATURES += "tools-debug"
 IMAGE_INSTALL += " \
+    config-wireless \
     cuitest \
     kernel-module-mtd-nandbiterrs \
     kernel-module-mtd-nandecctest \
