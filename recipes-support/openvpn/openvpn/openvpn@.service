@@ -6,7 +6,9 @@ After=syslog.target network.target
 PrivateTmp=true
 Type=forking
 PIDFile=/var/run/openvpn/%i.pid
-ExecStartPre=/bin/mkdir -p /var/run/openvpn/
+ExecStartPre=/bin/mkdir -p /var/run/openvpn
+ExecStartPre=/bin/mkdir -p /etc/openvpn
+ExecStartPre=/usr/bin/openvpn-install-certs
 ExecStart=/usr/sbin/openvpn --daemon --writepid /var/run/openvpn/%i.pid --cd /etc/openvpn/ --config %i.conf
 
 [Install]
