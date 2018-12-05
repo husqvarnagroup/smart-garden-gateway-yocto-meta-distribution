@@ -19,6 +19,7 @@ IMAGE_INSTALL += " \
     openssh-sftp-server \
     picocom \
     ssh-authorized-keys-dev \
+    wifi-certification-util \
     wifi-testsuite \
     wpa-supplicant-cli \
 "
