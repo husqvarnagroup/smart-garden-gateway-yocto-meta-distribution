@@ -15,7 +15,7 @@ for ext in crt key; do
         echo "File '${openvpn_dir}/client.${ext}' already exists"
     else
         content="$(fw_printenv -n conf_openvpn_${ext} 2>/dev/null)"
-        if [ "$0" != "0" ]; then
+        if [ "$0" = "0" ]; then
             echo -e "${content}" > "${openvpn_dir}/client.${ext}"
         else
             echo "U-Boot variable 'conf_openvpn_${ext}' is missing!" >&2
