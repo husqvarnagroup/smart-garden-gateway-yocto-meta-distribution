@@ -32,6 +32,5 @@ do_install_append() {
 
 # Overwrite the loopback server/client from base recipe
 SYSTEMD_SERVICE_${PN} = "openvpn@sg-cos-prod.service"
-SYSTEMD_AUTO_ENABLE = "enable"
 
 DEPENDS += "systemd"

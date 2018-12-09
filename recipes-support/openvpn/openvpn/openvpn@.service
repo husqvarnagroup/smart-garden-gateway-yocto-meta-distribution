@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenVPN Robust And Highly Flexible Tunneling Application On %I
 After=syslog.target network.target
+StopWhenUnneeded=yes
 
 [Service]
 PrivateTmp=true
@@ -10,6 +11,3 @@ ExecStartPre=/bin/mkdir -p /var/run/openvpn
 ExecStartPre=/bin/mkdir -p /etc/openvpn
 ExecStartPre=/usr/bin/openvpn-install-certs
 ExecStart=/usr/sbin/openvpn --daemon --writepid /var/run/openvpn/%i.pid --cd /etc/openvpn/ --config %i.conf
-
-[Install]
-WantedBy=multi-user.target
