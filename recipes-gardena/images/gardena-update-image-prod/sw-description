@@ -12,7 +12,7 @@ software = {
     )
 
     smart-gateway-@@MACHINE_ARCH@@ = {
-        hardware-compatibility: [ "0.5", "1.0" ];
+        hardware-compatibility: [ "0.5", "1.0", "1.1.0" ];
 
         stable = {
             bootslot0 = {

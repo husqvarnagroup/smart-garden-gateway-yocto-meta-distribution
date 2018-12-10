@@ -9,6 +9,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     bash \
     cuitest \
     curl \
+    emc-tools \
     gdb \
     gdbserver \
     htop \
