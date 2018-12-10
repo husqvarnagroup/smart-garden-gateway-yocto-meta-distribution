@@ -1,4 +1,4 @@
 # Disable autostart of default dnsmasq service
-PR = "r0"
+PR_append = ".0"
 
 SYSTEMD_AUTO_ENABLE = "disable"

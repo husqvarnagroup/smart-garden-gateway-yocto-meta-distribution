@@ -1,5 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
+PR_append = ".0"
+
 SRC_URI += " \
     file://ca-dev.crt \
     file://ca-prod.crt \
