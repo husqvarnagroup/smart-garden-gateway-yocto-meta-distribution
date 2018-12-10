@@ -6,9 +6,9 @@ SRC_URI += " \
     file://ca-qa.crt \
     file://openvpn-install-certs.sh \
     file://openvpn@.service \
-    file://sg-cos-dev.conf \
-    file://sg-cos-prod.conf \
-    file://sg-cos-qa.conf \
+    file://dev.conf \
+    file://prod.conf \
+    file://qa.conf \
 "
 
 FILES_${PN} += " \
@@ -17,9 +17,9 @@ FILES_${PN} += " \
 
 do_install_append() {
     install -d ${D}${sysconfdir}/openvpn
-    install -m 644 ${WORKDIR}/sg-cos-dev.conf ${D}${sysconfdir}/openvpn
-    install -m 644 ${WORKDIR}/sg-cos-prod.conf ${D}${sysconfdir}/openvpn
-    install -m 644 ${WORKDIR}/sg-cos-qa.conf ${D}${sysconfdir}/openvpn
+    install -m 644 ${WORKDIR}/dev.conf ${D}${sysconfdir}/openvpn
+    install -m 644 ${WORKDIR}/prod.conf ${D}${sysconfdir}/openvpn
+    install -m 644 ${WORKDIR}/qa.conf ${D}${sysconfdir}/openvpn
     install -m 644 ${WORKDIR}/ca-dev.crt ${D}${sysconfdir}/openvpn
     install -m 644 ${WORKDIR}/ca-prod.crt ${D}${sysconfdir}/openvpn
     install -m 644 ${WORKDIR}/ca-qa.crt ${D}${sysconfdir}/openvpn
@@ -31,6 +31,6 @@ do_install_append() {
 }
 
 # Overwrite the loopback server/client from base recipe
-SYSTEMD_SERVICE_${PN} = "openvpn@sg-cos-prod.service"
+SYSTEMD_SERVICE_${PN} = "openvpn@prod.service"
 
 DEPENDS += "systemd"
