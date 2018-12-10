@@ -1,7 +1,10 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
+PR_append = ".0"
+
 SRC_URI += "\
     file://display-error-on-nonzero-status.sh \
+    file://enable_pgrep.cfg \
 "
 
 FILES_${PN} += "\
