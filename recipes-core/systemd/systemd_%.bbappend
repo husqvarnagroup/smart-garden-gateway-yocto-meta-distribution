@@ -24,4 +24,7 @@ do_install_append() {
 
 	# journald: Set the maximium amount of memory for storing logs to 8M
 	sed -i -e 's/.*RuntimeMaxUse.*/RuntimeMaxUse=8M/' ${D}${sysconfdir}/systemd/journald.conf
+
+	# systemd-firstboot.service: Do not wait for user input
+	sed -i -e 's/.*ExecStart=.*/ExecStart=\/bin\/systemd-firstboot/' ${D}${systemd_unitdir}/system/systemd-firstboot.service
 }
