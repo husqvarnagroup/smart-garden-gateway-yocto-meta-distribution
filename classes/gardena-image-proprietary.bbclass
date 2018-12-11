@@ -2,6 +2,7 @@
 
 IMAGE_INSTALL += " \
     manufacturing-tools \
+    shadoway \
     sysupgrade \
 "
 

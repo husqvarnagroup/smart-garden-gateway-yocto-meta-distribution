@@ -1,0 +1,2 @@
+# Keep the host keys
+/etc/dropbear/dropbear_*_host_key

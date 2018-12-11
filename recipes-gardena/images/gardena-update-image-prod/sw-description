@@ -52,6 +52,10 @@ software = {
                     {
                         name = "swupdate_done";
                         value = "1";
+                    },
+                    {
+                        name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
+                        value = "";
                     }
                 )
             }
@@ -93,6 +97,10 @@ software = {
                     {
                         name = "swupdate_done";
                         value = "1";
+                    },
+                    {
+                        name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
+                        value = "";
                     }
                 )
             }
