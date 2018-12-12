@@ -1,5 +1,8 @@
 [Unit]
 Description=Fetch new Linux system images, install if applicable"
+After=update-sw-versions.service update-hw-revision.service network-online.target export-gpios.service swupdate-progress.service
+Wants=update-sw-versions.service update-hw-revision.service network-online.target export-gpios.service
+Requires=swupdate-progress.service
 
 [Service]
 ExecStart=/usr/bin/swupdate-check
