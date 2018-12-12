@@ -1,12 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRCREV = '8c8db83ba3ee0b017321d8977f382b9c0b14a7bf'
+SRCREV = 'e83730c4ec30134cdf56a2fd1d62a3767ade8133'
 
-PR_append = ".1"
+PR_append = ".2"
 
 SRC_URI += " \
             file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
-            file://0001-handlers-bootloader-let-comments-and-blankline-in-im.patch \
             file://disable_ubi_attach.cfg \
             file://disable_webserver.cfg \
             file://enable_bootloader.cfg \
