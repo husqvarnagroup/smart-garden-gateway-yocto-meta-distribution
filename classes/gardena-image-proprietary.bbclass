@@ -2,11 +2,10 @@
 
 IMAGE_INSTALL += " \
     accessory-server \
+    gateway-firmware \
     manufacturing-tools \
     shadoway \
     sysupgrade \
-    accessory-server \
-    gateway-firmware \
 "
 
 inherit gardena-image-opensource
