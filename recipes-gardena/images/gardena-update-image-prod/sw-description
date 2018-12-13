@@ -1,5 +1,5 @@
 software = {
-    version = "@@DISTRO_VERSION@@";
+    version = "@@DISTRO_VERSION_ID@@";
     description = "Linux System Firmware for the Gardena smart Gateway MT7688";
 
     scripts = (
@@ -7,7 +7,7 @@ software = {
             filename = "check_linux_system_version.sh";
             type = "shellscript";
             sha256 = "@check_linux_system_version.sh";
-            data = "@@DISTRO_VERSION@@";
+            data = "@@DISTRO_VERSION_ID@@";
         }
     )
 
@@ -47,7 +47,7 @@ software = {
                     },
                     {
                         name = "linux_system_version";
-                        value = "@@DISTRO_VERSION@@";
+                        value = "@@DISTRO_VERSION_ID@@";
                     },
                     {
                         name = "swupdate_done";
@@ -92,7 +92,7 @@ software = {
                     },
                     {
                         name = "linux_system_version";
-                        value = "@@DISTRO_VERSION@@";
+                        value = "@@DISTRO_VERSION_ID@@";
                     },
                     {
                         name = "swupdate_done";
