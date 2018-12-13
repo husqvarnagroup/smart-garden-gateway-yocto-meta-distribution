@@ -6,9 +6,9 @@
 
 set -u
 
-u_boot_version="$(fw_printenv -n u_boot_version 2>/dev/null | awk '{print $2}')"
+u_boot_version="$(strings /dev/mtd0 | grep "U-Boot 20" | awk '{print $2}')"
 if [ $? -ne 0 ]; then
-    echo "Failed to extract the U-Boot version from the U-Boot environment!" >&2
+    echo "Failed to extract the U-Boot version from /dev/mtd0!" >&2
     exit 1
 fi
 
