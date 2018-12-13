@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRCREV = 'e83730c4ec30134cdf56a2fd1d62a3767ade8133'
 
-PR_append = ".2"
+PR_append = ".3"
 
 SRC_URI += " \
             file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
@@ -46,6 +46,8 @@ do_install_append () {
     install -m 644 ${WORKDIR}/swupdate.cfg ${D}${sysconfdir}
 
     install -m 0755 ${WORKDIR}/swupdate-check ${D}${bindir}
+    sed -i 's#@DISTRO_UPDATE_URL@#${DISTRO_UPDATE_URL}#g' ${D}${bindir}/swupdate-check
+
     install -m 644 ${WORKDIR}/swupdate-check.service ${D}${systemd_unitdir}/system
     install -m 644 ${WORKDIR}/swupdate-check.timer ${D}${systemd_unitdir}/system
 
