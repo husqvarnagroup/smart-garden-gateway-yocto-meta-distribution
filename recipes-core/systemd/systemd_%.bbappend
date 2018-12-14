@@ -12,7 +12,7 @@ FILES_${PN} += "\
     ${sysconfdir}/profile.d/systemd-disable-colors.sh \
 "
 
-PR_append = ".1"
+PR_append = ".2"
 
 do_install_append() {
 	sed -i 's/#RuntimeWatchdogSec=0/RuntimeWatchdogSec=60/g' ${D}${sysconfdir}/systemd/system.conf
