@@ -3,6 +3,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://systemd-disable-colors.sh \
     file://keep.d/${PN} \
+    file://0001-socket-util-fix-getpeergroups-assert-fd-8080.patch \
+    file://0002-fd-util-move-certain-fds-above-fd-2-8129.patch \
 "
 
 FILES_${PN} += "\
