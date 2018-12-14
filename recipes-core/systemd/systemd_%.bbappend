@@ -3,6 +3,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://systemd-disable-colors.sh \
     file://keep.d/${PN} \
+    file://0001-socket-util-fix-getpeergroups-assert-fd-8080.patch \
+    file://0002-fd-util-move-certain-fds-above-fd-2-8129.patch \
 "
 
 FILES_${PN} += "\
@@ -10,7 +12,7 @@ FILES_${PN} += "\
     ${sysconfdir}/profile.d/systemd-disable-colors.sh \
 "
 
-PR_append = ".1"
+PR_append = ".2"
 
 do_install_append() {
 	sed -i 's/#RuntimeWatchdogSec=0/RuntimeWatchdogSec=60/g' ${D}${sysconfdir}/systemd/system.conf

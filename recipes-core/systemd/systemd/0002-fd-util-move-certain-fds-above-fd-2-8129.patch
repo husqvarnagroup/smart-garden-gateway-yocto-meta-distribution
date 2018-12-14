@@ -1,0 +1,324 @@
+From 7fe2903c2315db9d9f501ae255a6b6e4f01ba46c Mon Sep 17 00:00:00 2001
+From: Lennart Poettering <lennart@poettering.net>
+Date: Fri, 9 Feb 2018 17:53:28 +0100
+Subject: [PATCH] fd-util: move certain fds above fd #2 (#8129)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This adds some paranoia code that moves some of the fds we allocate for
+longer periods of times to fds > 2 if they are allocated below this
+boundary. This is a paranoid safety thing, in order to avoid that
+external code might end up erroneously use our fds under the assumption
+they were valid stdin/stdout/stderr. Think: some app closes
+stdin/stdout/stderr and then invokes 'fprintf(stderr, …' which causes
+writes on our fds.
+
+This both adds the helper to do the moving as well as ports over a
+number of users to this new logic. Since we don't want to litter all our
+code with invocations of this I tried to strictly focus on fds we keep
+open for long periods of times only and only in code that is frequently
+loaded into foreign programs (under the assumptions that in our own
+codebase we are smart enough to always keep stdin/stdout/stderr
+allocated to avoid this pitfall). Specifically this means all code used
+by NSS and our sd-xyz API:
+
+1. our logging APIs
+2. sd-event
+3. sd-bus
+4. sd-resolve
+5. sd-netlink
+
+This changed was inspired by this:
+
+https://github.com/systemd/systemd/issues/8075#issuecomment-363689755
+
+This shows that apparently IRL there are programs that do close
+stdin/stdout/stderr, and we should accomodate for that.
+
+Note that this won't fix any bugs, this just makes sure that buggy
+programs are less likely to interfere with out own code.
+---
+ src/basic/fd-util.c                        | 37 ++++++++++++++++++++++
+ src/basic/fd-util.h                        |  2 ++
+ src/basic/log.c                            |  9 ++++--
+ src/libsystemd/sd-bus/bus-container.c      |  2 ++
+ src/libsystemd/sd-bus/bus-socket.c         | 12 ++++---
+ src/libsystemd/sd-event/sd-event.c         |  6 +++-
+ src/libsystemd/sd-netlink/netlink-socket.c |  3 +-
+ src/libsystemd/sd-resolve/sd-resolve.c     | 13 +++++---
+ src/test/test-fd-util.c                    | 19 +++++++++++
+ 9 files changed, 89 insertions(+), 14 deletions(-)
+
+diff --git a/src/basic/fd-util.c b/src/basic/fd-util.c
+index 404361e8c..61a93fcb4 100644
+--- a/src/basic/fd-util.c
++++ b/src/basic/fd-util.c
+@@ -578,3 +578,40 @@ try_dev_shm_without_o_tmpfile:
+ 
+         return -EOPNOTSUPP;
+ }
++
++int fd_move_above_stdio(int fd) {
++        int flags, copy;
++        PROTECT_ERRNO;
++
++        /* Moves the specified file descriptor if possible out of the range [0…2], i.e. the range of
++         * stdin/stdout/stderr. If it can't be moved outside of this range the original file descriptor is
++         * returned. This call is supposed to be used for long-lasting file descriptors we allocate in our code that
++         * might get loaded into foreign code, and where we want ensure our fds are unlikely used accidentally as
++         * stdin/stdout/stderr of unrelated code.
++         *
++         * Note that this doesn't fix any real bugs, it just makes it less likely that our code will be affected by
++         * buggy code from others that mindlessly invokes 'fprintf(stderr, …' or similar in places where stderr has
++         * been closed before.
++         *
++         * This function is written in a "best-effort" and "least-impact" style. This means whenever we encounter an
++         * error we simply return the original file descriptor, and we do not touch errno. */
++
++        if (fd < 0 || fd > 2)
++                return fd;
++
++        flags = fcntl(fd, F_GETFD, 0);
++        if (flags < 0)
++                return fd;
++
++        if (flags & FD_CLOEXEC)
++                copy = fcntl(fd, F_DUPFD_CLOEXEC, 3);
++        else
++                copy = fcntl(fd, F_DUPFD, 3);
++        if (copy < 0)
++                return fd;
++
++        assert(copy > 2);
++
++        (void) close(fd);
++        return copy;
++}
+diff --git a/src/basic/fd-util.h b/src/basic/fd-util.h
+index 84a0816f0..284856ae6 100644
+--- a/src/basic/fd-util.h
++++ b/src/basic/fd-util.h
+@@ -91,3 +91,5 @@ int acquire_data_fd(const void *data, size_t size, unsigned flags);
+ /* Hint: ENETUNREACH happens if we try to connect to "non-existing" special IP addresses, such as ::5 */
+ #define ERRNO_IS_DISCONNECT(r) \
+         IN_SET(r, ENOTCONN, ECONNRESET, ECONNREFUSED, ECONNABORTED, EPIPE, ENETUNREACH)
++
++int fd_move_above_stdio(int fd);
+diff --git a/src/basic/log.c b/src/basic/log.c
+index 12ee65a5c..b3751299d 100644
+--- a/src/basic/log.c
++++ b/src/basic/log.c
+@@ -105,6 +105,8 @@ static int log_open_console(void) {
+                 console_fd = open_terminal("/dev/console", O_WRONLY|O_NOCTTY|O_CLOEXEC);
+                 if (console_fd < 0)
+                         return console_fd;
++
++                console_fd = fd_move_above_stdio(console_fd);
+         }
+ 
+         return 0;
+@@ -123,6 +125,7 @@ static int log_open_kmsg(void) {
+         if (kmsg_fd < 0)
+                 return -errno;
+ 
++        kmsg_fd = fd_move_above_stdio(kmsg_fd);
+         return 0;
+ }
+ 
+@@ -138,11 +141,11 @@ static int create_log_socket(int type) {
+         if (fd < 0)
+                 return -errno;
+ 
++        fd = fd_move_above_stdio(fd);
+         (void) fd_inc_sndbuf(fd, SNDBUF_SIZE);
+ 
+-        /* We need a blocking fd here since we'd otherwise lose
+-        messages way too early. However, let's not hang forever in the
+-        unlikely case of a deadlock. */
++        /* We need a blocking fd here since we'd otherwise lose messages way too early. However, let's not hang forever
++         * in the unlikely case of a deadlock. */
+         if (getpid_cached() == 1)
+                 timeval_store(&tv, 10 * USEC_PER_MSEC);
+         else
+diff --git a/src/libsystemd/sd-bus/bus-container.c b/src/libsystemd/sd-bus/bus-container.c
+index 16156d882..477f7053e 100644
+--- a/src/libsystemd/sd-bus/bus-container.c
++++ b/src/libsystemd/sd-bus/bus-container.c
+@@ -54,6 +54,8 @@ int bus_container_connect_socket(sd_bus *b) {
+         if (b->input_fd < 0)
+                 return -errno;
+ 
++        b->input_fd = fd_move_above_stdio(b->input_fd);
++
+         b->output_fd = b->input_fd;
+ 
+         bus_socket_setup(b);
+diff --git a/src/libsystemd/sd-bus/bus-socket.c b/src/libsystemd/sd-bus/bus-socket.c
+index d21010284..90132bb87 100644
+--- a/src/libsystemd/sd-bus/bus-socket.c
++++ b/src/libsystemd/sd-bus/bus-socket.c
+@@ -713,6 +713,8 @@ static int bus_socket_inotify_setup(sd_bus *b) {
+                 b->inotify_fd = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
+                 if (b->inotify_fd < 0)
+                         return -errno;
++
++                b->inotify_fd = fd_move_above_stdio(b->inotify_fd);
+         }
+ 
+         /* Make sure the path is NUL terminated */
+@@ -879,6 +881,8 @@ int bus_socket_connect(sd_bus *b) {
+                 if (b->input_fd < 0)
+                         return -errno;
+ 
++                b->input_fd = fd_move_above_stdio(b->input_fd);
++
+                 b->output_fd = b->input_fd;
+                 bus_socket_setup(b);
+ 
+@@ -978,7 +982,7 @@ int bus_socket_exec(sd_bus *b) {
+         }
+ 
+         safe_close(s[1]);
+-        b->output_fd = b->input_fd = s[0];
++        b->output_fd = b->input_fd = fd_move_above_stdio(s[0]);
+ 
+         bus_socket_setup(b);
+ 
+@@ -1206,7 +1210,7 @@ int bus_socket_read_message(sd_bus *bus) {
+                 CMSG_FOREACH(cmsg, &mh)
+                         if (cmsg->cmsg_level == SOL_SOCKET &&
+                             cmsg->cmsg_type == SCM_RIGHTS) {
+-                                int n, *f;
++                                int n, *f, i;
+ 
+                                 n = (cmsg->cmsg_len - CMSG_LEN(0)) / sizeof(int);
+ 
+@@ -1225,9 +1229,9 @@ int bus_socket_read_message(sd_bus *bus) {
+                                         return -ENOMEM;
+                                 }
+ 
+-                                memcpy_safe(f + bus->n_fds, CMSG_DATA(cmsg), n * sizeof(int));
++                                for (i = 0; i < n; i++)
++                                        f[bus->n_fds++] = fd_move_above_stdio(((int*) CMSG_DATA(cmsg))[i]);
+                                 bus->fds = f;
+-                                bus->n_fds += n;
+                         } else
+                                 log_debug("Got unexpected auxiliary data with level=%d and type=%d",
+                                           cmsg->cmsg_level, cmsg->cmsg_type);
+diff --git a/src/libsystemd/sd-event/sd-event.c b/src/libsystemd/sd-event/sd-event.c
+index cb9b3a454..7355921d3 100644
+--- a/src/libsystemd/sd-event/sd-event.c
++++ b/src/libsystemd/sd-event/sd-event.c
+@@ -457,6 +457,8 @@ _public_ int sd_event_new(sd_event** ret) {
+                 goto fail;
+         }
+ 
++        e->epoll_fd = fd_move_above_stdio(e->epoll_fd);
++
+         if (secure_getenv("SD_EVENT_PROFILE_DELAYS")) {
+                 log_debug("Event loop profiling enabled. Logarithmic histogram of event loop iterations in the range 2^0 ... 2^63 us will be logged every 5s.");
+                 e->profile_delays = true;
+@@ -695,7 +697,7 @@ static int event_make_signal_data(
+                 return 0;
+         }
+ 
+-        d->fd = r;
++        d->fd = fd_move_above_stdio(r);
+ 
+         ev.events = EPOLLIN;
+         ev.data.ptr = d;
+@@ -1045,6 +1047,8 @@ static int event_setup_timer_fd(
+         if (fd < 0)
+                 return -errno;
+ 
++        fd = fd_move_above_stdio(fd);
++
+         ev.events = EPOLLIN;
+         ev.data.ptr = d;
+ 
+diff --git a/src/libsystemd/sd-netlink/netlink-socket.c b/src/libsystemd/sd-netlink/netlink-socket.c
+index e08248c9f..3474ad9dd 100644
+--- a/src/libsystemd/sd-netlink/netlink-socket.c
++++ b/src/libsystemd/sd-netlink/netlink-socket.c
+@@ -25,6 +25,7 @@
+ #include "sd-netlink.h"
+ 
+ #include "alloc-util.h"
++#include "fd-util.h"
+ #include "format-util.h"
+ #include "missing.h"
+ #include "netlink-internal.h"
+@@ -41,7 +42,7 @@ int socket_open(int family) {
+         if (fd < 0)
+                 return -errno;
+ 
+-        return fd;
++        return fd_move_above_stdio(fd);
+ }
+ 
+ static int broadcast_groups_get(sd_netlink *nl) {
+diff --git a/src/libsystemd/sd-resolve/sd-resolve.c b/src/libsystemd/sd-resolve/sd-resolve.c
+index 787642a7f..1c68a96fe 100644
+--- a/src/libsystemd/sd-resolve/sd-resolve.c
++++ b/src/libsystemd/sd-resolve/sd-resolve.c
+@@ -507,12 +507,15 @@ _public_ int sd_resolve_new(sd_resolve **ret) {
+                 goto fail;
+         }
+ 
+-        fd_inc_sndbuf(resolve->fds[REQUEST_SEND_FD], QUERIES_MAX * BUFSIZE);
+-        fd_inc_rcvbuf(resolve->fds[REQUEST_RECV_FD], QUERIES_MAX * BUFSIZE);
+-        fd_inc_sndbuf(resolve->fds[RESPONSE_SEND_FD], QUERIES_MAX * BUFSIZE);
+-        fd_inc_rcvbuf(resolve->fds[RESPONSE_RECV_FD], QUERIES_MAX * BUFSIZE);
++        for (i = 0; i < _FD_MAX; i++)
++                resolve->fds[i] = fd_move_above_stdio(resolve->fds[i]);
++
++        (void) fd_inc_sndbuf(resolve->fds[REQUEST_SEND_FD], QUERIES_MAX * BUFSIZE);
++        (void) fd_inc_rcvbuf(resolve->fds[REQUEST_RECV_FD], QUERIES_MAX * BUFSIZE);
++        (void) fd_inc_sndbuf(resolve->fds[RESPONSE_SEND_FD], QUERIES_MAX * BUFSIZE);
++        (void) fd_inc_rcvbuf(resolve->fds[RESPONSE_RECV_FD], QUERIES_MAX * BUFSIZE);
+ 
+-        fd_nonblock(resolve->fds[RESPONSE_RECV_FD], true);
++        (void) fd_nonblock(resolve->fds[RESPONSE_RECV_FD], true);
+ 
+         *ret = resolve;
+         return 0;
+diff --git a/src/test/test-fd-util.c b/src/test/test-fd-util.c
+index e5a0e9d51..db4a7f8fd 100644
+--- a/src/test/test-fd-util.c
++++ b/src/test/test-fd-util.c
+@@ -155,12 +155,31 @@ static void test_acquire_data_fd(void) {
+         test_acquire_data_fd_one(ACQUIRE_NO_DEV_NULL|ACQUIRE_NO_MEMFD|ACQUIRE_NO_PIPE|ACQUIRE_NO_TMPFILE);
+ }
+ 
++static void test_fd_move_above_stdio(void) {
++        int original_stdin, new_fd;
++
++        original_stdin = fcntl(0, F_DUPFD, 3);
++        assert_se(original_stdin >= 3);
++        assert_se(close_nointr(0) != EBADF);
++
++        new_fd = open("/dev/null", O_RDONLY);
++        assert_se(new_fd == 0);
++
++        new_fd = fd_move_above_stdio(new_fd);
++        assert_se(new_fd >= 3);
++
++        assert_se(dup(original_stdin) == 0);
++        assert_se(close_nointr(original_stdin) != EBADF);
++        assert_se(close_nointr(new_fd) != EBADF);
++}
++
+ int main(int argc, char *argv[]) {
+         test_close_many();
+         test_close_nointr();
+         test_same_fd();
+         test_open_serialization_fd();
+         test_acquire_data_fd();
++        test_fd_move_above_stdio();
+ 
+         return 0;
+ }
+-- 
+2.19.2
+
