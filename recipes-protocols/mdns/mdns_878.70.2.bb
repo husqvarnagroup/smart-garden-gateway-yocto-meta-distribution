@@ -10,6 +10,12 @@ SRC_URI = "https://opensource.apple.com/tarballs/mDNSResponder/mDNSResponder-${P
            file://build.patch;patchdir=.. \
            file://mdns.service \
            file://0001-nss_mdns-Do-not-include-nss.h-when-libc-glibc.patch;patchdir=.. \
+           file://0002-Don-t-call-memcpy-with-size-src.patch;patchdir=.. \
+           file://0003-Don-t-enable-MDNS-on-non-multicast-non-broadcast-int.patch;patchdir=.. \
+           file://0004-mDNS-Support-interface-names-larger-than-8-character.patch;patchdir=.. \
+           file://0005-mDNSCore-fix-switch-fallthrough-warnings.patch;patchdir=.. \
+           file://0006-Clients-fix-misleading-indentation-warning.patch;patchdir=.. \
+           file://0007-mDNSCore-fix-Warray-bounds-warnings-for-HMAC_MD5_Alg.patch;patchdir=.. \
            "
 
 SRC_URI[md5sum] = "6995455d50166993d6b35e67416ee84b"
