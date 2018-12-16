@@ -9,6 +9,7 @@ IMAGE_INSTALL += " \
     initscripts-readonly-rootfs-overlay \
     iw \
     kernel-module-mt7603e \
+    linkupdown \
     linux-firmware-mt7628 \
     memtester \
     mtd-utils \
