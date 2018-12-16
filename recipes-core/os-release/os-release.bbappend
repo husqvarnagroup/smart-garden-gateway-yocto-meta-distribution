@@ -1,4 +1,4 @@
-PR_append = ".1"
+PR_append = ".2"
 
 VERSION = "${DISTRO_VERSION}"
 VERSION_ID = "${DISTRO_VERSION_ID}"
