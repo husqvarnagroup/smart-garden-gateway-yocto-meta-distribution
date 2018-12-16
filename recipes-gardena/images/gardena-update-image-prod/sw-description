@@ -56,6 +56,14 @@ software = {
                     {
                         name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
                         value = "";
+                    },
+                    {
+                        name = "mtdids"; /* Delete potentially no longer valid mapping (SG-10970) */
+                        value = "";
+                    },
+                    {
+                        name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
+                        value = "";
                     }
                 )
             }
@@ -100,6 +108,14 @@ software = {
                     },
                     {
                         name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
+                        value = "";
+                    },
+                    {
+                        name = "mtdids"; /* Delete potentially no longer valid mapping (SG-10970) */
+                        value = "";
+                    },
+                    {
+                        name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
                         value = "";
                     }
                 )
