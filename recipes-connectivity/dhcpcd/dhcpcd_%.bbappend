@@ -1,11 +1,12 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_append = ".1"
+PR_append = ".2"
 
 SRC_URI += " \
     file://dhcpcd.conf \
     file://dhcpcd.service \
     file://keep.d/${PN} \
+    file://0001-dont-crash-when-calling-ipv4ll-without-an-address-in-state.patch \
 "
 
 FILES_${PN} += "\
