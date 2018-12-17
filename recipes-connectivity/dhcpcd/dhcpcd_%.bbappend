@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_append = ".1"
+PR_append = ".2"
 
 SRC_URI += " \
     file://dhcpcd.conf \
