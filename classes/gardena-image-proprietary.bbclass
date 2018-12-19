@@ -1,4 +1,4 @@
-# Base for all proprietary Gardena images
+# Base for all proprietary GARDENA images
 
 IMAGE_INSTALL += " \
     accessory-server \
