@@ -1,4 +1,4 @@
-# Base for all Gardena images; Open Source software only
+# Base for all GARDENA images; Open Source software only
 
 IMAGE_INSTALL += " \
     crda \
