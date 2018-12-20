@@ -1,6 +1,8 @@
 # Base for all GARDENA images; Open Source software only
 
 IMAGE_INSTALL += " \
+    chrony \
+    chronyc \
     crda \
     dhcpcd \
     dnsmasq \
