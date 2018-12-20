@@ -1,5 +1,5 @@
 [Unit]
-Description=Fetch new Linux system images, install if applicable"
+Description=Software Update Service
 After=update-sw-versions.service update-hw-revision.service network-online.target export-gpios.service swupdate-progress.service
 Wants=update-sw-versions.service update-hw-revision.service network-online.target export-gpios.service
 Requires=swupdate-progress.service
