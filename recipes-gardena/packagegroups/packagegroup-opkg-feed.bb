@@ -22,8 +22,10 @@ RDEPENDS_packagegroup-opkg-feed = "\
     minicom \
     mtd-utils \
     net-tools \
-    network-management \
     netcat \
+    network-management \
+    ntp \
+    ntpdate \
     picocom \
     pstree \
     pv \
