@@ -21,8 +21,8 @@ RDEPENDS_packagegroup-opkg-feed = "\
     mc \
     minicom \
     mtd-utils \
-    net-tools \
     netcat \
+    net-tools \
     network-management \
     ntp \
     ntpdate \
@@ -30,6 +30,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     pstree \
     pv \
     rsync \
+    rust-hello-world \
     screen \
     sed \
     socat \

@@ -18,4 +18,5 @@ BBLAYERS ?= " \
   ##OEROOT##/../meta-readonly-rootfs-overlay \
   ##OEROOT##/../meta-shadoway \
   ##OEROOT##/../meta-swupdate \
+  ##OEROOT##/../meta-rust \
   "
