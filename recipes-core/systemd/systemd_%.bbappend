@@ -2,6 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://keep.d/${PN} \
+    file://systemd-disable-colors.sh \
 "
 
 FILES_${PN} += "\
