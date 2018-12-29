@@ -2,6 +2,7 @@
 
 IMAGE_INSTALL += " \
     accessory-server \
+    gateway-config-interface \
     gateway-firmware \
     manufacturing-tools \
     shadoway \
