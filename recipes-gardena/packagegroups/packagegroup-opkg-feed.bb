@@ -30,7 +30,6 @@ RDEPENDS_packagegroup-opkg-feed = "\
     pstree \
     pv \
     rsync \
-    rust-hello-world \
     screen \
     sed \
     socat \
