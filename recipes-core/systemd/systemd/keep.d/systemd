@@ -1,5 +1,4 @@
 # Those values have been identified "by hand" - feel free to append
-/etc/machine-id
 /var/lib/systemd/random-seed
 /var/lib/systemd/rfkill
 /var/lib/systemd/timesync/clock
