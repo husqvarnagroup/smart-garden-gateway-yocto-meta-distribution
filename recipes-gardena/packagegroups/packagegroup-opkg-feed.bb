@@ -21,8 +21,8 @@ RDEPENDS_packagegroup-opkg-feed = "\
     mc \
     minicom \
     mtd-utils \
-    net-tools \
     netcat \
+    net-tools \
     network-management \
     ntp \
     ntpdate \
