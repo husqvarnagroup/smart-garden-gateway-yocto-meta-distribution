@@ -16,7 +16,7 @@ for ext in crt key; do
     else
         content="$(fw_printenv -n conf_openvpn_${ext} 2>/dev/null)"
         if [ "$?" = "0" ]; then
-            echo "${content}" | tr '%' '\n' > "${openvpn_dir}/client.${ext}"
+            echo "${content}" | tr '%' '\n' > "${openvpn_dir}/client-prod.${ext}"
         else
             echo "U-Boot variable 'conf_openvpn_${ext}' is missing!" >&2
             exit 1
