@@ -1,2 +1,2 @@
-/etc/openvpn/client.crt
-/etc/openvpn/client.key
+/etc/openvpn/client-*.crt
+/etc/openvpn/client-*.key
