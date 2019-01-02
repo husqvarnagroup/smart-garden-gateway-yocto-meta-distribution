@@ -23,6 +23,19 @@ IMAGE_INSTALL += " \
     rfkill \
     squashfs-tools \
     swupdate \
+    tzdata \
+    tzdata-africa \
+    tzdata-americas \
+    tzdata-antarctica \
+    tzdata-arctic \
+    tzdata-asia \
+    tzdata-atlantic \
+    tzdata-australia \
+    tzdata-europe \
+    tzdata-misc \
+    tzdata-pacific \
+    tzdata-posix \
+    tzdata-right \
     u-boot \
     u-boot-fw-utils \
     wpa-supplicant \
