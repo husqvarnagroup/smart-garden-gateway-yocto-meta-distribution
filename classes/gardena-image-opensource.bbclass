@@ -3,7 +3,6 @@
 IMAGE_INSTALL += " \
     chrony \
     chronyc \
-    crda \
     dhcpcd \
     dnsmasq \
     hostapd \
@@ -38,6 +37,7 @@ IMAGE_INSTALL += " \
     tzdata-right \
     u-boot \
     u-boot-fw-utils \
+    wireless-regdb-static \
     wpa-supplicant \
 "
 
