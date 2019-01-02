@@ -3,7 +3,6 @@
 IMAGE_INSTALL += " \
     chrony \
     chronyc \
-    crda \
     dhcpcd \
     dnsmasq \
     hostapd \
