@@ -38,6 +38,7 @@ IMAGE_INSTALL += " \
     tzdata-right \
     u-boot \
     u-boot-fw-utils \
+    wireless-regdb-static \
     wpa-supplicant \
 "
 
