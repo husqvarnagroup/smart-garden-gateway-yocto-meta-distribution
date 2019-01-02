@@ -4,6 +4,8 @@
 do_dev_u_boot_upgrade=dhcp u-boot.bin-rom && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
 do_dev_import_default_env=dhcp uEnv.txt && env import -t ${fileaddr} ${filesize}
 do_dev_reset_overlay=ubi part nand && ubi remove overlay && ubi create overlay 0x1e00000 dynamic 4
+do_dev_flash_kernel=ubi part nand && run do_flash_kernel
+do_dev_flash_rootfs=ubi part nand && run do_flash_rootfs
 
 do_dev_led_set_state=for color in blue green red; do led smartgw:${led_name}:${color} ${led_state}; done
 do_dev_led_off=led_state=off; run do_dev_led_set_state
@@ -16,8 +18,10 @@ do_toggle_bootslot=if test "${bootslot}" = "0"; then setenv bootslot 1; else set
 do_show_bootstrap_error=if test ("${ubi_setup_done}" != "1" -o "${flashing_done}" != "1") -a ${bootcount} -ge 7; then led smartgw:internet:blue off; led smartgw:internet:green off; led smartgw:internet:red on; else true; fi
 do_set_bootargs=setenv bootargs console=ttyS0,${baudrate} root=/dev/ubiblock0_${bootslot} rootrw=ubi0:overlay rootrwfstype=ubifs rootrwoptions=rw,noatime ubi.block=0,rootfs${bootslot} ubi.mtd=nand init=/init mtdparts="${mtdparts}" ${dev_bootargs}
 do_if_ubi_setup=if test "${ubi_setup_done}" != "1"; then mtd erase spi-nand0; ubi part nand && ubi create rootfs0 0x2815000 static 0 && ubi create rootfs1 0x2815000 static 1 && ubi create kernel0 0x41e000 static 2 && ubi create kernel1 0x41e000 static 3 && ubi create overlay 0x1e00000 dynamic 4 && setenv ubi_setup_done 1; else ubi part nand; fi
-do_flashing_inplace=dhcp uImage.lzma && echo "Writing to kernel${bootslot}" && ubi write ${fileaddr} kernel${bootslot} ${filesize} && dhcp gardena-image-prod-mt7688.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
-do_if_flashing_setup=if test "${flashing_done}" != "1"; then run do_toggle_bootslot && run do_flashing_inplace && setenv flashing_done 1 && saveenv && reset; else true; fi
+do_flash_kernel=dhcp fitImage-mt7688.bin && echo "Writing to kernel${bootslot}" && ubi write ${fileaddr} kernel${bootslot} ${filesize}
+do_flash_rootfs=dhcp gardena-image-prod-mt7688.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
+do_flash=run do_flash_kernel && run do_flash_rootfs
+do_if_flashing_setup=if test "${flashing_done}" != "1"; then run do_toggle_bootslot && run do_flash && setenv flashing_done 1 && saveenv && reset; else true; fi
 do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
 do_factory_reset=setenv bootargs "${bootargs} rootrwreset=yes"
 do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi

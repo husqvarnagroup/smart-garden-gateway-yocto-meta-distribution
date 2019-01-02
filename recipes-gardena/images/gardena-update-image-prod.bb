@@ -14,11 +14,11 @@ PR = "r2"
 IMAGE_DEPENDS = "gardena-image-prod u-boot virtual/kernel"
 
 # Images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "gardena-image-prod uImage.lzma u-boot uEnv"
+SWUPDATE_IMAGES = "gardena-image-prod fitImage u-boot uEnv"
 
 # Configure file extensions of the images (potentially) used in SWUPDATE_IMAGES
 SWUPDATE_IMAGES_FSTYPES[gardena-image-prod] = ".squashfs-xz"
-SWUPDATE_IMAGES_FSTYPES[uImage.lzma] = ".bin"
+SWUPDATE_IMAGES_FSTYPES[fitImage] = ".bin"
 SWUPDATE_IMAGES_FSTYPES[u-boot] = ".bin"
 SWUPDATE_IMAGES_FSTYPES[uEnv] = ".txt"
 
