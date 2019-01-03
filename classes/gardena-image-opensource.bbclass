@@ -1,27 +1,7 @@
 # Base for all GARDENA images; Open Source software only
 
-IMAGE_INSTALL += " \
-    dhcpcd \
-    dnsmasq \
-    hostapd \
-    i2c-tools \
-    initscripts-readonly-rootfs-overlay \
-    iw \
-    kernel-module-mt7603e \
-    linux-firmware-mt7628 \
-    memtester \
-    mtd-utils \
-    mtd-utils-ubifs \
+TIME_MANAGEMENT += " \
     ntp \
-    openocd \
-    openvpn \
-    os-release \
-    packagegroup-core-boot \
-    ppp \
-    rfkill \
-    squashfs-tools \
-    swupdate \
-    tzdata \
     tzdata-africa \
     tzdata-americas \
     tzdata-antarctica \
@@ -34,6 +14,30 @@ IMAGE_INSTALL += " \
     tzdata-pacific \
     tzdata-posix \
     tzdata-right \
+"
+
+
+IMAGE_INSTALL += " \
+    ${TIME_MANAGEMENT} \
+    dhcpcd \
+    dnsmasq \
+    hostapd \
+    i2c-tools \
+    initscripts-readonly-rootfs-overlay \
+    iw \
+    kernel-module-mt7603e \
+    linux-firmware-mt7628 \
+    memtester \
+    mtd-utils \
+    mtd-utils-ubifs \
+    openocd \
+    openvpn \
+    os-release \
+    packagegroup-core-boot \
+    ppp \
+    rfkill \
+    squashfs-tools \
+    swupdate \
     u-boot \
     u-boot-fw-utils \
     wireless-regdb-static \
