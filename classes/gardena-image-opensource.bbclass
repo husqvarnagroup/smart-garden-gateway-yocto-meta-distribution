@@ -1,8 +1,6 @@
 # Base for all GARDENA images; Open Source software only
 
 IMAGE_INSTALL += " \
-    chrony \
-    chronyc \
     dhcpcd \
     dnsmasq \
     hostapd \
@@ -14,6 +12,7 @@ IMAGE_INSTALL += " \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \
+    ntp \
     openocd \
     openvpn \
     os-release \
