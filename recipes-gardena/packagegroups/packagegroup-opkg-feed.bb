@@ -7,6 +7,8 @@ RDEPENDS_packagegroup-opkg-feed = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd-analyze systemd-bootchart', '', d)} \
     atop \
     bash \
+    chrony \
+    chronyc \
     cuitest \
     curl \
     emc-tools \
@@ -24,7 +26,6 @@ RDEPENDS_packagegroup-opkg-feed = "\
     net-tools \
     netcat \
     network-management \
-    ntp \
     ntpdate \
     picocom \
     pstree \
