@@ -1,3 +1,3 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".1"
+PR_append = ".2"
