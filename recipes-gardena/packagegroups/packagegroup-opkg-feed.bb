@@ -21,8 +21,8 @@ RDEPENDS_packagegroup-opkg-feed = "\
     mc \
     minicom \
     mtd-utils \
-    netcat \
     net-tools \
+    netcat \
     network-management \
     ntp \
     ntpdate \
@@ -39,6 +39,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     tar \
     tcpdump \
     traceroute \
+    tshark \
     vim \
     wget \
     xz \
