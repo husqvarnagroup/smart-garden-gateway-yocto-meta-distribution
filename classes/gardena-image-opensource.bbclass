@@ -16,7 +16,6 @@ TIME_MANAGEMENT += " \
     tzdata-right \
 "
 
-
 IMAGE_INSTALL += " \
     ${TIME_MANAGEMENT} \
     dhcpcd \
