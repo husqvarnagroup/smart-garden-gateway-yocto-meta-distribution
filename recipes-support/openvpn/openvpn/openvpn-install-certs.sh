@@ -17,12 +17,12 @@ for ext in crt key; do
     file="${openvpn_dir}/client-prod.${ext}"
     if [ -f "${file}" ]; then
         echo "File '${file}' already exists"
+        exit 0
+    fi
+    if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
+        echo "${content}" | tr '%' '\n' > "${file}"
     else
-        if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
-            echo "${content}" | tr '%' '\n' > "${file}"
-        else
-            echo "U-Boot variable '${uboot_var}' is missing!" >&2
-            exit 1
-        fi
+        echo "U-Boot variable '${uboot_var}' is missing!" >&2
+        exit 1
     fi
 done
