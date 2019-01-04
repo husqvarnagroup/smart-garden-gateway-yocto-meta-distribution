@@ -8,18 +8,24 @@
 #
 # Precondition: The directory /etc/openvpn has to exist
 
+set -eu -o pipefail
+
 openvpn_dir="/etc/openvpn"
+err=0
 
 for ext in crt key; do
-    if [ -f "${openvpn_dir}/client.${ext}" ]; then
-        echo "File '${openvpn_dir}/client.${ext}' already exists"
+    uboot_var="conf_openvpn_${ext}"
+    file="${openvpn_dir}/client-prod.${ext}"
+    if [ -e "${file}" ]; then
+        echo "File '${file}' already exists"
+        continue
+    fi
+    if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
+        echo "${content}" | tr '%' '\n' > "${file}"
     else
-        content="$(fw_printenv -n conf_openvpn_${ext} 2>/dev/null)"
-        if [ "$?" = "0" ]; then
-            echo "${content}" | tr '%' '\n' > "${openvpn_dir}/client-prod.${ext}"
-        else
-            echo "U-Boot variable 'conf_openvpn_${ext}' is missing!" >&2
-            exit 1
-        fi
+        echo "U-Boot variable '${uboot_var}' is missing!" >&2
+        err=1
     fi
 done
+
+exit $err
