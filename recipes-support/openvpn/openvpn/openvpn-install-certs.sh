@@ -16,7 +16,7 @@ err=0
 for ext in crt key; do
     uboot_var="conf_openvpn_${ext}"
     file="${openvpn_dir}/client-prod.${ext}"
-    if [ -f "${file}" ]; then
+    if [ -e "${file}" ]; then
         echo "File '${file}' already exists"
         continue
     fi
