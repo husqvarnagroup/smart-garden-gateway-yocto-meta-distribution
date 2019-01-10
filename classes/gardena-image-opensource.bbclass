@@ -2,6 +2,7 @@
 
 TIME_MANAGEMENT += " \
     ntp \
+    tzdata \
     tzdata-africa \
     tzdata-americas \
     tzdata-antarctica \
