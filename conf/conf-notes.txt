@@ -6,6 +6,6 @@ You can now run 'bitbake <target>'
 Common targets are:
     gardena-image-dev
     gardena-image-prod
-    gardena-update-image-prod
     gardena-update-image-dev
+    gardena-update-image-prod
     gardena-image-opensource-prod
