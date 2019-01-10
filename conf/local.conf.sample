@@ -203,8 +203,8 @@ BB_DISKMON_DIRS ??= "\
 
 
 # Download mirror
-# fetcher checks files with http HEAD request and decide wich packages needs to be
-# downloaded from mirror and wich from original source url
+# fetcher checks files with http HEAD request and decide which packages needs to be
+# downloaded from mirror and which from original source url
 SOURCE_MIRROR_URL = "http://sg-low-cost-gateway-dev.s3.amazonaws.com/mirror/"
 
 #
