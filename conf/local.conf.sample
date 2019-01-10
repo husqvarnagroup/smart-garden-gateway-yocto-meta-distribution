@@ -202,6 +202,11 @@ BB_DISKMON_DIRS ??= "\
 #file://.* file:///some/local/dir/sstate/PATH"
 
 
+# Download mirror
+# fetcher checks files with http HEAD request and decide wich packages needs to be
+# downloaded from mirror and wich from original source url
+SOURCE_MIRROR_URL = "http://sg-low-cost-gateway-dev.s3.amazonaws.com/mirror/"
+
 #
 # Qemu configuration
 #
