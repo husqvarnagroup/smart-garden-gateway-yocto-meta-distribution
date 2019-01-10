@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 IMAGE_FEATURES += "tools-debug"
 IMAGE_INSTALL += " \
     cuitest \
+    homekit-devscripts \
     kernel-module-mtd-nandbiterrs \
     kernel-module-mtd-nandecctest \
     kernel-module-mtd-oobtest \
