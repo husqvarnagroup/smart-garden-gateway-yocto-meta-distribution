@@ -231,7 +231,7 @@ INHERIT += "buildhistory"
 BUILDHISTORY_COMMIT = "1"
 
 # Archive source code for all packages that will be built
-INHERIT += "archiver"
+#INHERIT += "archiver"
 ARCHIVER_MODE[src] = "original"
 COPYLEFT_LICENSE_EXCLUDE = 'CLOSED Proprietary'
 
