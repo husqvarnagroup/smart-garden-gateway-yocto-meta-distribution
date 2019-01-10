@@ -7,4 +7,5 @@ Common targets are:
     gardena-image-dev
     gardena-image-prod
     gardena-update-image-prod
+    gardena-update-image-dev
     gardena-image-opensource-prod
