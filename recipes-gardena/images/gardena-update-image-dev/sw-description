@@ -1,0 +1,125 @@
+software = {
+    version = "@@DISTRO_VERSION_ID@@";
+    description = "Linux System Firmware for the GARDENA smart Gateway MT7688";
+
+    scripts = (
+        {
+            filename = "check_linux_system_version.sh";
+            type = "shellscript";
+            sha256 = "@check_linux_system_version.sh";
+            data = "@@DISTRO_VERSION_ID@@";
+        }
+    )
+
+    smart-gateway-@@MACHINE_ARCH@@ = {
+        hardware-compatibility: [ "0.5", "1.0", "1.1.0" ];
+
+        stable = {
+            bootslot0 = {
+                images = (
+                    {
+                        filename = "gardena-image-dev-@@MACHINE_ARCH@@.squashfs-xz";
+                        volume = "rootfs1";
+                        sha256 = "@gardena-image-dev-@@MACHINE_ARCH@@.squashfs-xz";
+                    },
+                    {
+                        filename = "fitImage-@@MACHINE_ARCH@@.bin";
+                        volume = "kernel1";
+                        sha256 = "@fitImage-@@MACHINE_ARCH@@.bin";
+                    },
+                    {
+                        filename = "uEnv-@@MACHINE_ARCH@@.txt";
+                        type = "bootloader";
+                        sha256 = "@uEnv-@@MACHINE_ARCH@@.txt";
+                    },
+                    {
+                        filename = "u-boot-@@MACHINE_ARCH@@.bin";
+                        mtdname = "uboot";
+                        type = "flash";
+                        sha256 = "@u-boot-@@MACHINE_ARCH@@.bin";
+                    }
+                )
+
+                bootenv = (
+                    {
+                        name = "bootslot";
+                        value = "1";
+                    },
+                    {
+                        name = "linux_system_version";
+                        value = "@@DISTRO_VERSION_ID@@";
+                    },
+                    {
+                        name = "swupdate_done";
+                        value = "1";
+                    },
+                    {
+                        name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
+                        value = "";
+                    },
+                    {
+                        name = "mtdids"; /* Delete potentially no longer valid mapping (SG-10970) */
+                        value = "";
+                    },
+                    {
+                        name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
+                        value = "";
+                    }
+                )
+            }
+
+            bootslot1 = {
+                images = (
+                    {
+                        filename = "gardena-image-dev-@@MACHINE_ARCH@@.squashfs-xz";
+                        volume = "rootfs0";
+                        sha256 = "@gardena-image-dev-@@MACHINE_ARCH@@.squashfs-xz";
+                    },
+                    {
+                        filename = "fitImage-@@MACHINE_ARCH@@.bin";
+                        volume = "kernel0";
+                        sha256 = "@fitImage-@@MACHINE_ARCH@@.bin";
+                    },
+                    {
+                        filename = "uEnv-@@MACHINE_ARCH@@.txt";
+                        type = "bootloader";
+                        sha256 = "@uEnv-@@MACHINE_ARCH@@.txt";
+                    },
+                    {
+                        filename = "u-boot-@@MACHINE_ARCH@@.bin";
+                        mtdname = "uboot";
+                        type = "flash";
+                        sha256 = "@u-boot-@@MACHINE_ARCH@@.bin";
+                    }
+                )
+
+                bootenv = (
+                    {
+                        name = "bootslot";
+                        value = "0";
+                    },
+                    {
+                        name = "linux_system_version";
+                        value = "@@DISTRO_VERSION_ID@@";
+                    },
+                    {
+                        name = "swupdate_done";
+                        value = "1";
+                    },
+                    {
+                        name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
+                        value = "";
+                    },
+                    {
+                        name = "mtdids"; /* Delete potentially no longer valid mapping (SG-10970) */
+                        value = "";
+                    },
+                    {
+                        name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
+                        value = "";
+                    }
+                )
+            }
+        }
+    }
+}
