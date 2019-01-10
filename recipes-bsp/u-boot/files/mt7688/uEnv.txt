@@ -23,7 +23,7 @@ do_flash_rootfs=dhcp gardena-image-prod-mt7688.squashfs-xz && echo "Writing to r
 do_flash=run do_flash_kernel && run do_flash_rootfs
 do_if_flashing_setup=if test "${flashing_done}" != "1"; then run do_toggle_bootslot && run do_flash && setenv flashing_done 1 && saveenv && reset; else true; fi
 do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
-do_factory_reset=setenv bootargs "${bootargs} rootrwreset=yes"
+do_factory_reset=setenv bootargs "${bootargs} rootrwreset=yes" && led smartgw:power:blue off && led smartgw:power:green on && led smartgw:power:red on
 do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi
 do_start_over=env default -f -a && saveenv && reset
 
