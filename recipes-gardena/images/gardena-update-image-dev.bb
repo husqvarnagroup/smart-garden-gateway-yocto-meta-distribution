@@ -8,7 +8,7 @@ SRC_URI = "\
     file://check_linux_system_version.sh \
 "
 
-PR = "r0"
+PR = "r1"
 
 # Images to build before building swupdate image
 IMAGE_DEPENDS = "gardena-image-dev u-boot virtual/kernel"
