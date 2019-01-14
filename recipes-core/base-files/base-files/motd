@@ -1,0 +1,15 @@
+
+You can find the open source Yocto project for this gateway at
+https://github.com/husqvarnagroup/smart-garden-gateway-public
+(this does not include the propriety packages, which are needed to
+operate the gateway in the smart system).
+
+Please be aware that any modification to your gateway, in particular a
+modification of U-Boot, may permanently brick your device and is not
+covered by warranty.
+
+Happy hacking!
+
+PS Interested in tinkering with Gardena products full-time? Write to
+jobs@hqv.ch for currently open developer positions!
+
