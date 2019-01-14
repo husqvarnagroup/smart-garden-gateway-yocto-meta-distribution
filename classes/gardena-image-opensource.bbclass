@@ -40,6 +40,7 @@ IMAGE_INSTALL += " \
     swupdate \
     u-boot \
     u-boot-fw-utils \
+    unique-hostname \
     wireless-regdb-static \
     wpa-supplicant \
 "
