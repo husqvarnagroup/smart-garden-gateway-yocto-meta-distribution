@@ -203,8 +203,8 @@ BB_DISKMON_DIRS ??= "\
 
 
 # Download mirror
-# fetcher checks files with http HEAD request and decide which packages needs to be
-# downloaded from mirror and which from original source url
+# Fetcher checks files with HTTP HEAD request and decides which packages need to be
+# downloaded from this mirror and which can be from original source URL.
 SOURCE_MIRROR_URL = "http://sg-low-cost-gateway-dev.s3.amazonaws.com/mirror/"
 
 #
@@ -230,9 +230,9 @@ CONF_VERSION = "1"
 INHERIT += "buildhistory"
 BUILDHISTORY_COMMIT = "1"
 
-# Archive source code for all packages that will be built
-# Dissabled by default as not relevant for development builds and will be activated
-# by auto.conf on CI infracstructure for release builds
+# Archive source code for all packages getting built
+# Disabled by default as not relevant for development builds and will be activated
+# by auto.conf on CI infrastructure for release builds.
 #INHERIT += "archiver"
 ARCHIVER_MODE[src] = "original"
 COPYLEFT_LICENSE_EXCLUDE = 'CLOSED Proprietary'
