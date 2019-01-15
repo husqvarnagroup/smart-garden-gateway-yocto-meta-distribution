@@ -10,11 +10,11 @@ set_power_led_yellow_flash() {
     # to a visible delay between red and green
     echo oneshot > $POWER_LED:blue/trigger
     echo 0 > $POWER_LED:blue/brightness
+    # keep these two together for synchronicity between R and G components
+    echo timer > $POWER_LED:red/trigger && echo timer > $POWER_LED:green/trigger
     for x in red/delay_on red/delay_off green/delay_on green/delay_off; do
         echo 500 > $POWER_LED:$x
     done
-    # keep these two together for synchronicity between R and G components
-    echo timer > $POWER_LED:red/trigger && echo timer > $POWER_LED:green/trigger
 }
 
 set_power_led_green() {
