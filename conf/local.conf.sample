@@ -206,7 +206,6 @@ BB_DISKMON_DIRS ??= "\
 # fetcher checks files with http HEAD request and decide which packages needs to be
 # downloaded from mirror and which from original source url
 INHERIT += "own-mirrors"
-BB_GENERATE_MIRROR_TARBALLS = "1"
 SOURCE_MIRROR_URL ?= "https://sg-low-cost-gateway-dev.s3.amazonaws.com/mirror/"
 
 #
