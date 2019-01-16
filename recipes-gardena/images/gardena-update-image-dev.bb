@@ -2,7 +2,7 @@ require gardena-update-image.inc
 
 DESCRIPTION = "SWUpdate compound image for gardena-image-dev"
 
-SRC_URI = "\
+SRC_URI += "\
     file://sw-description \
 "
 
