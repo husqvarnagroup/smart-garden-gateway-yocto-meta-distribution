@@ -201,11 +201,14 @@ BB_DISKMON_DIRS ??= "\
 #file://.* http://someserver.tld/share/sstate/PATH;downloadfilename=PATH \n \
 #file://.* file:///some/local/dir/sstate/PATH"
 
-
 # Download mirror
 # Fetcher checks files with HTTP HEAD request and decides which packages need to be
 # downloaded from this mirror and which can be from original source URL.
-SOURCE_MIRROR_URL = "http://sg-low-cost-gateway-dev.s3.amazonaws.com/mirror/"
+INHERIT += "own-mirrors"
+SOURCE_MIRROR_URL ?= "https://sg-low-cost-gateway-dev.s3.amazonaws.com/mirror/"
+# Tarball generation disabled by default as it takes too much time for development
+# builds. Will be activated by auto.conf on CI infrastructure for release builds.
+#BB_GENERATE_MIRROR_TARBALLS = "1"
 
 #
 # Qemu configuration
