@@ -233,6 +233,10 @@ CONF_VERSION = "1"
 INHERIT += "buildhistory"
 BUILDHISTORY_COMMIT = "1"
 
+# Store build information on target filesystem on /etc/build
+INHERIT += "image-buildinfo"
+IMAGE_BUILDINFO_VARS = "DISTRO DISTRO_VERSION DISTRO_VERSION_ID"
+
 # Archive source code for all packages getting built
 # Disabled by default as not relevant for development builds and will be activated
 # by auto.conf on CI infrastructure for release builds.
