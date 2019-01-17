@@ -15,6 +15,7 @@ set_power_led_yellow_flash() {
     for x in red/delay_on red/delay_off green/delay_on green/delay_off; do
         echo 500 > $POWER_LED:$x
     done
+    echo timer > $POWER_LED:red/trigger && echo timer > $POWER_LED:green/trigger
 }
 
 set_power_led_green() {
