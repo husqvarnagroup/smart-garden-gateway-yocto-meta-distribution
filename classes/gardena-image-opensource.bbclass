@@ -62,4 +62,11 @@ LICENSE = "MIT"
 # Default rootfs size: 40 MB
 IMAGE_ROOTFS_SIZE ?= "40960"
 
+do_removepyc() {
+    # remove all pyc files from rootfs
+    find ${IMAGE_ROOTFS}/ -type f -name "*.pyc" -delete
+}
+
+addtask removepyc after do_rootfs before do_image
+
 inherit core-image
