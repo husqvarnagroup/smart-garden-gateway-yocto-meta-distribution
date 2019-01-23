@@ -11,11 +11,11 @@ FILES_${PN} += "\
 PR_append = ".0"
 
 do_install_append() {
-	sed -i 's/#RuntimeWatchdogSec=0/RuntimeWatchdogSec=60/g' ${D}${sysconfdir}/systemd/system.conf
-	sed -i 's/#ShutdownWatchdogSec=10min/ShutdownWatchdogSec=1min/g' ${D}${sysconfdir}/systemd/system.conf
+	sed -i 's/.*RuntimeWatchdogSec=.*/RuntimeWatchdogSec=60/g' ${D}${sysconfdir}/systemd/system.conf
+	sed -i 's/.*ShutdownWatchdogSec=.*/ShutdownWatchdogSec=1min/g' ${D}${sysconfdir}/systemd/system.conf
 
 	# Disable colorized statup messages
-	sed -i 's/#LogColor=yes/LogColor=no/g' ${D}${sysconfdir}/systemd/system.conf
+	sed -i 's/.*LogColor=.*/LogColor=no/g' ${D}${sysconfdir}/systemd/system.conf
 
 	# journald: Log to RAM, not storage
 	sed -i -e 's/.*Storage=.*/Storage=volatile/' ${D}${sysconfdir}/systemd/journald.conf
