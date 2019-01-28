@@ -35,6 +35,7 @@ IMAGE_INSTALL += " \
     os-release \
     packagegroup-core-boot \
     ppp \
+    reset-rm \
     rfkill \
     squashfs-tools \
     swupdate \
