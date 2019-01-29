@@ -16,7 +16,9 @@ S = "${WORKDIR}/git"
 RDEPENDS_${PN} += " \
     lsdl-serializer-lib \
     python3-core \
+    python3-fcntl \
     python3-threading \
+    python3-xml \
 "
 
 do_install() {
