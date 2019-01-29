@@ -20,28 +20,19 @@ RDEPENDS_${PN} += " \
 "
 
 do_install() {
-    install -d ${D}${PYTHON_SITEPACKAGES_DIR}
-    install -m 0755 ${S}/lemonbeat/configuration.py ${D}${PYTHON_SITEPACKAGES_DIR}/
-    install -m 0755 ${S}/lemonbeat/defines.py ${D}${PYTHON_SITEPACKAGES_DIR}/
-    install -m 0755 ${S}/lemonbeat/device_description.py ${D}${PYTHON_SITEPACKAGES_DIR}/
-    install -m 0755 ${S}/lemonbeat/device.py ${D}${PYTHON_SITEPACKAGES_DIR}/
-    install -m 0755 ${S}/lemonbeat/firmware.py ${D}${PYTHON_SITEPACKAGES_DIR}/
-    install -m 0755 ${S}/lemonbeat/gateway.py ${D}${PYTHON_SITEPACKAGES_DIR}/
-    install -m 0755 ${S}/lemonbeat/__init__.py ${D}${PYTHON_SITEPACKAGES_DIR}/
-    install -m 0755 ${S}/lemonbeat/message.py ${D}${PYTHON_SITEPACKAGES_DIR}/
-    install -m 0755 ${S}/lemonbeat/partner.py ${D}${PYTHON_SITEPACKAGES_DIR}/
-    install -m 0755 ${S}/lemonbeat/types.py ${D}${PYTHON_SITEPACKAGES_DIR}/
+    install -d ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat
+    install -m 0755 ${S}/lemonbeat/configuration.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
+    install -m 0755 ${S}/lemonbeat/defines.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
+    install -m 0755 ${S}/lemonbeat/device_description.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
+    install -m 0755 ${S}/lemonbeat/device.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
+    install -m 0755 ${S}/lemonbeat/firmware.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
+    install -m 0755 ${S}/lemonbeat/gateway.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
+    install -m 0755 ${S}/lemonbeat/__init__.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
+    install -m 0755 ${S}/lemonbeat/message.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
+    install -m 0755 ${S}/lemonbeat/partner.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
+    install -m 0755 ${S}/lemonbeat/types.py ${D}${PYTHON_SITEPACKAGES_DIR}/lemonbeat/
 }
 
 FILES_${PN} += " \
-    ${PYTHON_SITEPACKAGES_DIR}/configuration.py \
-    ${PYTHON_SITEPACKAGES_DIR}/defines.py \
-    ${PYTHON_SITEPACKAGES_DIR}/device_description.py \
-    ${PYTHON_SITEPACKAGES_DIR}/device.py \
-    ${PYTHON_SITEPACKAGES_DIR}/firmware.py \
-    ${PYTHON_SITEPACKAGES_DIR}/gateway.py \
-    ${PYTHON_SITEPACKAGES_DIR}/__init__.py \
-    ${PYTHON_SITEPACKAGES_DIR}/message.py \
-    ${PYTHON_SITEPACKAGES_DIR}/partner.py \
-    ${PYTHON_SITEPACKAGES_DIR}/types.py \
+    ${PYTHON_SITEPACKAGES_DIR}/lemonbeat/* \
 "
