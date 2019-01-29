@@ -1,4 +1,4 @@
-DESCRIPTION = "Lemonbeat python library"
+DESCRIPTION = "Lemonbeat Python library"
 LICENSE = "CLOSED"
 
 inherit python3-dir
