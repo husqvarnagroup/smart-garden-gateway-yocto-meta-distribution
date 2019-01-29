@@ -5,6 +5,7 @@ IMAGE_INSTALL += " \
     gateway-config-interface \
     gateway-firmware \
     manufacturing-tools \
+    python3-lemonbeat \
     shadoway \
     sysupgrade \
 "
