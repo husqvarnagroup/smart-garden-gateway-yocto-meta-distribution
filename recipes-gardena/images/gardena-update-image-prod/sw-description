@@ -3,6 +3,12 @@ software = {
     description = "Linux System Firmware for the GARDENA smart Gateway MT7688";
 
     embedded-script ="
+function write_to_file(filename, data)
+  file = io.open (filename, \"w\")
+  file:write(data)
+  file:close()
+end
+
 function set_power_led_yellow_flash()
   -- note: we're not using 'led-indicator flash' here as it will lead
   -- to a visible delay between red and green
@@ -11,20 +17,20 @@ function set_power_led_yellow_flash()
   local blue = \"/sys/class/leds/smartgw:power:blue\"
 
   -- Disable the blue power LED
-  os.execute (\"echo oneshot > \" .. blue .. \"/trigger\")
-  os.execute (\"echo 0 > \" .. blue .. \"/brightness\")
+  write_to_file(blue .. \"/trigger\", \"oneshot\")
+  write_to_file(blue .. \"/brightness\", \"0\")
 
-  -- Expose and configure timer interface
-  os.execute (\"echo timer > \" .. green .. \"/trigger\")
-  os.execute (\"echo timer > \" .. red .. \"/trigger\")
-  os.execute (\"echo 500 > \" .. green .. \"/delay_on\")
-  os.execute (\"echo 500 > \" .. green .. \"/delay_off\")
-  os.execute (\"echo 500 > \" .. red .. \"/delay_on\")
-  os.execute (\"echo 500 > \" .. red .. \"/delay_off\")
+  -- Expose and configure timer interface for red and green power LEDs
+  write_to_file(green .. \"/trigger\", \"timer\")
+  write_to_file(green .. \"/delay_on\", \"500\")
+  write_to_file(green .. \"/delay_off\", \"500\")
+  write_to_file(red .. \"/trigger\", \"timer\")
+  write_to_file(red .. \"/delay_on\", \"500\")
+  write_to_file(red .. \"/delay_off\", \"500\")
 
-  -- keep these two together for synchronicity between R and G components
-  os.execute (\"echo timer > \" .. green .. \"/trigger\")
-  os.execute (\"echo timer > \" .. red .. \"/trigger\")
+  -- Keep these two together for synchronicity between red and green LEDs
+  write_to_file(red .. \"/trigger\", \"timer\")
+  write_to_file(green .. \"/trigger\", \"timer\")
 end
 
 function check_version_and_leds()
