@@ -54,11 +54,13 @@ end";
                         volume = "rootfs1";
                         sha256 = "@gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
                         hook = "check_version_and_leds";
+                        installed-directly = true;
                     },
                     {
                         filename = "fitImage-@@MACHINE_ARCH@@.bin";
                         volume = "kernel1";
                         sha256 = "@fitImage-@@MACHINE_ARCH@@.bin";
+                        installed-directly = true;
                     },
                     {
                         filename = "uEnv-@@MACHINE_ARCH@@.txt";
@@ -108,11 +110,13 @@ end";
                         volume = "rootfs0";
                         sha256 = "@gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
                         hook = "check_version_and_leds";
+                        installed-directly = true;
                     },
                     {
                         filename = "fitImage-@@MACHINE_ARCH@@.bin";
                         volume = "kernel0";
                         sha256 = "@fitImage-@@MACHINE_ARCH@@.bin";
+                        installed-directly = true;
                     },
                     {
                         filename = "uEnv-@@MACHINE_ARCH@@.txt";
