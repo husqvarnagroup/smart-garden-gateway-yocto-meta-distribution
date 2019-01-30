@@ -28,6 +28,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     network-management \
     ntpdate \
     picocom \
+    prelink \
     pstree \
     pv \
     rsync \
