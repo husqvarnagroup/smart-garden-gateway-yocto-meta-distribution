@@ -2,49 +2,46 @@ software = {
     version = "@@DISTRO_VERSION_ID@@";
     description = "Linux System Firmware for the GARDENA smart Gateway MT7688";
 
-    scripts = (
-        {
-            filename = "check_linux_system_version.sh";
-            type = "shellscript";
-            sha256 = "@check_linux_system_version.sh";
-            data = "@@DISTRO_VERSION_ID@@";
-        }
-    )
-
     embedded-script ="
---[[
-	SWUpdate Embedded Script
-	Description:
-	Comments are allowed..
-]]
-
 function set_power_led_yellow_flash()
-	local green = \"/sys/class/leds/a0080000.rgbled:green:pri\"
-	local red = \"/sys/class/leds/a0080000.rgbled:red:pri\"
-	os.execute (\"echo 100 > \" .. green .. \"/brightness\")
-	os.execute (\"echo 100 > \" .. red .. \"/brightness\")
-	-- for led in green, red do
-	--	os.execute (\"echo 500 > \" .. led .. \"delay_on\")
-	--	os.execute (\"echo 500 > \" .. led .. \"delay_off\")
-	-- end
+  -- note: we're not using 'led-indicator flash' here as it will lead
+  -- to a visible delay between red and green
+  local green = \"/sys/class/leds/smartgw:power:green\"
+  local red = \"/sys/class/leds/smartgw:power:red\"
+  local blue = \"/sys/class/leds/smartgw:power:blue\"
+
+  -- Disable the blue power LED
+  os.execute (\"echo oneshot > \" .. blue .. \"/trigger\")
+  os.execute (\"echo 0 > \" .. blue .. \"/brightness\")
+
+  -- Expose and configure timer interface
+  os.execute (\"echo timer > \" .. green .. \"/trigger\")
+  os.execute (\"echo timer > \" .. red .. \"/trigger\")
+  os.execute (\"echo 500 > \" .. green .. \"/delay_on\")
+  os.execute (\"echo 500 > \" .. green .. \"/delay_off\")
+  os.execute (\"echo 500 > \" .. red .. \"/delay_on\")
+  os.execute (\"echo 500 > \" .. red .. \"/delay_off\")
+
+  -- keep these two together for synchronicity between R and G components
+  os.execute (\"echo timer > \" .. green .. \"/trigger\")
+  os.execute (\"echo timer > \" .. red .. \"/trigger\")
 end
 
 function check_version_and_leds()
-	local ver = \"@@DISTRO_VERSION_ID@@\"
-	local f = io.popen(\"fw_printenv -n linux_system_version || echo unknown\")
-	installed = f:read()
-	f:close()
-	
-	if (ver == installed) then
-		msg = \"Version\" ..  ver .. \"is already installed\"
-		return false, msg
-	else
-		msg = \"Installing \" .. ver  
-		set_power_led_yellow_flash()
-		return true, msg
-	end
-end";
+  local ver = \"@@DISTRO_VERSION_ID@@\"
+  local f = io.popen(\"fw_printenv -n linux_system_version || echo unknown\")
+  installed = f:read()
+  f:close()
 
+  if (ver == installed) then
+    msg = \"Version \" ..  ver .. \" is already installed\"
+    return false, msg
+  else
+    msg = \"Installing \" .. ver
+    set_power_led_yellow_flash()
+    return true, msg
+  end
+end";
 
     smart-gateway-@@MACHINE_ARCH@@ = {
         hardware-compatibility: [ "0.5", "1.0", "1.1.0" ];
@@ -56,7 +53,7 @@ end";
                         filename = "gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
                         volume = "rootfs1";
                         sha256 = "@gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
-			hook = "check_version_and_leds";
+                        hook = "check_version_and_leds";
                     },
                     {
                         filename = "fitImage-@@MACHINE_ARCH@@.bin";
@@ -110,7 +107,7 @@ end";
                         filename = "gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
                         volume = "rootfs0";
                         sha256 = "@gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
-			hook = "check_version_and_leds";
+                        hook = "check_version_and_leds";
                     },
                     {
                         filename = "fitImage-@@MACHINE_ARCH@@.bin";
