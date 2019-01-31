@@ -1,0 +1,68 @@
+From patchwork Wed Jan 30 15:41:02 2019
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Security: verify sw-description before parsing
+X-Patchwork-Submitter: Stefano Babic <sbabic@denx.de>
+X-Patchwork-Id: 1033622
+Message-Id: <20190130154102.1050-1-sbabic@denx.de>
+To: swupdate@googlegroups.com
+Cc: Stefano Babic <sbabic@denx.de>
+Date: Wed, 30 Jan 2019 16:41:02 +0100
+From: Stefano Babic <sbabic@denx.de>
+List-Id: <swupdate.googlegroups.com>
+
+sw-description must be verified before parsing. After introducing the
+embedded-script feature, code in sw-description is executed during
+parsing. This requires that sw-description *must* be verified before the
+parser is called, else external code in Lua could run.
+
+Signed-off-by: Stefano Babic <sbabic@denx.de>
+---
+ core/parser.c | 26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
+
+diff --git a/core/parser.c b/core/parser.c
+index ab182ba..74375fd 100644
+--- a/core/parser.c
++++ b/core/parser.c
+@@ -181,6 +181,20 @@ int parse(struct swupdate_cfg *sw, const char *descfile)
+ 	parser_fn current;
+ #ifdef CONFIG_SIGNED_IMAGES
+ 	char *sigfile;
++
++	sigfile = malloc(strlen(descfile) + strlen(".sig") + 1);
++	if (!sigfile)
++		return -ENOMEM;
++	strcpy(sigfile, descfile);
++	strcat(sigfile, ".sig");
++
++	ret = swupdate_verify_file(sw->dgst, sigfile, descfile,
++				   sw->globals.forced_signer_name);
++	free(sigfile);
++
++	if (ret)
++		return ret;
++
+ #endif
+ 	for (unsigned int i = 0; i < ARRAY_SIZE(parsers); i++) {
+ 		current = parsers[i];
+@@ -221,18 +235,6 @@ int parse(struct swupdate_cfg *sw, const char *descfile)
+ 	}
+ 
+ #ifdef CONFIG_SIGNED_IMAGES
+-	sigfile = malloc(strlen(descfile) + strlen(".sig") + 1);
+-	if (!sigfile)
+-		return -ENOMEM;
+-	strcpy(sigfile, descfile);
+-	strcat(sigfile, ".sig");
+-
+-	ret = swupdate_verify_file(sw->dgst, sigfile, descfile,
+-				   sw->globals.forced_signer_name);
+-	free(sigfile);
+-
+-	if (ret)
+-		return ret;
+ 
+ 	/*
+ 	 * If the software must be verified, all images
