@@ -4,7 +4,7 @@ software = {
 
     embedded-script ="
 function write_to_file(filename, data)
-  file = io.open (filename, \"w\")
+  local file = io.open (filename, \"w\")
   file:write(data)
   file:close()
 end
@@ -33,20 +33,19 @@ function set_power_led_yellow_flash()
   write_to_file(green .. \"/trigger\", \"timer\")
 end
 
-function check_version_and_leds()
-  local ver = \"@@DISTRO_VERSION_ID@@\"
-  local f = io.popen(\"fw_printenv -n linux_system_version || echo unknown\")
-  installed = f:read()
-  f:close()
-
-  if (ver == installed) then
-    msg = \"Version \" ..  ver .. \" is already installed\"
-    return false, msg
-  else
-    msg = \"Installing \" .. ver
-    set_power_led_yellow_flash()
-    return true, msg
+function check_version_and_leds(image)
+  local version_id_new = \"@@DISTRO_VERSION_ID@@\"
+  local os_release = io.open (\"/etc/os-release\")
+  for line in os_release:lines() do
+    version_id_current = string.match(line, \"^VERSION_ID=\\\"(.+)\\\"$\")
+    if (version_id_new == version_id_current) then
+      return false, \"Version \" .. version_id_new .. \" is already installed\"
+    end
   end
+
+  set_power_led_yellow_flash()
+
+  return true, \"Installing \" .. version_id_new
 end";
 
     smart-gateway-@@MACHINE_ARCH@@ = {
