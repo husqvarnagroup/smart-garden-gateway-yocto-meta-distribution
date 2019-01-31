@@ -2,7 +2,7 @@
 
 IMAGE_INSTALL += " \
     accessory-server \
-    gateway-config-interface \
+    gateway-config-backend \
     gateway-firmware \
     lb-fw-upload \
     manufacturing-tools \
