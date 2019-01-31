@@ -86,10 +86,6 @@ end";
                         value = "1";
                     },
                     {
-                        name = "linux_system_version";
-                        value = "@@DISTRO_VERSION_ID@@";
-                    },
-                    {
                         name = "swupdate_done";
                         value = "1";
                     },
@@ -104,7 +100,11 @@ end";
                     {
                         name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
                         value = "";
-                    }
+                    },
+                    {
+                        name = "linux_system_version"; /* No longer needed since SG-10583 */
+                        value = "";
+                    },
                 )
             }
 
@@ -142,10 +142,6 @@ end";
                         value = "0";
                     },
                     {
-                        name = "linux_system_version";
-                        value = "@@DISTRO_VERSION_ID@@";
-                    },
-                    {
                         name = "swupdate_done";
                         value = "1";
                     },
@@ -160,7 +156,11 @@ end";
                     {
                         name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
                         value = "";
-                    }
+                    },
+                    {
+                        name = "linux_system_version"; /* No longer needed since SG-10583 */
+                        value = "";
+                    },
                 )
             }
         }
