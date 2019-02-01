@@ -105,6 +105,10 @@ end";
                         name = "linux_system_version"; /* No longer needed since SG-10583 */
                         value = "";
                     },
+                    {
+                        name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
+                        value = "";
+                    },
                 )
             }
 
@@ -159,6 +163,10 @@ end";
                     },
                     {
                         name = "linux_system_version"; /* No longer needed since SG-10583 */
+                        value = "";
+                    },
+                    {
+                        name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
                         value = "";
                     },
                 )
