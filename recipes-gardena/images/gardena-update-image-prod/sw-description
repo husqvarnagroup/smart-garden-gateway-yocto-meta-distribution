@@ -3,10 +3,14 @@ software = {
     description = "Linux System Firmware for the GARDENA smart Gateway MT7688";
 
     embedded-script ="
-function write_to_file(filename, data)
-  local file = io.open (filename, \"w\")
-  file:write(data)
-  file:close()
+function write_to_file_best_effort(filename, data)
+  local file, err = io.open (filename, \"w\")
+  if file then
+    file:write(data)
+    file:close()
+  else
+    print(\"Error opening file: \" .. err)
+  end
 end
 
 function set_power_led_yellow_flash()
@@ -17,20 +21,20 @@ function set_power_led_yellow_flash()
   local blue = \"/sys/class/leds/smartgw:power:blue\"
 
   -- Disable the blue power LED
-  write_to_file(blue .. \"/trigger\", \"oneshot\")
-  write_to_file(blue .. \"/brightness\", \"0\")
+  write_to_file_best_effort(blue .. \"/trigger\", \"oneshot\")
+  write_to_file_best_effort(blue .. \"/brightness\", \"0\")
 
   -- Expose and configure timer interface for red and green power LEDs
-  write_to_file(green .. \"/trigger\", \"timer\")
-  write_to_file(green .. \"/delay_on\", \"500\")
-  write_to_file(green .. \"/delay_off\", \"500\")
-  write_to_file(red .. \"/trigger\", \"timer\")
-  write_to_file(red .. \"/delay_on\", \"500\")
-  write_to_file(red .. \"/delay_off\", \"500\")
+  write_to_file_best_effort(green .. \"/trigger\", \"timer\")
+  write_to_file_best_effort(green .. \"/delay_on\", \"500\")
+  write_to_file_best_effort(green .. \"/delay_off\", \"500\")
+  write_to_file_best_effort(red .. \"/trigger\", \"timer\")
+  write_to_file_best_effort(red .. \"/delay_on\", \"500\")
+  write_to_file_best_effort(red .. \"/delay_off\", \"500\")
 
   -- Keep these two together for synchronicity between red and green LEDs
-  write_to_file(red .. \"/trigger\", \"timer\")
-  write_to_file(green .. \"/trigger\", \"timer\")
+  write_to_file_best_effort(red .. \"/trigger\", \"timer\")
+  write_to_file_best_effort(green .. \"/trigger\", \"timer\")
 end
 
 function check_version_and_leds(image)
@@ -108,7 +112,7 @@ end";
                     {
                         name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
                         value = "";
-                    },
+                    }
                 )
             }
 
@@ -168,7 +172,7 @@ end";
                     {
                         name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
                         value = "";
-                    },
+                    }
                 )
             }
         }
