@@ -1,9 +1,10 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_append = ".2"
+PR_append = ".3"
 
 SRC_URI += " \
     file://0001-dont-crash-when-calling-ipv4ll-without-an-address-in-state.patch \
+    file://40-swupdate-check.sh \
     file://dhcpcd.conf \
     file://dhcpcd.service \
     file://keep.d/${PN} \
@@ -19,6 +20,9 @@ do_install_append() {
 
     install -d ${D}${systemd_unitdir}/system
     install -m 0644 ${WORKDIR}/dhcpcd.service ${D}${systemd_unitdir}/system/
+
+    install -d ${D}${libexecdir}/dhcpcd-hooks
+    install -m 0644 ${WORKDIR}/40-swupdate-check.sh ${D}${libexecdir}/dhcpcd-hooks/40-swupdate-check
 
     # Keep DHCP Unique Identifier on updates
     install -d ${D}${base_libdir}/upgrade/keep.d
