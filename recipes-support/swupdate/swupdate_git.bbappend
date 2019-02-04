@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRCREV = 'e83730c4ec30134cdf56a2fd1d62a3767ade8133'
 
-PR_append = ".7"
+PR_append = ".8"
 
 SRC_URI += " \
             file://0001-Security-verify-sw-description-before-parsing.patch \
