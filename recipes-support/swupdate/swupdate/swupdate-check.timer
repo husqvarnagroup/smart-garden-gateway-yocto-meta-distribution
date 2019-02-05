@@ -3,7 +3,12 @@ Description=Run swupdate-check.service on startup and again every 12 hours
 After=network-online.target
 
 [Timer]
+# Triggered on boot (this timer unit activated) and interfaces (wlan0, eth0)
+# activated (dhcpcd hook)
 OnActiveSec=5s
+# Fallback once after boot
+OnBootSec=300s
+# Twice a day
 OnUnitActiveSec=12h
 
 [Install]

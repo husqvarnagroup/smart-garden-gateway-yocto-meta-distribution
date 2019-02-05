@@ -4,10 +4,7 @@ After=update-sw-versions.service update-hw-revision.service network-online.targe
 Wants=update-sw-versions.service update-hw-revision.service network-online.target export-gpios.service
 Requires=swupdate-progress.service
 ConditionPathExists=/etc/fct_finalized
-StartLimitBurst=5
 
 [Service]
 ExecStart=/usr/bin/swupdate-check
 Type=oneshot
-Restart=on-failure
-RestartSec=30s
