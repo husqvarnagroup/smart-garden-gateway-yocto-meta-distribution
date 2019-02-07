@@ -1,7 +1,7 @@
 [Unit]
 Description=Software Update Service
-After=update-sw-versions.service update-hw-revision.service network-online.target export-gpios.service swupdate-progress.service fctcheck.service
-Wants=update-sw-versions.service update-hw-revision.service network-online.target export-gpios.service
+After=update-sw-versions.service update-hw-revision.service network-online.target swupdate-progress.service fctcheck.service
+Wants=update-sw-versions.service update-hw-revision.service network-online.target
 Requires=swupdate-progress.service
 ConditionPathExists=/etc/fct_finalized
 
