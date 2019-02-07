@@ -2,6 +2,12 @@
 
 set -u
 
+# Make sure /tmp/hw-revision exists
+/usr/bin/update-hw-revision
+
+# Make sure /tmp/sw-versions exists
+/usr/bin/update-sw-versions
+
 # Get update_url stored in U-Boot to allow using customized update servers
 update_url=$(fw_printenv -n update_url 2>/dev/null || echo @DISTRO_UPDATE_URL@)
 

@@ -6,6 +6,9 @@
 
 set -u
 
+# Make sure at least an empty file exists
+touch /tmp/sw-versions
+
 u_boot_version="$(strings /dev/mtd0 | grep "U-Boot 20" | awk '{print $2}')"
 if [ $? -ne 0 ]; then
     echo "Failed to extract the U-Boot version from /dev/mtd0!" >&2
