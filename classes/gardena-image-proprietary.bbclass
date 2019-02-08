@@ -6,6 +6,7 @@ IMAGE_INSTALL += " \
     gateway-firmware \
     lb-fw-upload \
     manufacturing-tools \
+    otau \
     python3-lemonbeat \
     shadoway \
     sysupgrade \
