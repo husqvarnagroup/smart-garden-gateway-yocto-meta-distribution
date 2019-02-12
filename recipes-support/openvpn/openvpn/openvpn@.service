@@ -1,6 +1,7 @@
 [Unit]
 Description=OpenVPN to Seluxit Servers (%I environment)
-After=syslog.target network.target fctcheck.service
+After=syslog.target network-online.target fctcheck.service
+Wants=network-online.target fctcheck.service
 ConditionPathExists=/etc/fct_finalized
 StopWhenUnneeded=yes
 
