@@ -7,9 +7,9 @@ SRC_URI += " \
     git://stash.dss.husqvarnagroup.com/scm/sg/lemonbeat-python.git;protocol=https \
 "
 
-PR = "r0"
+PR = "r1"
 
-SRCREV = "aea59ad0b95b97aa97403381842ac33b1e4d56a1"
+SRCREV = "412719da8768fc7f029d89ebceee5b696090d79c"
 
 S = "${WORKDIR}/git"
 
