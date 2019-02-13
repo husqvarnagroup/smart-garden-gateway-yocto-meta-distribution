@@ -1,11 +1,13 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".1"
+PR_append = ".2"
 
 SRC_URI += "file://ppp.service \
+            file://ppp@.service \
             file://ipv6-up \
             file://ipv6-down \
-            file://01_set_routes"
+            file://01_set_routes \
+"
 
 do_install_append() {
     mkdir -p ${D}${sysconfdir}/ppp/ipv6-up.d/

@@ -1,0 +1,10 @@
+[Unit]
+Description=PPP link to %I
+Before=network.target
+
+[Service]
+ExecStart=@SBINDIR@/pppd call %I nodetach nolog
+ExecStop=-=/usr/bin/fct-tool --reset-rm
+
+[Install]
+WantedBy=multi-user.target
