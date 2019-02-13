@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".0"
+PR_append = ".1"
 
 SRC_URI += "file://ppp.service \
             file://ipv6-up \
@@ -19,3 +19,7 @@ do_install_append() {
 }
 
 SYSTEMD_SERVICE_${PN} = "ppp.service"
+
+RDEPENDS_${PN} += " \
+    gateway-firmware \
+"
