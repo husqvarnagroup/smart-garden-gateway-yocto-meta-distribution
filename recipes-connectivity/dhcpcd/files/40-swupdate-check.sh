@@ -8,7 +8,7 @@
 if [ "${if_up}" = "true" ]; then
     case "${interface}" in
         eth0 | wlan0)
-            systemctl restart swupdate-check.timer
+            systemctl restart swupdate-check.timer || true
             ;;
     esac
 fi
