@@ -10,7 +10,7 @@ FILES_${PN} += "\
     ${sysconfdir}/profile.d/systemd-disable-colors.sh \
 "
 
-PR_append = ".0"
+PR_append = ".1"
 
 do_install_append() {
 	# Disable colorized output of system tools (systemctl, etc.)
@@ -27,3 +27,6 @@ do_install_append() {
 	install -d ${D}${base_libdir}/upgrade/keep.d
 	install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
 }
+
+# Removed due to SG-12020
+PACKAGECONFIG_remove = "resolved"
