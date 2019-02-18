@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRCREV = 'e83730c4ec30134cdf56a2fd1d62a3767ade8133'
 
-PR_append = ".10"
+PR_append = ".11"
 
 SRC_URI += " \
             file://0001-Security-verify-sw-description-before-parsing.patch \
@@ -15,6 +15,7 @@ SRC_URI += " \
             file://enable_signing_cms.cfg \
             file://enable_systemd.cfg \
             file://enable_ubi.cfg \
+            file://ignore_expired_certificate.cfg \
             file://set_hw_revision_file_path.cfg \
             file://set_sw_versions_file_path.cfg \
             file://swupdate.cfg \
