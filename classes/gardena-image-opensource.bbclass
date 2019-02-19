@@ -39,8 +39,8 @@ IMAGE_INSTALL += " \
     rfkill \
     squashfs-tools \
     swupdate \
-    u-boot \
     u-boot-fw-utils \
+    u-boot-prebuilt \
     unique-hostname \
     wireless-regdb-static \
     wpa-supplicant \
