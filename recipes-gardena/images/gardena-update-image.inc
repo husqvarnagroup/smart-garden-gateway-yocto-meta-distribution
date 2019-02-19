@@ -4,14 +4,14 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 inherit swupdate
 
 # Images to build before building swupdate image
-IMAGE_DEPENDS = "u-boot virtual/kernel"
+IMAGE_DEPENDS = "u-boot-prebuilt virtual/kernel"
 
 # Images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "fitImage u-boot uEnv"
+SWUPDATE_IMAGES = "fitImage u-boot-prebuilt uEnv"
 
 # Configure file extensions of the images (potentially) used in SWUPDATE_IMAGES
 SWUPDATE_IMAGES_FSTYPES[fitImage] = ".bin"
-SWUPDATE_IMAGES_FSTYPES[u-boot] = ".bin"
+SWUPDATE_IMAGES_FSTYPES[u-boot-prebuilt] = ".bin"
 SWUPDATE_IMAGES_FSTYPES[uEnv] = ".txt"
 
 # In order to sign the image, the variables SWUPDATE_SIGNING, SWUPDATE_CMS_KEY,
