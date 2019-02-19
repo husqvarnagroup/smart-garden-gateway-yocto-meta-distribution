@@ -77,10 +77,10 @@ end";
                         sha256 = "@uEnv-@@MACHINE_ARCH@@.txt";
                     },
                     {
-                        filename = "u-boot-@@MACHINE_ARCH@@.bin";
+                        filename = "u-boot-prebuilt-@@MACHINE_ARCH@@.bin";
                         mtdname = "uboot";
                         type = "flash";
-                        sha256 = "@u-boot-@@MACHINE_ARCH@@.bin";
+                        sha256 = "@u-boot-prebuilt-@@MACHINE_ARCH@@.bin";
                     }
                 )
 
@@ -137,10 +137,10 @@ end";
                         sha256 = "@uEnv-@@MACHINE_ARCH@@.txt";
                     },
                     {
-                        filename = "u-boot-@@MACHINE_ARCH@@.bin";
+                        filename = "u-boot-prebuilt-@@MACHINE_ARCH@@.bin";
                         mtdname = "uboot";
                         type = "flash";
-                        sha256 = "@u-boot-@@MACHINE_ARCH@@.bin";
+                        sha256 = "@u-boot-prebuilt-@@MACHINE_ARCH@@.bin";
                     }
                 )
 

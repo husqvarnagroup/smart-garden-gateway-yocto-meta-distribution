@@ -1,7 +1,6 @@
 # Custom commands for development
 # Warning: Those commands can be removed at any time.
 #          Productive gateways must not use any of those commands!
-do_dev_u_boot_upgrade=dhcp u-boot.bin-rom && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
 do_dev_import_default_env=dhcp uEnv.txt && env import -t ${fileaddr} ${filesize}
 do_dev_reset_overlay=ubi part nand && ubi remove overlay && ubi create overlay 0x1e00000 dynamic 4
 do_dev_flash_kernel=ubi part nand && run do_flash_kernel
@@ -26,9 +25,11 @@ do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
 do_factory_reset=setenv bootargs "${bootargs} rootrwreset=yes" && led smartgw:power:blue off && led smartgw:power:green on && led smartgw:power:red on
 do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi
 do_start_over=env default -f -a && saveenv && reset
+do_u_boot_upgrade=dhcp u-boot-prebuilt-mt7688.bin && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
+do_if_u_boot_upgrade=if test "$ver" = "U-Boot 2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto (Jan 04 2019 - 03:45:05 +0000)"; then echo "U-Boot is up-to-date"; else echo "U-Boot is outdated, upgrade needed"; run do_u_boot_upgrade; fi
 
 ## Relevant for startup
 bootcmd=run do_show_bootstrap_error && run do_if_ubi_setup && run do_if_flashing_setup && run do_set_bootargs && run do_if_factory_reset && run do_boot_from_flash; reset
 
 ## Relevant for initial configuration
-do_u_boot_init=led smartgw:internet:green on && run bootcmd
+do_u_boot_init=led smartgw:internet:green on && run do_if_u_boot_upgrade && run bootcmd
