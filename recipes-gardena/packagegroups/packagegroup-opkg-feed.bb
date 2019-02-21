@@ -3,6 +3,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 PR = "r0"
 
+# TODO: overlayfs-purge has been added to this list for testing purposes, remove it again when it's being used as a dependency.
+
 RDEPENDS_packagegroup-opkg-feed = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd-analyze systemd-bootchart', '', d)} \
     atop \
@@ -27,6 +29,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     netcat \
     network-management \
     ntpdate \
+    overlayfs-purge \
     picocom \
     prelink \
     pstree \
