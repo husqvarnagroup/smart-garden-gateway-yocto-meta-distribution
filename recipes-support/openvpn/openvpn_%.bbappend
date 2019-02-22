@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".2"
+PR_append = ".3"
 
 SRC_URI += " \
     file://ca-dev.crt \
@@ -9,7 +9,7 @@ SRC_URI += " \
     file://dev.conf \
     file://keep.d/${PN} \
     file://openvpn-install-certs.sh \
-    file://openvpn@.service \
+    file://openvpn.service \
     file://prod.conf \
     file://qa.conf \
 "
@@ -31,7 +31,7 @@ do_install_append() {
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/openvpn-install-certs.sh ${D}${bindir}/openvpn-install-certs
 
-    install -m 644 ${WORKDIR}/openvpn@.service ${D}${systemd_unitdir}/system
+    install -m 644 ${WORKDIR}/openvpn.service ${D}${systemd_unitdir}/system
 
     # Development: Keep certificates from being overwritten on update
     install -d ${D}${base_libdir}/upgrade/keep.d
@@ -39,6 +39,6 @@ do_install_append() {
 }
 
 # Overwrite the loopback server/client from base recipe
-SYSTEMD_SERVICE_${PN} = "openvpn@prod.service"
+SYSTEMD_SERVICE_${PN} = "openvpn.service"
 
 DEPENDS += "systemd"
