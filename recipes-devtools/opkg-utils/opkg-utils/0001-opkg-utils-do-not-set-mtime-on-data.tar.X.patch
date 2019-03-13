@@ -1,0 +1,23 @@
+From 6692ad3707f967a05d56d75206b90c73a8341533 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andreas=20M=C3=BCller?= <andreas.mueller@husqvarnagroup.com>
+Date: Tue, 12 Mar 2019 12:17:35 +0100
+Subject: [PATCH] opkg-utils: do not set mtime on data.tar.X
+
+see http://git.yoctoproject.org/cgit.cgi/poky/commit/?id=a79bc39033c07e5cb0aa5ca95afe8f035c403f33
+---
+ opkg-build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/opkg-build b/opkg-build
+index 532b6dc..95694c4 100755
+--- a/opkg-build
++++ b/opkg-build
+@@ -291,7 +291,7 @@ mkdir $tmp_dir
+ build_date="$(date --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" "+%Y-%m-%d %H:%M:%S")"
+ 
+ echo $CONTROL > $tmp_dir/tarX
+-( cd $pkg_dir && tar $ogargs $tsortargs --mtime="$build_date" -X $tmp_dir/tarX -c $tarformat . | $compressor $compressorargs > $tmp_dir/data.tar.$cext )
++( cd $pkg_dir && tar $ogargs $tsortargs -X $tmp_dir/tarX -c $tarformat . | $compressor $compressorargs > $tmp_dir/data.tar.$cext )
+ ( cd $pkg_dir/$CONTROL && tar $ogargs $tsortargs --mtime="$build_date" -c $tarformat . | gzip $zipargs > $tmp_dir/control.tar.gz )
+ rm $tmp_dir/tarX
+ 
