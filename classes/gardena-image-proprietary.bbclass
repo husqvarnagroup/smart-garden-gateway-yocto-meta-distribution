@@ -4,7 +4,7 @@ IMAGE_INSTALL += " \
     accessory-server \
     gateway-config-backend \
     gateway-firmware \
-    lb-fw-upload \
+    lemonbeat-firmware-upload \
     manufacturing-tools \
     otau \
     python3-lemonbeat \
