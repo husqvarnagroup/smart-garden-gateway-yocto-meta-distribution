@@ -24,12 +24,14 @@ do_if_flashing_setup=if test "${flashing_done}" != "1"; then run do_toggle_boots
 do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
 do_factory_reset=setenv bootargs "${bootargs} rootrwreset=yes" && led smartgw:power:blue off && led smartgw:power:green on && led smartgw:power:red on
 do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi
+do_resurrection_reset=echo "resurrection reset triggered" && setenv bootargs && run do_toggle_bootslot && saveenv && run do_set_bootargs && setenv bootargs "${bootargs} rootrwreset=yes" && led smartgw:power:blue off && led smartgw:power:green off && led smartgw:power:red on
+do_if_resurrection_reset=setenv holdtime 0 && while gpio input PA11; do if test $holdtime = 2d; then run do_resurrection_reset; fi; setexpr holdtime ${holdtime} + 1; sleep 1; done || true
 do_start_over=env default -f -a && saveenv && reset
 do_u_boot_upgrade=dhcp u-boot-prebuilt-mt7688.bin && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
 do_if_u_boot_upgrade=if test "$ver" = "U-Boot 2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto (Jan 04 2019 - 03:45:05 +0000)"; then echo "U-Boot is up-to-date"; else echo "U-Boot is outdated, upgrade needed"; run do_u_boot_upgrade; fi
 
 ## Relevant for startup
-bootcmd=run do_show_bootstrap_error && run do_if_ubi_setup && run do_if_flashing_setup && run do_set_bootargs && run do_if_factory_reset && run do_boot_from_flash; reset
+bootcmd=run do_show_bootstrap_error && run do_if_ubi_setup && run do_if_flashing_setup && run do_set_bootargs && run do_if_factory_reset && run do_if_resurrection_reset && run do_boot_from_flash; reset
 
 ## Relevant for initial configuration
 do_u_boot_init=led smartgw:internet:green on && run do_if_u_boot_upgrade && run bootcmd
