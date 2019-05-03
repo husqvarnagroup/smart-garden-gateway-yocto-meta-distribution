@@ -16,6 +16,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     emc-tools \
     gdb \
     gdbserver \
+    git \
     htop \
     i2c-tools \
     iftop \
