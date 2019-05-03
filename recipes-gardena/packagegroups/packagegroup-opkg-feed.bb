@@ -35,6 +35,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     prelink \
     pstree \
     pv \
+    python3-pip \
     rsync \
     screen \
     sed \
