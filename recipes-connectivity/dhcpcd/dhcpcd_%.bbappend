@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_append = ".4"
+PR_append = ".5"
 
 SRC_URI += " \
     file://0001-dont-crash-when-calling-ipv4ll-without-an-address-in-state.patch \
