@@ -16,6 +16,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     emc-tools \
     gdb \
     gdbserver \
+    git \
     htop \
     i2c-tools \
     iftop \
@@ -34,6 +35,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     prelink \
     pstree \
     pv \
+    python3-pip \
     rsync \
     screen \
     sed \
