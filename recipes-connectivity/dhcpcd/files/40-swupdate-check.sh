@@ -15,7 +15,7 @@ try_update()
 {
     [ -e "${update_marker}" ] && return 0
 
-    systemctl restart swupdate-check.timer || true
+    systemctl restart swupdate-check.timer
     touch "${update_marker}"
 }
 
