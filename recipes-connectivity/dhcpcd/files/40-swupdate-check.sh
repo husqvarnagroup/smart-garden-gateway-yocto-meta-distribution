@@ -23,7 +23,7 @@ try_update()
 if [ "${interface}" = eth0 ] || [ "${interface}" = wlan0 ]; then
     if [ "${if_down}" = true ]; then
         rm -f "${update_marker}"
-    elif [ "$reason" = BOUND ] || [ "$reason" = BOUND6 ] || [ "$reason" = ROUTERADVERT ]; then
+    elif [ "${reason}" = BOUND ] || [ "${reason}" = BOUND6 ] || [ "${reason}" = ROUTERADVERT ]; then
         try_update
     fi
 fi
