@@ -21,7 +21,7 @@ try_update()
 
 # The only interesting interfaces are Ethernet and WiFi
 if [ "${interface}" = eth0 ] || [ "${interface}" = wlan0 ]; then
-    if $if_down; then
+    if [ "${if_down}" = true ]; then
         rm -f "${update_marker}"
     elif [ "$reason" = BOUND ] || [ "$reason" = BOUND6 ] || [ "$reason" = ROUTERADVERT ]; then
         try_update
