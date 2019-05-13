@@ -25,8 +25,8 @@ do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
 do_factory_reset=run do_reset_overlay && led smartgw:power:blue off && led smartgw:power:green on && led smartgw:power:red on
 do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi
 do_resurrection_reset=echo "resurrection reset triggered" && run do_toggle_bootslot && saveenv && led smartgw:power:blue off && led smartgw:power:green off && led smartgw:power:red on
-# note: checking for holdtime 0x2d (45) equals ~ 30 seconds (due to a
-# bug in U-Boot); once our sleep is precise, we will likely want to
+# note: checking for holdtime 0x2d (45) equals ~ 30 seconds (due to a bug in
+# U-Boot before 2019.04); once our sleep is precise, we will likely want to
 # reduce the value to 0x1e (30)
 do_if_resurrection_reset=printenv recovery_status || setenv holdtime 0 && while gpio input PA11; do if test $holdtime = 2d; then run do_resurrection_reset; fi; setexpr holdtime ${holdtime} + 1; sleep 1; done || true
 do_start_over=env default -f -a && saveenv && reset
