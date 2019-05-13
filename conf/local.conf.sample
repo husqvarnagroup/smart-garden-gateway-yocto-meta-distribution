@@ -203,9 +203,11 @@ BB_DISKMON_DIRS ??= "\
 
 # Download mirror
 # Fetcher checks files with HTTP HEAD request and decides which packages need to be
-# downloaded from this mirror and which can be from original source URL.
+# downloaded from this mirror and which must be from original source URL.
 INHERIT += "own-mirrors"
-SOURCE_MIRROR_URL ?= "https://sg-low-cost-gateway-dev.s3.amazonaws.com/mirror/"
+# This default value is intended to provide our customers with sources which
+# are no longer accessible upstream.
+SOURCE_MIRROR_URL ?= "https://sg-low-cost-gateway-dev.s3.amazonaws.com/public/mirror"
 # Tarball generation disabled by default as it takes too much time for development
 # builds. Will be activated by auto.conf on CI infrastructure for release builds.
 #BB_GENERATE_MIRROR_TARBALLS = "1"

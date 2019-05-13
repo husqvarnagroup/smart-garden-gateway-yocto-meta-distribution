@@ -24,6 +24,8 @@ IMAGE_INSTALL += " \
     hostapd \
     i2c-tools \
     initscripts-readonly-rootfs-overlay \
+    iptables \
+    iptables-modules \
     iw \
     kernel-module-mt7603e \
     linux-firmware-mt7628 \
