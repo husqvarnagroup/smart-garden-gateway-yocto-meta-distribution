@@ -1,11 +1,10 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-SRCREV = 'e83730c4ec30134cdf56a2fd1d62a3767ade8133'
+SRCREV = 'd39f4b8e00ef1929545b66158e45b82ea922bf81'
 
-PR_append = ".11"
+PR_append = ".12"
 
 SRC_URI += " \
-            file://0001-Security-verify-sw-description-before-parsing.patch \
             file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
             file://disable_ubi_attach.cfg \
             file://disable_webserver.cfg \
