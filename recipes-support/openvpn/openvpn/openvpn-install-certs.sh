@@ -16,12 +16,14 @@ err=0
 for ext in crt key; do
     uboot_var="conf_openvpn_${ext}"
     file="${openvpn_dir}/client-prod.${ext}"
-    if [ -e "${file}" ]; then
-        echo "File '${file}' already exists"
+    if [ -s "${file}" ]; then
+        echo "File '${file}' already exists and is not empty"
         continue
     fi
     if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
-        echo "${content}" | tr '%' '\n' > "${file}"
+        echo "${content}" | tr '%' '\n' > "${file}".tmp
+        sync
+        mv "${file}".tmp "${file}"
     else
         echo "U-Boot variable '${uboot_var}' is missing!" >&2
         err=1
