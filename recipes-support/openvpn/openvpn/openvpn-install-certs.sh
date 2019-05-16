@@ -11,11 +11,15 @@
 set -eu -o pipefail
 
 openvpn_dir="/etc/openvpn"
-err=0
+seluxit_env="$(fw_printenv -n "seluxit_env" 2>/dev/null || echo prod)"
 
 for ext in crt key; do
-    uboot_var="conf_openvpn_${ext}"
-    file="${openvpn_dir}/client-prod.${ext}"
+    file="${openvpn_dir}/client-${seluxit_env}.${ext}"
+    if [ "${seluxit_env}" = prod ]; then
+        uboot_var="conf_openvpn_${ext}"
+    else
+        uboot_var="conf_openvpn_${seluxit_env}_${ext}"
+    fi
     if [ -s "${file}" ]; then
         echo "File '${file}' already exists and is not empty"
         continue
@@ -26,8 +30,14 @@ for ext in crt key; do
         mv "${file}".tmp "${file}"
     else
         echo "U-Boot variable '${uboot_var}' is missing!" >&2
-        err=1
+        exit 1
     fi
 done
 
-exit $err
+seluxit_env_file_name="/etc/seluxit_env"
+seluxit_env_file_content="SELUXIT_ENV=${seluxit_env}"
+
+if [ "$(head -n1 "${seluxit_env_file_name}")" != "${seluxit_env_file_content}" ]; then
+    echo "Updating Seluxit environment file"
+    echo "${seluxit_env_file_content}" > "${seluxit_env_file_name}"
+fi
