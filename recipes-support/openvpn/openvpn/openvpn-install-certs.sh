@@ -3,8 +3,7 @@
 # Extract OpenVPN client certificate and key from U-Boot.
 #
 # Since certificates files contain newlines and U-Boot variables can not contain
-# such, newlines are encoded as the string "\n". Please escape properly as "\\\n"
-# if you ever want the string "\n" to end up in the final file.
+# such, newlines are encoded as the string "%".
 #
 # Precondition: The directory /etc/openvpn has to exist
 
