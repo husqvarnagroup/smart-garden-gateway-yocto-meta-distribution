@@ -6,6 +6,7 @@ IMAGE_INSTALL += " \
     gateway-config-backend \
     gateway-firmware \
     lemonbeat-firmware-upload \
+    lsdl-serializer-log \
     manufacturing-tools \
     otau \
     python3-lemonbeat \
