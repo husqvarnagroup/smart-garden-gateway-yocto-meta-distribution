@@ -10,6 +10,7 @@ IMAGE_INSTALL += " \
     otau \
     python3-lemonbeat \
     shadoway \
+    snapshot \
     sysupgrade \
 "
 
