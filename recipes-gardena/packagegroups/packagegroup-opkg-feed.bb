@@ -42,6 +42,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     socat \
     srecord \
     strace \
+    stresstest-download \
     swdtool \
     tar \
     tcpdump \
