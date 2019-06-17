@@ -23,7 +23,7 @@ do_reset_overlay=ubi part nand && ubi remove overlay; ubi create overlay 0x1e000
 do_if_flashing_setup=if test "${flashing_done}" != "1"; then run do_toggle_bootslot && run do_flash && setenv flashing_done 1 && saveenv && reset; else true; fi
 do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
 do_factory_reset=run do_reset_overlay && led smartgw:power:blue off && led smartgw:power:green on && led smartgw:power:red on
-do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi
+do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi && if test "${enable_factory_reset}" = "1"; then echo "Factory reset enabled via u-boot variable" && run do_factory_reset && setenv enable_factory_reset && saveenv; else true; fi
 do_resurrection_reset=echo "resurrection reset triggered" && run do_toggle_bootslot && saveenv && led smartgw:power:blue off && led smartgw:power:green off && led smartgw:power:red on
 # note: checking for holdtime 0x2d (45) equals ~ 30 seconds (due to a bug in
 # U-Boot before 2019.04); once our sleep is precise, we will likely want to
