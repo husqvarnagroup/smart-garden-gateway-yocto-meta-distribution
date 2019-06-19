@@ -10,18 +10,21 @@ set -u
 touch /tmp/sw-versions
 
 u_boot_version="$(strings /dev/mtd0 | grep "U-Boot 20" | awk '{print $2}')"
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     echo "Failed to extract the U-Boot version from /dev/mtd0!" >&2
     exit 1
 fi
 
 rootfs_version="$(cat /etc/version)"
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     echo "Failed to extract the rootfs version" >&2
     exit 2
 fi
 
 kernel_version="$(uname -r)"
+# shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     echo "Failed to extract the kernel version" >&2
     exit 3
