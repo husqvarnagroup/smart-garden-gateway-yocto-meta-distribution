@@ -3,8 +3,12 @@ Description=Software Update Service
 After=update-sw-versions.service update-hw-revision.service network-online.target swupdate-progress.service fctcheck.service
 Wants=update-sw-versions.service update-hw-revision.service network-online.target fctcheck.service
 Requires=swupdate-progress.service
+# prevent swupdate during manufacturing
 ConditionPathExists=/etc/fct_finalized
 
 [Service]
 ExecStart=/usr/bin/swupdate-check
 Type=oneshot
+# allow swupdate to fail (e.g. when network unavailable or version
+# already installed) without degrading the systemd status
+SuccessExitStatus=4
