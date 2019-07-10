@@ -1,0 +1,20 @@
+From 80db436f297501e62000c34654444a3e7522ad15 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andreas=20M=C3=BCller?= <andreas.mueller@husqvarnagroup.com>
+Date: Wed, 10 Jul 2019 13:24:11 +0200
+Subject: [PATCH] add homekit accessory protocol port
+
+---
+ etc-services | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/etc-services b/etc-services
+index 904ada7..6bde349 100644
+--- a/etc-services
++++ b/etc-services
+@@ -625,3 +625,6 @@ lemonbeat-status              20015/tcp
+ lemonbeat-status              20015/udp
+ lemonbeat-configuration       20016/tcp
+ lemonbeat-configuration       20016/udp
++
++# HomeKit Accessory Protocol
++homekit-accessory-protocol    8001/tcp
