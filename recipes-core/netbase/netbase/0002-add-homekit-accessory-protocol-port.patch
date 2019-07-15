@@ -11,10 +11,11 @@ diff --git a/etc-services b/etc-services
 index 904ada7..6bde349 100644
 --- a/etc-services
 +++ b/etc-services
-@@ -625,3 +625,6 @@ lemonbeat-status              20015/tcp
+@@ -625,3 +625,7 @@ lemonbeat-status              20015/tcp
  lemonbeat-status              20015/udp
  lemonbeat-configuration       20016/tcp
  lemonbeat-configuration       20016/udp
 +
 +# HomeKit Accessory Protocol
++# Note: this port was chosen by us and is not a HomeKit default
 +homekit-accessory-protocol    8001/tcp
