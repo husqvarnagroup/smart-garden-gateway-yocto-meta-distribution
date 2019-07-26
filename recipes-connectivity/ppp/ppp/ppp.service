@@ -6,7 +6,7 @@ Wants=fctcheck.service rm-flashing.service
 ConditionPathExists=/etc/fct_finalized
 
 [Service]
-ExecStart=@SBINDIR@/pppd local crtscts /dev/ttyS1 115200 +ipv6 noauth nodetach noip
+ExecStart=@SBINDIR@/pppd local crtscts @TTY@ 115200 +ipv6 noauth nodetach noip
 Restart=on-failure
 RestartSec=10s
 
