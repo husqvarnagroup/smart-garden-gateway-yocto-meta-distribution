@@ -27,8 +27,6 @@ IMAGE_INSTALL += " \
     iptables \
     iptables-modules \
     iw \
-    kernel-module-mt7603e \
-    linux-firmware-mt7628 \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \
