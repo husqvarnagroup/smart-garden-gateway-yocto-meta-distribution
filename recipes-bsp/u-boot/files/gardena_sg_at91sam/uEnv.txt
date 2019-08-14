@@ -1,0 +1,14 @@
+# Custom commands required regular startup
+# Warning: Removing or changing any of this lines requires care as gateways in
+#          the field need to be updated with all changes!
+do_toggle_bootslot=if test "${bootslot}" = "0"; then setenv bootslot 1; else setenv bootslot 0;fi;
+do_set_bootargs=setenv bootargs console=ttyS0,${baudrate} root=/dev/ubiblock0_${bootslot} rootrw=ubi0:overlay rootrwfstype=ubifs rootrwoptions=rw,noatime ubi.block=0,rootfs${bootslot} ubi.mtd=ubi init=/init mtdparts="${mtdparts}" ${dev_bootargs}
+do_reset_overlay=ubi part ubi && ubi remove overlay; ubi create overlay 0x1e00000 dynamic 6
+do_boot_from_flash=ubi read 0x22000000 kernel${bootslot} && bootm 0x22000000
+do_factory_reset=run do_reset_overlay && led smartgw:power:blue off && led smartgw:power:green on && led smartgw:power:red on
+do_if_factory_reset=if gpio input 24; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi && if test "${enable_factory_reset}" = "1"; then echo "Factory reset enabled via u-boot variable" && run do_factory_reset && setenv enable_factory_reset && saveenv; else true; fi
+do_resurrection_reset=echo "resurrection reset triggered" && run do_toggle_bootslot && saveenv && led smartgw:power:blue off && led smartgw:power:green off && led smartgw:power:red on
+do_if_resurrection_reset=printenv recovery_status || setenv holdtime 0 && while gpio input 24; do if test $holdtime = 1e; then run do_resurrection_reset; fi; setexpr holdtime ${holdtime} + 1; sleep 1; done || true
+
+## Relevant for startup
+bootcmd=ubi part ubi && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset
