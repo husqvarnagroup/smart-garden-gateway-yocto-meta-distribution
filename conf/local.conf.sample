@@ -26,7 +26,7 @@
 #MACHINE ?= "qemux86-64"
 #
 # This sets the default machine to be qemux86 if no other machine is selected:
-MACHINE ??= "mt7688"
+MACHINE ??= "gardena-sg-mt7688"
 
 # This sets the used distribution
 DISTRO ?= "gardena"
