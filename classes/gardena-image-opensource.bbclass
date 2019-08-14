@@ -40,10 +40,13 @@ IMAGE_INSTALL += " \
     squashfs-tools \
     swupdate \
     u-boot-fw-utils \
-    u-boot-prebuilt \
     unique-hostname \
     wireless-regdb-static \
     wpa-supplicant \
+"
+
+IMAGE_INSTALL_mt7688 += " \
+    u-boot-prebuilt \
 "
 
 IMAGE_FEATURES += " \

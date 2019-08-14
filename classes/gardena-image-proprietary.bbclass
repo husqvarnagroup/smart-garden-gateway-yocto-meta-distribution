@@ -7,12 +7,14 @@ IMAGE_INSTALL += " \
     gateway-firmware \
     lemonbeat-firmware-upload \
     lsdl-serializer-log \
-    manufacturing-tools \
     otau \
     python3-lemonbeat \
     shadoway \
     snapshot \
     sysupgrade \
+"
+IMAGE_INSTALL_mt7688 += " \
+    manufacturing-tools \
 "
 
 inherit gardena-image-opensource
