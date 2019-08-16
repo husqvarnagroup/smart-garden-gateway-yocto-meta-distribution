@@ -31,6 +31,7 @@ KERNEL_FEATURES_append = " \
     distro/enable_ubi.cfg \
     distro/enable_watchdog.cfg \
     distro/enable_wifi_crda.cfg \
+    distro/enable_wifi_crypto.cfg \
     distro/set_cfq_scheduler.cfg \
     distro/set_default_loglevel.cfg \
     distro/disable_kernel_samples.cfg \
