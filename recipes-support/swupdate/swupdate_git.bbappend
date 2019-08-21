@@ -39,6 +39,10 @@ FILES_${PN} += " \
     ${bindir}/swupdate-check \
 "
 
+DEFAULT_BOARD_NAME = "unknown"
+DEFAULT_BOARD_NAME_mt7688 = "smart-gateway-mt7688"
+DEFAULT_BOARD_NAME_at91sam9x5 = "smart-gateway-at91sam"
+
 do_install_append () {
     install -d ${D}${datadir}/${PN}
     install -m 644 ${WORKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/${PN}/sw-update.cert.pem
@@ -54,6 +58,8 @@ do_install_append () {
 
     install -m 644 ${WORKDIR}/update-hw-revision.service ${D}${systemd_unitdir}/system
     install -m 755 ${WORKDIR}/update-hw-revision.sh ${D}${bindir}/update-hw-revision
+    sed -i -e 's,@DEFAULT_BOARD_NAME@,${DEFAULT_BOARD_NAME},g' \
+               ${D}${bindir}/update-hw-revision
 
     install -m 644 ${WORKDIR}/update-sw-versions.service ${D}${systemd_unitdir}/system
     install -m 755 ${WORKDIR}/update-sw-versions.sh ${D}${bindir}/update-sw-versions
