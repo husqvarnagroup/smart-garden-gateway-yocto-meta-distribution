@@ -1,6 +1,6 @@
 software = {
     version = "@@DISTRO_VERSION_ID@@";
-    description = "Linux System Firmware for the GARDENA smart Gateway MT7688";
+    description = "Linux System Firmware for the GARDENA smart Gateway @@MACHINE@@";
 
     embedded-script ="
 function write_to_file(filename, data)
