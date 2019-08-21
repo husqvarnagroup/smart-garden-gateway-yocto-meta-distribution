@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".5"
+PR_append = ".6"
 
 SRC_URI += " \
     file://ca-dev.crt \
