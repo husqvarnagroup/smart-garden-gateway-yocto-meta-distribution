@@ -97,7 +97,7 @@ end";
                         value = "1";
                     },
                     {
-                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1" */
+                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
                         value = "1";
                     },
                     {
@@ -164,7 +164,7 @@ end";
                         value = "1";
                     },
                     {
-                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1" */
+                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
                         value = "1";
                     },
                     {
