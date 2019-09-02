@@ -93,6 +93,10 @@ end";
                         value = "1";
                     },
                     {
+                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
+                        value = "1";
+                    },
+                    {
                         name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
                         value = "";
                     },
@@ -153,6 +157,10 @@ end";
                     },
                     {
                         name = "swupdate_done";
+                        value = "1";
+                    },
+                    {
+                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
                         value = "1";
                     },
                     {
