@@ -1,8 +1,7 @@
 [Unit]
 Description=OpenVPN to Seluxit Servers
-After=syslog.target network-online.target fctcheck.service eoltest-check.service
-Wants=network-online.target fctcheck.service eoltest-check.service
-ConditionPathExists=/etc/fct_finalized
+After=syslog.target network-online.target eoltest-check.service
+Wants=network-online.target eoltest-check.service
 ConditionPathExists=/etc/eol_test_passed
 StopWhenUnneeded=yes
 
