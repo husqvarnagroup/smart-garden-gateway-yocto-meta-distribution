@@ -40,6 +40,10 @@ KERNEL_FEATURES_append = " \
     features/bpf/bpf.scc \
 "
 
+KERNEL_FEATURES_append_mt7688 = " \
+    distro/disable_wifi_regdb_sigcheck.cfg \
+"
+
 # Misc stuff (maybe not even strictly required)
 KERNEL_FEATURES_append = "\
     distro/enable_misc_stuff.cfg \
