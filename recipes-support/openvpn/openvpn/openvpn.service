@@ -2,6 +2,7 @@
 Description=OpenVPN to Seluxit Servers
 After=syslog.target network-online.target eoltest-check.service
 Wants=network-online.target eoltest-check.service
+Requires=openvpn-install-certs.service
 ConditionPathExists=/etc/eol_test_passed
 StopWhenUnneeded=yes
 
@@ -11,6 +12,4 @@ Type=forking
 EnvironmentFile=/etc/seluxit_env
 PIDFile=/var/run/openvpn/seluxit.pid
 ExecStartPre=/bin/mkdir -p /var/run/openvpn
-ExecStartPre=/bin/mkdir -p /etc/openvpn
-ExecStartPre=/usr/bin/openvpn-install-certs
 ExecStart=/usr/sbin/openvpn --daemon --writepid /var/run/openvpn/seluxit.pid --cd /etc/openvpn/ --config ${SELUXIT_ENV}.conf
