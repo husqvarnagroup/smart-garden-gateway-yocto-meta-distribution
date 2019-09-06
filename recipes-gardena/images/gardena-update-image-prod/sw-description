@@ -97,6 +97,10 @@ end";
                         value = "1";
                     },
                     {
+                        name = "bootdelay"; /* Introduced as part of SG-10770. We can still get into U-Boot with a key press. */
+                        value = "0";
+                    },
+                    {
                         name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
                         value = "1";
                     },
@@ -162,6 +166,10 @@ end";
                     {
                         name = "swupdate_done";
                         value = "1";
+                    },
+                    {
+                        name = "bootdelay"; /* Introduced as part of SG-10770. We can still get into U-Boot with a key press. */
+                        value = "0";
                     },
                     {
                         name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
