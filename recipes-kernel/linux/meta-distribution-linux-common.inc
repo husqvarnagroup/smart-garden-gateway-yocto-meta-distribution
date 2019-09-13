@@ -36,6 +36,7 @@ KERNEL_FEATURES_append = " \
     distro/set_default_loglevel.cfg \
     distro/disable_kernel_samples.cfg \
     distro/enable_netfilter.cfg \
+    features/bpf/bpf.scc \
 "
 
 # Misc stuff (maybe not even strictly required)
