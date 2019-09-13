@@ -14,6 +14,7 @@ KERNEL_FEATURES_append = " \
     distro/enable_leds.cfg \
     distro/enable_multiuser.cfg \
     distro/enable_mtd_tests.cfg \
+    distro/enable_net_sched.cfg \
     distro/enable_notify.cfg \
     distro/enable_panic_on_oops.cfg \
     distro/enable_ppp.cfg \
