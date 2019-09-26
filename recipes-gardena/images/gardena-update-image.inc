@@ -3,16 +3,31 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 inherit swupdate
 
+INC_PR = "r7"
+
+UBOOT_VARIANT = "u-boot"
+
 # Images to build before building swupdate image
-IMAGE_DEPENDS = "u-boot-prebuilt virtual/kernel"
+IMAGE_DEPENDS = "virtual/kernel ${UBOOT_VARIANT}"
+
+# Define U-Boot filename and version
+UBOOT_FILENAME = "${UBOOT_VARIANT}-${MACHINE}.bin"
+UBOOT_VERSION = "${@d.getVar("PREFERRED_VERSION_u-boot", False).replace("-prebuilt", "")}"
 
 # Images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "fitImage u-boot-prebuilt uEnv"
+SWUPDATE_IMAGES = "fitImage uEnv u-boot"
 
 # Configure file extensions of the images (potentially) used in SWUPDATE_IMAGES
 SWUPDATE_IMAGES_FSTYPES[fitImage] = ".bin"
-SWUPDATE_IMAGES_FSTYPES[u-boot-prebuilt] = ".bin"
+SWUPDATE_IMAGES_FSTYPES[u-boot] = ".bin"
 SWUPDATE_IMAGES_FSTYPES[uEnv] = ".txt"
+
+# We had smart-gateway-mt7688 in swupdate as hardware identification string and
+# need to keep this pattern in order to be able to update every existing gateway.
+# Since we will never ever be able to get rid of this, we do not try to
+# set/migrate to the proper MACHINE string here, and even align the at91sam
+# based gateway.
+SWUPDATE_HARDWARE_NAME = "smart-gateway-${@d.getVar("MACHINE", False).replace("gardena-sg-", "")}"
 
 # In order to sign the image, the variables SWUPDATE_SIGNING, SWUPDATE_CMS_KEY,
 # and SWUPDATE_CMS_CERT need to be set. [1]

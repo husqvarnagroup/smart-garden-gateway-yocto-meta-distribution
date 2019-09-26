@@ -45,10 +45,6 @@ IMAGE_INSTALL += " \
     wpa-supplicant \
 "
 
-IMAGE_INSTALL_mt7688 += " \
-    u-boot-prebuilt \
-"
-
 IMAGE_FEATURES += " \
     empty-root-password \
     package-management \ 

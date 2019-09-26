@@ -52,38 +52,38 @@ function check_version_and_leds(image)
   return true, \"Installing \" .. version_id_new
 end";
 
-    smart-gateway-@@MACHINE_ARCH@@ = {
+    @@SWUPDATE_HARDWARE_NAME@@ = {
         hardware-compatibility: [ "0.5", "1.0", "1.1.0", "1.2.0" ];
 
         stable = {
             bootslot0 = {
                 images = (
                     {
-                        filename = "gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
+                        filename = "gardena-image-prod-@@MACHINE@@.squashfs-xz";
                         volume = "rootfs1";
-                        sha256 = "@gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
+                        sha256 = "@gardena-image-prod-@@MACHINE@@.squashfs-xz";
                         hook = "check_version_and_leds";
                         installed-directly = true;
                     },
                     {
-                        filename = "fitImage-@@MACHINE_ARCH@@.bin";
+                        filename = "fitImage-@@MACHINE@@.bin";
                         volume = "kernel1";
-                        sha256 = "@fitImage-@@MACHINE_ARCH@@.bin";
+                        sha256 = "@fitImage-@@MACHINE@@.bin";
                         installed-directly = true;
                     },
                     {
-                        filename = "uEnv-@@MACHINE_ARCH@@.txt";
+                        filename = "uEnv-@@MACHINE@@.txt";
                         type = "bootloader";
-                        sha256 = "@uEnv-@@MACHINE_ARCH@@.txt";
+                        sha256 = "@uEnv-@@MACHINE@@.txt";
                     },
                     {
                         name = "u-boot";
-                        filename = "u-boot-prebuilt-@@MACHINE_ARCH@@.bin";
+                        filename = "u-boot-@@MACHINE@@.bin";
                         mtdname = "uboot";
                         type = "flash";
-                        sha256 = "@u-boot-prebuilt-@@MACHINE_ARCH@@.bin";
+                        sha256 = "@u-boot-@@MACHINE@@.bin";
                         install-if-different = true;
-                        version = "@@PREFERRED_VERSION_u-boot-prebuilt@@";
+                        version = "@@UBOOT_VERSION@@";
                     }
                 )
 
@@ -130,31 +130,31 @@ end";
             bootslot1 = {
                 images = (
                     {
-                        filename = "gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
+                        filename = "gardena-image-prod-@@MACHINE@@.squashfs-xz";
                         volume = "rootfs0";
-                        sha256 = "@gardena-image-prod-@@MACHINE_ARCH@@.squashfs-xz";
+                        sha256 = "@gardena-image-prod-@@MACHINE@@.squashfs-xz";
                         hook = "check_version_and_leds";
                         installed-directly = true;
                     },
                     {
-                        filename = "fitImage-@@MACHINE_ARCH@@.bin";
+                        filename = "fitImage-@@MACHINE@@.bin";
                         volume = "kernel0";
-                        sha256 = "@fitImage-@@MACHINE_ARCH@@.bin";
+                        sha256 = "@fitImage-@@MACHINE@@.bin";
                         installed-directly = true;
                     },
                     {
-                        filename = "uEnv-@@MACHINE_ARCH@@.txt";
+                        filename = "uEnv-@@MACHINE@@.txt";
                         type = "bootloader";
-                        sha256 = "@uEnv-@@MACHINE_ARCH@@.txt";
+                        sha256 = "@uEnv-@@MACHINE@@.txt";
                     },
                     {
                         name = "u-boot";
-                        filename = "u-boot-prebuilt-@@MACHINE_ARCH@@.bin";
+                        filename = "u-boot-@@MACHINE@@.bin";
                         mtdname = "uboot";
                         type = "flash";
-                        sha256 = "@u-boot-prebuilt-@@MACHINE_ARCH@@.bin";
+                        sha256 = "@u-boot-@@MACHINE@@.bin";
                         install-if-different = true;
-                        version = "@@PREFERRED_VERSION_u-boot-prebuilt@@";
+                        version = "@@UBOOT_VERSION@@";
                     }
                 )
 
