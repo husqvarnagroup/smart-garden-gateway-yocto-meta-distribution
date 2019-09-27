@@ -45,6 +45,11 @@ IMAGE_INSTALL += " \
     wpa-supplicant \
 "
 
+IMAGE_INSTALL_append_mt7688 += " \
+    kernel-module-mt7603e \
+    linux-firmware-mt7628 \
+"
+
 IMAGE_FEATURES += " \
     empty-root-password \
     package-management \ 

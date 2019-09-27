@@ -13,7 +13,7 @@ IMAGE_INSTALL += " \
     snapshot \
     sysupgrade \
 "
-IMAGE_INSTALL_mt7688 += " \
+IMAGE_INSTALL_append_mt7688 += " \
     manufacturing-tools \
 "
 
