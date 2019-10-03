@@ -29,6 +29,10 @@ SWUPDATE_IMAGES_FSTYPES[uEnv] = ".txt"
 # based gateway.
 SWUPDATE_HARDWARE_NAME = "smart-gateway-${@d.getVar("MACHINE", False).replace("gardena-sg-", "")}"
 
+# Set the compatible hardware revisions which are different for all architectures
+HARDWARE_COMPATIBILITY_mt7688 = "[ "0.5", "1.0", "1.1.0", "1.2.0" ]"
+HARDWARE_COMPATIBILITY_at91sam9x5 = "[ "1.1b" ]"
+
 # In order to sign the image, the variables SWUPDATE_SIGNING, SWUPDATE_CMS_KEY,
 # and SWUPDATE_CMS_CERT need to be set. [1]
 # Please do so by either adding them to our local.conf file or by exporting them

@@ -49,7 +49,7 @@ function check_version_and_leds(image)
 end";
 
     @@SWUPDATE_HARDWARE_NAME@@ = {
-        hardware-compatibility: [ "0.5", "1.0", "1.1.0", "1.2.0" ];
+        hardware-compatibility: @@HARDWARE_COMPATIBILITY@@;
 
         stable = {
             bootslot0 = {
