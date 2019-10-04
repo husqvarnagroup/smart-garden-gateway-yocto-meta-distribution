@@ -1,3 +1,17 @@
+# Custom commands for development
+# Warning: Those commands can be removed at any time.
+#          Productive gateways must not use any of those commands!
+do_dev_import_default_env=dhcp uEnv-gardena-sg-at91sam.txt && env import -t ${fileaddr} ${filesize}
+do_dev_flash_kernel=ubi part ubi && dhcp fitImage-gardena-sg-at91sam.bin && echo "Writing to kernel${bootslot}" && ubi write ${fileaddr} kernel${bootslot} ${filesize}
+do_dev_flash_rootfs=ubi part ubi && dhcp gardena-image-prod-gardena-sg-at91sam.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
+do_dev_flash=run do_dev_flash_kernel && run do_dev_flash_rootfs
+do_dev_u_boot_upgrade=dhcp u-boot-with-spl.bin-gardena-sg-at91sam && nand erase 0 180000 && nand write ${fileaddr} 0 ${filesize} && reset
+do_dev_ubi_setup=nand erase 180000 10000000; ubi part ubi && ubi create rootfs0 0x2815000 static 0 && ubi create rootfs1 0x2815000 static 1 && ubi create kernel0 0x41e000 static 2 && ubi create kernel1 0x41e000 static 3 && ubi create uboot_env0 0x10000 static 4 && ubi create uboot_env1 0x10000 static 5 && ubi create overlay 0x1e00000 dynamic 6
+
+do_dev_led_set_state=for color in blue green red; do led smartgw:${led_name}:${color} ${led_state}; done
+do_dev_led_off=led_state=off; run do_dev_led_set_state
+do_dev_led_on=led_state=on; run do_dev_led_set_state
+
 # Custom commands required regular startup
 # Warning: Removing or changing any of this lines requires care as gateways in
 #          the field need to be updated with all changes!
