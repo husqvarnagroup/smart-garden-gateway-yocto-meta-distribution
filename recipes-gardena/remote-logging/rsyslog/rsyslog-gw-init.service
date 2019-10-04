@@ -1,0 +1,9 @@
+[Unit]
+Description=Prepare gateway rsyslog configuration
+Before=rsyslog.service
+
+[Service]
+Type=oneshot
+ExecStart=@BINDIR@/rsyslog-gw-init
+[Install]
+WantedBy=multi-user.target
