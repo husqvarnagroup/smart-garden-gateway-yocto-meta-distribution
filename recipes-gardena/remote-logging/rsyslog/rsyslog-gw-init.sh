@@ -37,11 +37,11 @@ for ext in crt key; do
 done
 
 # Disable verbose logging on prod
-FILTER_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/90-shadoway-forward-filter.conf"
+FILTER_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/90-severity-forward-filter.conf"
 if [ "${SELUXIT_ENV}" = prod ]; then
     cat > ${FILTER_CONFIG_FILE} <<\EOF
-# don't forward shadoway notice, info & debug logs
-if $programname == ['shadoway', 'shadoway-proxy'] and $syslogseverity >= 5 then stop
+# don't forward notice, info & debug logs
+if $syslogseverity >= 5 then stop
 EOF
 else
     rm ${FILTER_CONFIG_FILE} 2>/dev/null || true
