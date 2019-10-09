@@ -3,19 +3,20 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 inherit swupdate
 
-INC_PR = "r7"
-
-UBOOT_VARIANT = "u-boot"
+INC_PR = "r8"
 
 # Images to build before building swupdate image
-IMAGE_DEPENDS = "virtual/kernel ${UBOOT_VARIANT}"
+IMAGE_DEPENDS = "virtual/kernel u-boot"
 
 # Define U-Boot filename and version
-UBOOT_FILENAME = "${UBOOT_VARIANT}-${MACHINE}.bin"
+UBOOT_FILENAME = "u-boot-${MACHINE}.bin"
+UBOOT_FILENAME_at91sam9x5 = "u-boot-with-spl.bin-${MACHINE}"
 UBOOT_VERSION = "${@d.getVar("PREFERRED_VERSION_u-boot", False).replace("-prebuilt", "")}"
 
 # Images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "fitImage uEnv u-boot"
+SWUPDATE_IMAGES = "fitImage uEnv"
+SWUPDATE_IMAGES_append_mt7688 = " u-boot"
+SWUPDATE_IMAGES_append_at91sam9x5 = " u-boot-with-spl.bin"
 
 # Configure file extensions of the images (potentially) used in SWUPDATE_IMAGES
 SWUPDATE_IMAGES_FSTYPES[fitImage] = ".bin"

@@ -78,10 +78,10 @@ end";
                     },
                     {
                         name = "u-boot";
-                        filename = "u-boot-@@MACHINE@@.bin";
+                        filename = "@@UBOOT_FILENAME@@";
                         mtdname = "uboot";
                         type = "flash";
-                        sha256 = "@u-boot-@@MACHINE@@.bin";
+                        sha256 = "@@@UBOOT_FILENAME@@";
                         install-if-different = true;
                         version = "@@UBOOT_VERSION@@";
                     }
@@ -149,10 +149,10 @@ end";
                     },
                     {
                         name = "u-boot";
-                        filename = "u-boot-@@MACHINE@@.bin";
+                        filename = "@@UBOOT_FILENAME@@";
                         mtdname = "uboot";
                         type = "flash";
-                        sha256 = "@u-boot-@@MACHINE@@.bin";
+                        sha256 = "@@@UBOOT_FILENAME@@";
                         install-if-different = true;
                         version = "@@UBOOT_VERSION@@";
                     }
