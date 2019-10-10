@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}:"
 SRC_URI_append = " file://distribution-kmeta;type=kmeta;name=distribution-kmeta;destsuffix=distribution-kmeta"
 
 KERNEL_FEATURES_append = " \
+    distro/disable_kernel_samples.cfg \
     distro/enable_compaction.cfg \
     distro/enable_console.cfg \
     distro/enable_debugfs.cfg \
@@ -12,9 +13,10 @@ KERNEL_FEATURES_append = " \
     distro/enable_file_locking.cfg \
     distro/enable_keyboard_button.cfg \
     distro/enable_leds.cfg \
-    distro/enable_multiuser.cfg \
     distro/enable_mtd_tests.cfg \
+    distro/enable_multiuser.cfg \
     distro/enable_net_sched.cfg \
+    distro/enable_netfilter.cfg \
     distro/enable_notify.cfg \
     distro/enable_panic_on_oops.cfg \
     distro/enable_ppp.cfg \
@@ -35,8 +37,6 @@ KERNEL_FEATURES_append = " \
     distro/enable_wifi_crypto.cfg \
     distro/set_cfq_scheduler.cfg \
     distro/set_default_loglevel.cfg \
-    distro/disable_kernel_samples.cfg \
-    distro/enable_netfilter.cfg \
     features/bpf/bpf.scc \
 "
 
