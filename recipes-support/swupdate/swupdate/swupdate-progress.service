@@ -1,0 +1,9 @@
+[Unit]
+Description=SWUpdate progress service
+
+[Service]
+ExecStart=/usr/bin/swupdate-progress -r -w
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
