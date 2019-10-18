@@ -1,8 +1,8 @@
 [Unit]
 Description=PPP link to radio module
 Before=network.target
-After=fctcheck.service rm-flashing.service
-Wants=fctcheck.service rm-flashing.service
+After=manufacturing-statusfiles.service rm-flashing.service
+Requires=manufacturing-statusfiles.service rm-flashing.service
 ConditionPathExists=/etc/fct_finalized
 
 [Service]
