@@ -27,8 +27,6 @@ IMAGE_INSTALL += " \
     iptables \
     iptables-modules \
     iw \
-    kernel-module-mt7603e \
-    linux-firmware-mt7628 \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \
@@ -42,10 +40,14 @@ IMAGE_INSTALL += " \
     squashfs-tools \
     swupdate \
     u-boot-fw-utils \
-    u-boot-prebuilt \
     unique-hostname \
     wireless-regdb-static \
     wpa-supplicant \
+"
+
+IMAGE_INSTALL_append_mt7688 += " \
+    kernel-module-mt7603e \
+    linux-firmware-mt7628 \
 "
 
 IMAGE_FEATURES += " \

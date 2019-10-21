@@ -10,6 +10,7 @@ SRC_URI += " \
     file://keep.d/${PN} \
     file://openvpn-install-certs.sh \
     file://openvpn.service \
+    file://openvpn-install-certs.service \
     file://prod.conf \
     file://qa.conf \
 "
@@ -17,6 +18,7 @@ SRC_URI += " \
 FILES_${PN} += " \
     ${sysconfdir}/openvpn \
     ${base_libdir}/upgrade/keep.d \
+    ${systemd_unitdir}/system \
 "
 
 do_install_append() {
@@ -32,6 +34,7 @@ do_install_append() {
     install -m 0755 ${WORKDIR}/openvpn-install-certs.sh ${D}${bindir}/openvpn-install-certs
 
     install -m 644 ${WORKDIR}/openvpn.service ${D}${systemd_unitdir}/system
+    install -m 644 ${WORKDIR}/openvpn-install-certs.service ${D}${systemd_unitdir}/system
 
     # Development: Keep certificates from being overwritten on update
     install -d ${D}${base_libdir}/upgrade/keep.d

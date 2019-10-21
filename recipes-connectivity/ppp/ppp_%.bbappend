@@ -17,6 +17,7 @@ do_install_append() {
     install -m 0755 ${WORKDIR}/01_set_routes ${D}${sysconfdir}/ppp/ipv6-up.d/
     install -m 0644 ${WORKDIR}/ppp.service ${D}${systemd_unitdir}/system
     sed -i -e 's,@SBINDIR@,${sbindir},g' \
+	       -e 's,@TTY@,${RADIO_MODULE_PPP_TTY},g' \
 	       ${D}${systemd_unitdir}/system/ppp.service
 }
 

@@ -10,6 +10,7 @@ SRC_URI = " \
     file://reto-schneider_office.pub \
     file://tsvetomir-ivanov.pub \
     file://andrej-gessel.pub \
+    file://michael-zimmermann.pub \
 "
 
 inherit ssh-authorized-keys

@@ -6,7 +6,7 @@ SRC_URI += "\
     file://sw-description \
 "
 
-PR = "r3"
+PR = "${INC_PR}.0"
 
 # Images to build before building swupdate image
 IMAGE_DEPENDS += "gardena-image-dev"
