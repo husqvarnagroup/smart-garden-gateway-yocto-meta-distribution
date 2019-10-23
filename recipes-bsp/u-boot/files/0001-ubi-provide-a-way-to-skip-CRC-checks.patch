@@ -1,4 +1,4 @@
-From 1f70804ed6ed534f2ac23c9db78c70194b0e7f80 Mon Sep 17 00:00:00 2001
+From 390ab99c2e05a00ee8b8034a86fef1af2d7383d6 Mon Sep 17 00:00:00 2001
 From: Quentin Schulz <quentin.schulz@bootlin.com>
 Date: Wed, 11 Sep 2019 14:11:39 +0200
 Subject: [PATCH] ubi: provide a way to skip CRC checks
@@ -30,10 +30,10 @@ Cc: Boris Brezillon <boris.brezillon@bootlin.com>
  7 files changed, 61 insertions(+), 9 deletions(-)
 
 diff --git a/cmd/ubi.c b/cmd/ubi.c
-index c511a2fb76..7e86d194de 100644
+index ca5dc9021b..c857f07d93 100644
 --- a/cmd/ubi.c
 +++ b/cmd/ubi.c
-@@ -145,7 +145,8 @@ bad:
+@@ -146,7 +146,8 @@ bad:
  	return err;
  }
  
@@ -43,7 +43,7 @@ index c511a2fb76..7e86d194de 100644
  {
  	struct ubi_mkvol_req req;
  	int err;
-@@ -162,7 +163,10 @@ static int ubi_create_vol(char *volume, int64_t size, int dynamic, int vol_id)
+@@ -163,7 +164,10 @@ static int ubi_create_vol(char *volume, int64_t size, int dynamic, int vol_id)
  	strcpy(req.name, volume);
  	req.name_len = strlen(volume);
  	req.name[req.name_len] = '\0';
@@ -55,7 +55,7 @@ index c511a2fb76..7e86d194de 100644
  	/* It's duplicated at drivers/mtd/ubi/cdev.c */
  	err = verify_mkvol_req(ubi, &req);
  	if (err) {
-@@ -468,6 +472,7 @@ static int do_ubi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+@@ -469,6 +473,7 @@ static int do_ubi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
  {
  	int64_t size = 0;
  	ulong addr = 0;
@@ -63,7 +63,7 @@ index c511a2fb76..7e86d194de 100644
  
  	if (argc < 2)
  		return CMD_RET_USAGE;
-@@ -526,6 +531,12 @@ static int do_ubi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+@@ -527,6 +532,12 @@ static int do_ubi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
  		/* Use maximum available size */
  		size = 0;
  
@@ -76,7 +76,7 @@ index c511a2fb76..7e86d194de 100644
  		/* E.g., create volume size type vol_id */
  		if (argc == 6) {
  			id = simple_strtoull(argv[5], NULL, 16);
-@@ -554,8 +565,10 @@ static int do_ubi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+@@ -555,8 +566,10 @@ static int do_ubi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
  			printf("No size specified -> Using max size (%lld)\n", size);
  		}
  		/* E.g., create volume */
@@ -89,7 +89,7 @@ index c511a2fb76..7e86d194de 100644
  	}
  
  	if (strncmp(argv[1], "remove", 6) == 0) {
-@@ -622,7 +635,7 @@ static int do_ubi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+@@ -623,7 +636,7 @@ static int do_ubi(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
  }
  
  U_BOOT_CMD(
@@ -98,7 +98,7 @@ index c511a2fb76..7e86d194de 100644
  	"ubi commands",
  	"detach"
  		" - detach ubi from a mtd partition\n"
-@@ -633,7 +646,7 @@ U_BOOT_CMD(
+@@ -634,7 +647,7 @@ U_BOOT_CMD(
  		" - Display volume and ubi layout information\n"
  	"ubi check volumename"
  		" - check if volumename exists\n"

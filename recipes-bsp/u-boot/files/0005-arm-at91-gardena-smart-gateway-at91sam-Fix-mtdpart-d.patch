@@ -1,4 +1,4 @@
-From bb33bbbeafa739e3dda9d09882250255cc6562be Mon Sep 17 00:00:00 2001
+From 214c59b9d94ed9df7ed093c32135c09429ab3d4d Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Wed, 23 Oct 2019 14:09:16 +0000
 Subject: [PATCH] arm: at91: gardena-smart-gateway-at91sam: Fix mtdpart
@@ -9,7 +9,7 @@ Subject: [PATCH] arm: at91: gardena-smart-gateway-at91sam: Fix mtdpart
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/configs/gardena-smart-gateway-at91sam_defconfig b/configs/gardena-smart-gateway-at91sam_defconfig
-index a25d378064..e8bd2784a0 100644
+index 4a2cc331a6..2958437a3e 100644
 --- a/configs/gardena-smart-gateway-at91sam_defconfig
 +++ b/configs/gardena-smart-gateway-at91sam_defconfig
 @@ -44,8 +44,9 @@ CONFIG_CMD_CACHE=y

@@ -1,4 +1,4 @@
-From 23b0ca841bc9eda08aea3591f032d68e985dcf31 Mon Sep 17 00:00:00 2001
+From d04f976ca768a064b019b5ecf5e2142bddd2bd49 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Wed, 21 Aug 2019 16:03:40 +0200
 Subject: [PATCH] WIP: include/configs/gardena-smart-gateway-at91sam.h: Enable
@@ -10,7 +10,7 @@ Signed-off-by: Stefan Roese <sr@denx.de>
  1 file changed, 1 insertion(+)
 
 diff --git a/include/configs/gardena-smart-gateway-at91sam.h b/include/configs/gardena-smart-gateway-at91sam.h
-index 02bf4d195f..f09084663a 100644
+index 482e4714b1..9f3f4aa203 100644
 --- a/include/configs/gardena-smart-gateway-at91sam.h
 +++ b/include/configs/gardena-smart-gateway-at91sam.h
 @@ -40,6 +40,7 @@

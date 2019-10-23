@@ -1,4 +1,4 @@
-From b81d6c39d012a1f55dab9f50c01914f16b3f6df6 Mon Sep 17 00:00:00 2001
+From 1c0ef78dfcdb3d6a4da3cf80061ea1af710f821b Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Wed, 23 Oct 2019 14:14:32 +0000
 Subject: [PATCH] mips: mt76xx: gardena-smart-gateway: Set default bootdelay to
@@ -10,10 +10,10 @@ Subject: [PATCH] mips: mt76xx: gardena-smart-gateway: Set default bootdelay to
  2 files changed, 2 insertions(+)
 
 diff --git a/configs/gardena-smart-gateway-mt7688-ram_defconfig b/configs/gardena-smart-gateway-mt7688-ram_defconfig
-index 4edade457b..e19d35b9f8 100644
+index 03f9d99760..801051c615 100644
 --- a/configs/gardena-smart-gateway-mt7688-ram_defconfig
 +++ b/configs/gardena-smart-gateway-mt7688-ram_defconfig
-@@ -13,6 +13,7 @@ CONFIG_IMAGE_FORMAT_LEGACY=y
+@@ -13,6 +13,7 @@ CONFIG_LEGACY_IMAGE_FORMAT=y
  CONFIG_OF_STDOUT_VIA_ALIAS=y
  CONFIG_USE_BOOTCOMMAND=y
  CONFIG_BOOTCOMMAND="cp.b 83000000 84000000 10000 && dhcp uEnv.txt && env import -t ${fileaddr} ${filesize} && run do_u_boot_init; reset"
@@ -22,10 +22,10 @@ index 4edade457b..e19d35b9f8 100644
  CONFIG_SYS_CONSOLE_INFO_QUIET=y
  CONFIG_VERSION_VARIABLE=y
 diff --git a/configs/gardena-smart-gateway-mt7688_defconfig b/configs/gardena-smart-gateway-mt7688_defconfig
-index 707d270920..c2f88a154b 100644
+index 6cb8fc0631..5bb3ca924b 100644
 --- a/configs/gardena-smart-gateway-mt7688_defconfig
 +++ b/configs/gardena-smart-gateway-mt7688_defconfig
-@@ -16,6 +16,7 @@ CONFIG_IMAGE_FORMAT_LEGACY=y
+@@ -16,6 +16,7 @@ CONFIG_LEGACY_IMAGE_FORMAT=y
  CONFIG_OF_STDOUT_VIA_ALIAS=y
  CONFIG_USE_BOOTCOMMAND=y
  CONFIG_BOOTCOMMAND="cp.b 83000000 84000000 10000 && dhcp uEnv.txt && env import -t ${fileaddr} ${filesize} && run do_u_boot_init; reset"

@@ -1,4 +1,4 @@
-From e2253ae44b12210becdf2bcdd94086594890cf4b Mon Sep 17 00:00:00 2001
+From 97efdd2d4e79c92fae6a0d19fc926690e378d118 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 12 Sep 2019 07:51:36 +0200
 Subject: [PATCH] ubi: Print skip_check in ubi_dump_vol_info()
