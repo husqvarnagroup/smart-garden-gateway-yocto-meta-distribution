@@ -1,0 +1,28 @@
+From 732e3bf9f1f8830b74c2f22ed13c7ff73f3ba554 Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Wed, 23 Oct 2019 20:45:40 +0200
+Subject: [PATCH] arm: at91: gardena-smart-gateway-at91sam: Align volume names
+ with mt7688 gateway
+
+---
+ configs/gardena-smart-gateway-at91sam_defconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/configs/gardena-smart-gateway-at91sam_defconfig b/configs/gardena-smart-gateway-at91sam_defconfig
+index 2958437a3e..4211b55fa9 100644
+--- a/configs/gardena-smart-gateway-at91sam_defconfig
++++ b/configs/gardena-smart-gateway-at91sam_defconfig
+@@ -54,8 +54,8 @@ CONFIG_DEFAULT_DEVICE_TREE="at91sam9g25-gardena-smart-gateway"
+ CONFIG_OF_SPL_REMOVE_PROPS="pinctrl-0 pinctrl-names clocks clock-names interrupts interrupt-parent interrupts-extended dmas dma-names"
+ CONFIG_ENV_IS_IN_UBI=y
+ CONFIG_ENV_UBI_PART="ubi"
+-CONFIG_ENV_UBI_VOLUME="env"
+-CONFIG_ENV_UBI_VOLUME_REDUND="env_r"
++CONFIG_ENV_UBI_VOLUME="uboot_env0"
++CONFIG_ENV_UBI_VOLUME_REDUND="uboot_env1"
+ CONFIG_NET_RANDOM_ETHADDR=y
+ CONFIG_DM=y
+ CONFIG_SPL_DM=y
+-- 
+2.20.1
+
