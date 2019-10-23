@@ -1,0 +1,25 @@
+From 5ed8b7344c0b90c1238a102348e83e9493d2b7f0 Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Wed, 23 Oct 2019 14:14:21 +0000
+Subject: [PATCH] arm: at91: gardena-smart-gateway-at91sam: Set default
+ bootdelay to 0
+
+---
+ configs/gardena-smart-gateway-at91sam_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/gardena-smart-gateway-at91sam_defconfig b/configs/gardena-smart-gateway-at91sam_defconfig
+index e8bd2784a0..3b1e312f93 100644
+--- a/configs/gardena-smart-gateway-at91sam_defconfig
++++ b/configs/gardena-smart-gateway-at91sam_defconfig
+@@ -21,6 +21,7 @@ CONFIG_NAND_BOOT=y
+ CONFIG_BOOTDELAY=3
+ CONFIG_USE_BOOTARGS=y
+ CONFIG_BOOTARGS="console=ttyS0,115200 earlyprintk mtdparts=atmel_nand:256k(bootstrap)ro,768k(uboot)ro,256k(env_redundant),256k(env),512k(dtb),6M(kernel)ro,-(rootfs) rootfstype=ubifs ubi.mtd=6 root=ubi0:rootfs rw"
++CONFIG_BOOTDELAY=0
+ CONFIG_SYS_CONSOLE_IS_IN_ENV=y
+ CONFIG_SYS_CONSOLE_INFO_QUIET=y
+ CONFIG_SPL_TEXT_BASE=0x300000
+-- 
+2.20.1
+

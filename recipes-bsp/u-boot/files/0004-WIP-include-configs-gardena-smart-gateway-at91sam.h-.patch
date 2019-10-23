@@ -1,0 +1,26 @@
+From 23b0ca841bc9eda08aea3591f032d68e985dcf31 Mon Sep 17 00:00:00 2001
+From: Stefan Roese <sr@denx.de>
+Date: Wed, 21 Aug 2019 16:03:40 +0200
+Subject: [PATCH] WIP: include/configs/gardena-smart-gateway-at91sam.h: Enable
+ BBT
+
+Signed-off-by: Stefan Roese <sr@denx.de>
+---
+ include/configs/gardena-smart-gateway-at91sam.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/configs/gardena-smart-gateway-at91sam.h b/include/configs/gardena-smart-gateway-at91sam.h
+index 02bf4d195f..f09084663a 100644
+--- a/include/configs/gardena-smart-gateway-at91sam.h
++++ b/include/configs/gardena-smart-gateway-at91sam.h
+@@ -40,6 +40,7 @@
+ #define CONFIG_SYS_NAND_MASK_CLE	BIT(22)
+ #define CONFIG_SYS_NAND_ENABLE_PIN	AT91_PIN_PD4
+ #define CONFIG_SYS_NAND_READY_PIN	AT91_PIN_PD5
++#define CONFIG_SYS_NAND_USE_FLASH_BBT
+ 
+ #define CONFIG_SYS_LOAD_ADDR		0x22000000	/* load address */
+ 
+-- 
+2.20.1
+

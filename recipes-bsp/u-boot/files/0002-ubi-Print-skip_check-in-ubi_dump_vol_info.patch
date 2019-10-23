@@ -1,7 +1,7 @@
-From ea0f8a4df792f36dd7339e5342291ec5319ec3c3 Mon Sep 17 00:00:00 2001
+From e2253ae44b12210becdf2bcdd94086594890cf4b Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 12 Sep 2019 07:51:36 +0200
-Subject: [PATCH 2/3] ubi: Print skip_check in ubi_dump_vol_info()
+Subject: [PATCH] ubi: Print skip_check in ubi_dump_vol_info()
 
 It might be interesting, if "skip_check" is set of not, so lets print
 this flag in ubi_dump_vol_info() as well.
@@ -9,6 +9,8 @@ this flag in ubi_dump_vol_info() as well.
 Signed-off-by: Stefan Roese <sr@denx.de>
 Cc: Quentin Schulz <quentin.schulz@bootlin.com>
 Cc: Boris Brezillon <boris.brezillon@bootlin.com>
+
+%% original patch: 0002-ubi-Print-skip_check-in-ubi_dump_vol_info.patch
 ---
  drivers/mtd/ubi/debug.c | 1 +
  1 file changed, 1 insertion(+)
@@ -26,5 +28,5 @@ index 0a7427522c..f3d348da83 100644
  	if (vol->name_len <= UBI_VOL_NAME_MAX &&
  	    strnlen(vol->name, vol->name_len + 1) == vol->name_len) {
 -- 
-2.23.0
+2.20.1
 

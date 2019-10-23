@@ -1,0 +1,29 @@
+From bb33bbbeafa739e3dda9d09882250255cc6562be Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Wed, 23 Oct 2019 14:09:16 +0000
+Subject: [PATCH] arm: at91: gardena-smart-gateway-at91sam: Fix mtdpart
+ defaults
+
+---
+ configs/gardena-smart-gateway-at91sam_defconfig | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/configs/gardena-smart-gateway-at91sam_defconfig b/configs/gardena-smart-gateway-at91sam_defconfig
+index a25d378064..e8bd2784a0 100644
+--- a/configs/gardena-smart-gateway-at91sam_defconfig
++++ b/configs/gardena-smart-gateway-at91sam_defconfig
+@@ -44,8 +44,9 @@ CONFIG_CMD_CACHE=y
+ CONFIG_CMD_TIME=y
+ CONFIG_CMD_FAT=y
+ CONFIG_CMD_MTDPARTS=y
+-CONFIG_MTDIDS_DEFAULT="nand0=nand0"
+-CONFIG_MTDPARTS_DEFAULT="nand0:1536k(uboot),1024k(unused),512k(dtb_old),4608k(kernel_old),86528k(ubi),-(rootfs_old)"
++CONFIG_CMD_SETEXPR=y
++CONFIG_MTDIDS_DEFAULT="nand0=atmel_nand"
++CONFIG_MTDPARTS_DEFAULT="atmel_nand:1536k(uboot),10752k(unused),-(ubi)"
+ CONFIG_CMD_UBI=y
+ CONFIG_OF_CONTROL=y
+ CONFIG_SPL_OF_CONTROL=y
+-- 
+2.20.1
+
