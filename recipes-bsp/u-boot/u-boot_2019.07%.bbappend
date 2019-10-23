@@ -1,6 +1,15 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/${MACHINE_ARCH}:${THISDIR}/files:"
 
-PR_append = ".1"
+PR_append = ".0"
+
+# Changing UBOOT_LOCALVERSION *and* the PV so that PREFERRED_VERSION_u-boot and
+# PV of the u-boot package match. We need this to generate a sw-description
+# file which checks for the same version string as the one which is compiled
+# into the U-Boot binary.
+# Changing UBOOT_LOCALVERSION causes the (new) U-Boot binary to be flashed by
+# SWUpdate. Use with caution!
+UBOOT_LOCALVERSION = "-gardena-1"
+PV_append = "${UBOOT_LOCALVERSION}"
 
 SRC_URI += " \
     file://0001-ubi-provide-a-way-to-skip-CRC-checks.patch \
