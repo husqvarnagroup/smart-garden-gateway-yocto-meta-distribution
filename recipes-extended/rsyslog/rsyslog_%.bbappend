@@ -3,8 +3,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 PR_append = ".0"
 
 RDEPENDS_${PN} += "ca-certificates"
-SYSTEMD_SERVICE_${PN} += "rsyslog-gw-init.service"
-
 
 SRC_URI += "\
     file://rsyslog.conf \
@@ -13,15 +11,14 @@ SRC_URI += "\
     file://rsyslog-gw-init.sh \
 "
 
-
 do_install_append() {
     # Install rsyslog configuration
     install -d "${D}${sysconfdir}/rsyslog.d"
-	install -m 644 ${WORKDIR}/rsyslog.conf ${D}${sysconfdir}/rsyslog.conf
-	install -m 644 ${WORKDIR}/rsyslog.d/10-shadoway-logs.conf ${D}${sysconfdir}/rsyslog.d/10-shadoway-logs.conf
+    install -m 644 ${WORKDIR}/rsyslog.conf ${D}${sysconfdir}/rsyslog.conf
+    install -m 644 ${WORKDIR}/rsyslog.d/10-shadoway-logs.conf ${D}${sysconfdir}/rsyslog.d/10-shadoway-logs.conf
 
     # Install rsyslog gateway init script
-	install -d ${D}${bindir}
+    install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/rsyslog-gw-init.sh ${D}${bindir}/rsyslog-gw-init
 
     # Install systemd unit files
@@ -30,3 +27,5 @@ do_install_append() {
     sed -i -e 's,@BINDIR@,${bindir},g' \
         ${D}${systemd_unitdir}/system/rsyslog-gw-init.service
 }
+
+SYSTEMD_SERVICE_${PN} += "rsyslog-gw-init.service"
