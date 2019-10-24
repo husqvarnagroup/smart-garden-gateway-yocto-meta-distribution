@@ -1,5 +1,5 @@
 [Unit]
-Description=Extract OpenVPN client certificate and key from U-Boot
+Description=Extract X.509 client certificate and key from U-Boot
 After=syslog.target eoltest-check.service
 Wants=eoltest-check.service
 ConditionPathExists=/etc/eol_test_passed
@@ -8,5 +8,4 @@ ConditionPathExists=/etc/eol_test_passed
 PrivateTmp=true
 Type=oneshot
 RemainAfterExit=yes
-ExecStartPre=/bin/mkdir -p /etc/openvpn
-ExecStart=/usr/bin/openvpn-install-certs
+ExecStart=/usr/bin/environment

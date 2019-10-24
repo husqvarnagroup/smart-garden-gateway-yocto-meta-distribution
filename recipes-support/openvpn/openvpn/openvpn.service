@@ -1,8 +1,8 @@
 [Unit]
 Description=OpenVPN to Seluxit Servers
-After=syslog.target network-online.target eoltest-check.service
+After=syslog.target network-online.target eoltest-check.service environment.service
 Wants=network-online.target eoltest-check.service
-Requires=openvpn-install-certs.service
+Requires=environment.service
 ConditionPathExists=/etc/eol_test_passed
 StopWhenUnneeded=yes
 

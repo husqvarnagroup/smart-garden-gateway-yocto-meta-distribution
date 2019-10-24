@@ -2,7 +2,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 PR_append = ".0"
 
-RDEPENDS_${PN} += "ca-certificates"
+RDEPENDS_${PN} += "ca-certificates environment"
 
 SRC_URI += "\
     file://rsyslog.conf \
