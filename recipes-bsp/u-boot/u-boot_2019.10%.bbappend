@@ -8,7 +8,7 @@ PR_append = ".0"
 # into the U-Boot binary.
 # Changing UBOOT_LOCALVERSION causes the (new) U-Boot binary to be flashed by
 # SWUpdate. Use with caution!
-UBOOT_LOCALVERSION = "-gardena-1"
+UBOOT_LOCALVERSION = "-gardena-2"
 PV_append = "${UBOOT_LOCALVERSION}"
 
 SRC_URI += " \
@@ -22,5 +22,6 @@ SRC_URI += " \
     file://0008-mips-mt76xx-gardena-smart-gateway-Set-default-bootde.patch \
     file://0009-mips-mt76xx-gardena-smart-gateway-Enable-UBI-fastmap.patch \
     file://0010-arm-at91-gardena-smart-gateway-at91sam-Enable-UBI-fa.patch \
+    file://0011-arm-at91-gardena-smart-gateway-at91sam-Enable-UBI-me.patch \
 "
 
