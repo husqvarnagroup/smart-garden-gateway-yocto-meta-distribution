@@ -1,0 +1,18 @@
+From a3f62941bb29a6aefe138290650d7345203750b9 Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Thu, 24 Oct 2019 11:58:23 +0000
+Subject: [PATCH] arm: at91: gardena-smart-gateway-at91sam: Enable UBI messages
+
+---
+ configs/gardena-smart-gateway-at91sam_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/gardena-smart-gateway-at91sam_defconfig b/configs/gardena-smart-gateway-at91sam_defconfig
+index 8d8b924e7a..c47fb89f37 100644
+--- a/configs/gardena-smart-gateway-at91sam_defconfig
++++ b/configs/gardena-smart-gateway-at91sam_defconfig
+@@ -86,3 +86,4 @@ CONFIG_ATMEL_PIT_TIMER=y
+ CONFIG_WDT=y
+ CONFIG_WDT_AT91=y
+ # CONFIG_UBIFS_SILENCE_MSG is not set
++# CONFIG_UBI_SILENCE_MSG is not set
