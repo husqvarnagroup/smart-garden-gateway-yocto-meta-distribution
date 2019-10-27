@@ -21,6 +21,7 @@ IMAGE_INSTALL += " \
     ${TIME_MANAGEMENT} \
     dhcpcd \
     dnsmasq \
+    firewall \
     hostapd \
     i2c-tools \
     initscripts-readonly-rootfs-overlay \

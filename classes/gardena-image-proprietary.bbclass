@@ -2,7 +2,6 @@
 
 IMAGE_INSTALL += " \
     accessory-server \
-    firewall \
     gateway-config-backend \
     gateway-firmware \
     lemonbeat-firmware-upload \
