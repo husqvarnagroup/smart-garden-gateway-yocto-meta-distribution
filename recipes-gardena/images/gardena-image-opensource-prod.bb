@@ -45,4 +45,9 @@ IMAGE_INSTALL += " \
     python3-unittest \
 "
 
+# Allow the image to start
+IMAGE_INSTALL += " \
+    manufacturing-tools-shim \
+"
+
 inherit gardena-image-opensource
