@@ -1,0 +1,14 @@
+[Unit]
+Description=Configure rsyslog
+Before=rsyslog.service
+After=environment.service
+Requires=environment.service
+ConditionPathExists=|!/etc/rsyslog.d/01-gateway-id.conf
+ConditionPathExists=|!/etc/rsyslog.d/90-severity-forward-filter.conf
+
+[Service]
+Type=oneshot
+ExecStart=@BINDIR@/rsyslog-gw-init
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,2 @@
+/etc/ssl/certs/client-*.crt
+/etc/ssl/private/client-*.key

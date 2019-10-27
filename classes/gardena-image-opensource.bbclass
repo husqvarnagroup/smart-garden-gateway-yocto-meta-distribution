@@ -37,6 +37,7 @@ IMAGE_INSTALL += " \
     ppp \
     reset-rm \
     rfkill \
+    rsyslog \
     squashfs-tools \
     swupdate \
     u-boot-fw-utils \
