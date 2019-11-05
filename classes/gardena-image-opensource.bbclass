@@ -41,6 +41,7 @@ IMAGE_INSTALL += " \
     rsyslog \
     squashfs-tools \
     swupdate \
+    systemd-conf \
     u-boot-fw-utils \
     unique-hostname \
     wireless-regdb-static \

@@ -1,5 +1,7 @@
 FILESEXTRAPATHS_prepend_mt7688 := "${THISDIR}/${BPN}:"
 
+PR_append = ".0"
+
 SRC_URI_append_mt7688 = " \
     file://0001-Reduce-max-possible-txpower-by-10dBm-for-all-frequen.patch \
 "
