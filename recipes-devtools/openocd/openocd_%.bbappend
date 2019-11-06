@@ -19,7 +19,7 @@ SRC_URI_remove = "file://0001-Add-fallthrough-comments.patch \
                   file://0003-armv7a-Add-missing-break-to-fix-fallthrough-warning.patch \
                   file://0005-command-Move-the-fall-through-comment-to-right-scope.patch"
 
-SRCREV="d0be1630dc080b0c881830fa28bf2ccfe7850bb8"
+SRCREV_openocd = "d0be1630dc080b0c881830fa28bf2ccfe7850bb8"
 
 # Available drivers for programmers
 # WARNING: The aim of the next few lines is mainly to disable features. Some of
