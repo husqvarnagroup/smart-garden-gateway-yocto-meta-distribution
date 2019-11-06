@@ -1,9 +1,9 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".0"
+PR_append = ".1"
 
 SRC_URI += " \
-    file://keep.d/${PN} \
+    file://keep.d/${BPN} \
 "
 
 FILES_${PN} += "\

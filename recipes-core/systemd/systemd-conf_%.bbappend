@@ -3,7 +3,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://journald-ram.conf \
     file://journald-storage.conf \
-    file://keep.d/${PN} \
+    file://keep.d/${BPN} \
     file://system-logcolor.conf \
     file://system-watchdog.conf \
 "
@@ -12,7 +12,7 @@ FILES_${PN} += "\
     ${base_libdir}/upgrade/keep.d \
 "
 
-PR_append = ".0"
+PR_append = ".1"
 
 do_install_append() {
     install -m 0644 ${WORKDIR}/system-watchdog.conf ${D}${systemd_unitdir}/system.conf.d/50-watchdog.conf

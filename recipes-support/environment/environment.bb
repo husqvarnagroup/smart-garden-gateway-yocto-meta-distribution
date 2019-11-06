@@ -5,15 +5,15 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 inherit systemd allarch
 
 PV = "2019-10-27"
-PR = "r0"
+PR = "r1"
 
 SRC_URI += " \
     file://ca-dev.crt \
     file://ca-prod.crt \
     file://ca-qa.crt \
-    file://keep.d/${PN} \
-    file://${PN}.sh \
-    file://${PN}.service \
+    file://keep.d/${BPN} \
+    file://${BPN}.sh \
+    file://${BPN}.service \
 "
 
 FILES_${PN} += " \

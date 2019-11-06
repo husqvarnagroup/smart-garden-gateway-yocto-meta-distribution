@@ -1,12 +1,12 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_append = ".0"
+PR_append = ".1"
 
 SRC_URI += " \
     file://40-swupdate-check.sh \
     file://dhcpcd.conf \
     file://dhcpcd.service \
-    file://keep.d/${PN} \
+    file://keep.d/${BPN} \
 "
 
 FILES_${PN} += "\

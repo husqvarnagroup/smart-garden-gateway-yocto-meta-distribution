@@ -1,7 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
-    file://keep.d/${PN} \
+    file://keep.d/${BPN} \
     file://systemd-disable-colors.sh \
 "
 
@@ -10,7 +10,7 @@ FILES_${PN} += "\
     ${sysconfdir}/profile.d/systemd-disable-colors.sh \
 "
 
-PR_append = ".0"
+PR_append = ".1"
 
 do_install_append() {
 	# Disable colorized output of system tools (systemctl, etc.)
