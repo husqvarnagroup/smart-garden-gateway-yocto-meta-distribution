@@ -1,16 +1,21 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".3"
+PR_append = ".4"
 
 SRC_URI += " \
     file://0001-jtag-sysfsgpio-clean-up-swd-gpios.patch \
     file://0002-libgpiod.patch \
-    file://gardena_radio.cfg \
+"
+
+SRC_URI_append_mt7688 = " \
     file://gardena_nrf52.cfg \
+    file://gardena_radio.cfg \
 "
 
 SRC_URI_append_at91sam9x5 = " \
     file://0003-atmel-performance-hack.patch \
+    file://gardena_nrf52.cfg \
+    file://gardena_radio.cfg \
 "
 
 # We are using upstream and most patches in the base .bb are already upstreamed.
