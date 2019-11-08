@@ -262,6 +262,3 @@ COPY_LIC_DIRS = "1"
 
 # Optional: Lower optimization to improve debugability
 #DEBUG_BUILD = "1"
-
-# Put Shadoway dependencies in SDK
-TOOLCHAIN_TARGET_TASK_append = " lua-staticdev googletest-staticdev linux-libc-headers-dev"
