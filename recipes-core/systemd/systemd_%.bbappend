@@ -1,7 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
-    file://keep.d/${PN} \
+    file://keep.d/${BPN} \
     file://systemd-disable-colors.sh \
 "
 
@@ -17,9 +17,6 @@ do_install_append() {
 	install -d ${D}${sysconfdir}/profile.d
 	install -m 0644 ${WORKDIR}/systemd-disable-colors.sh ${D}${sysconfdir}/profile.d
 
-	# systemd-firstboot.service: Do not wait for user input
-	sed -i -e 's/.*ExecStart=.*/ExecStart=\/bin\/systemd-firstboot/' ${D}${systemd_unitdir}/system/systemd-firstboot.service
-
 	# Use our own NTP server names
 	sed -i 's/#NTP=.*/NTP=time1.iot.sg.dss.husqvarnagroup.net time2.iot.sg.dss.husqvarnagroup.net time3.iot.sg.dss.husqvarnagroup.net time4.iot.sg.dss.husqvarnagroup.net/' ${D}${sysconfdir}/systemd/timesyncd.conf
 
@@ -29,4 +26,4 @@ do_install_append() {
 }
 
 # Removed due to SG-12020
-PACKAGECONFIG_remove = "resolved"
+PACKAGECONFIG_remove = "resolved nss-resolve"

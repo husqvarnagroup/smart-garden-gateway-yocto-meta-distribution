@@ -1,16 +1,21 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".3"
+PR_append = ".4"
 
 SRC_URI += " \
     file://0001-jtag-sysfsgpio-clean-up-swd-gpios.patch \
     file://0002-libgpiod.patch \
-    file://gardena_radio.cfg \
+"
+
+SRC_URI_append_mt7688 = " \
     file://gardena_nrf52.cfg \
+    file://gardena_radio.cfg \
 "
 
 SRC_URI_append_at91sam9x5 = " \
     file://0003-atmel-performance-hack.patch \
+    file://gardena_nrf52.cfg \
+    file://gardena_radio.cfg \
 "
 
 # We are using upstream and most patches in the base .bb are already upstreamed.
@@ -19,7 +24,7 @@ SRC_URI_remove = "file://0001-Add-fallthrough-comments.patch \
                   file://0003-armv7a-Add-missing-break-to-fix-fallthrough-warning.patch \
                   file://0005-command-Move-the-fall-through-comment-to-right-scope.patch"
 
-SRCREV="d0be1630dc080b0c881830fa28bf2ccfe7850bb8"
+SRCREV_openocd = "d0be1630dc080b0c881830fa28bf2ccfe7850bb8"
 
 # Available drivers for programmers
 # WARNING: The aim of the next few lines is mainly to disable features. Some of

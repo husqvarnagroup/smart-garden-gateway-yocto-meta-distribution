@@ -1,0 +1,40 @@
+From 943e81f5db56eedbadf43459afbc967d100f9da2 Mon Sep 17 00:00:00 2001
+From: Ron Yorston <rmy@pobox.com>
+Date: Mon, 29 Jul 2019 09:51:14 +0100
+Subject: [PATCH] ash: only catch unexpected exceptions in PS1 expansion
+
+Commit d1a2fa2a4 (ash: catch error in arithmetic expansion in PS1)
+catches all exceptions raised by expandarg().  Some exceptions, such as
+the EXEXIT raised when command expansion is used, are expected:
+
+   export PS1='$(echo "$ ")'
+
+These should be processed normally or the shell hangs at the prompt.
+
+function                                             old     new   delta
+expandstr                                            344     353      +9
+------------------------------------------------------------------------------
+(add/remove: 0/0 grow/shrink: 1/0 up/down: 9/0)                 Total: 9 bytes
+
+Signed-off-by: Ron Yorston <rmy@pobox.com>
+Signed-off-by: Denys Vlasenko <vda.linux@googlemail.com>
+---
+ shell/ash.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/shell/ash.c b/shell/ash.c
+index e3bbac9a0..c0352602b 100644
+--- a/shell/ash.c
++++ b/shell/ash.c
+@@ -13126,6 +13126,8 @@ expandstr(const char *ps, int syntax_type)
+ 	if (setjmp(jmploc.loc) == 0) {
+ 		exception_handler = &jmploc;
+ 		expandarg(&n, NULL, EXP_QUOTED);
++	} else if (exception_type == EXEXIT) {
++		exitshell();
+ 	}
+ 	exception_handler = savehandler;
+ 	RESTORE_INT(saveint);
+-- 
+2.20.1
+
