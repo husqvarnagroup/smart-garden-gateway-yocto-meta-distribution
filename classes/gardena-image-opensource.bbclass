@@ -43,6 +43,7 @@ IMAGE_INSTALL += " \
     swupdate \
     systemd-conf \
     systemd-container \
+    tcpdump-sherlock \
     u-boot-fw-utils \
     unique-hostname \
     wireless-regdb-static \
