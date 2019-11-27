@@ -3,19 +3,22 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://keep.d/${BPN} \
     file://systemd-disable-colors.sh \
+    file://systemd-disable-pager.sh \
 "
 
 FILES_${PN} += "\
     ${base_libdir}/upgrade/keep.d \
     ${sysconfdir}/profile.d/systemd-disable-colors.sh \
+    ${sysconfdir}/profile.d/systemd-disable-pager.sh \
 "
 
-PR_append = ".1"
+PR_append = ".2"
 
 do_install_append() {
 	# Disable colorized output of system tools (systemctl, etc.)
 	install -d ${D}${sysconfdir}/profile.d
 	install -m 0644 ${WORKDIR}/systemd-disable-colors.sh ${D}${sysconfdir}/profile.d
+	install -m 0644 ${WORKDIR}/systemd-disable-pager.sh ${D}${sysconfdir}/profile.d
 
 	# Use our own NTP server names
 	sed -i 's/#NTP=.*/NTP=time1.iot.sg.dss.husqvarnagroup.net time2.iot.sg.dss.husqvarnagroup.net time3.iot.sg.dss.husqvarnagroup.net time4.iot.sg.dss.husqvarnagroup.net/' ${D}${sysconfdir}/systemd/timesyncd.conf
