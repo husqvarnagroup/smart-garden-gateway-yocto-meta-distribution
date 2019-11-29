@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".1"
+PR_append = ".2"
 
 RDEPENDS_${PN} += "ca-certificates environment"
 
@@ -10,6 +10,10 @@ SRC_URI += "\
     file://rsyslog-gw-init.service \
     file://rsyslog-gw-init.sh \
 "
+
+PACKAGECONFIG[impstats] = "--enable-impstats,--disable-impstats,,"
+
+PACKAGECONFIG_append = " impstats"
 
 do_install_append() {
     # Install rsyslog configuration
