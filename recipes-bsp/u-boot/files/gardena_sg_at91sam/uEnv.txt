@@ -26,7 +26,7 @@ do_if_resurrection_reset=printenv recovery_status || setenv holdtime 0 && while 
 
 # migration related commands
 do_migration_ubi_setup=ubi remove rootfs1; ubi remove kernel1; ubi remove overlay; ubi create rootfs1 0x2815000 static 1 && ubi create kernel1 0x41e000 static 3 && ubi create overlay 0x1e00000 dynamic 6
-do_if_not_migrated=if test "${migration_done}" != "1"; then setenv bootslot 0 && run do_migration_ubi_setup; else true; fi;
+do_if_not_migrated=if test "${migration_done}" != "1"; then ubi read 0x22000000 migration_env && env import -t 0x22000000 ${filesize} ; setenv bootslot 0 && run do_migration_ubi_setup; else true; fi;
 
 ## Relevant for startup
 bootcmd=ubi part ubi && run do_if_not_migrated && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset
