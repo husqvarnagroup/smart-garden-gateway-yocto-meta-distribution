@@ -18,6 +18,6 @@ IMAGE_INSTALL_append_mt7688 += " \
 "
 
 IMAGE_INSTALL_append_at91sam9x5 += " \
-    manufacturing-tools-shim \
+    manufacturing-tools-migration \
 "
 inherit gardena-image-opensource
