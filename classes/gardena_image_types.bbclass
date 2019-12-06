@@ -41,6 +41,13 @@ vol_id=7
 vol_type=static
 vol_name=migrate
 flash_later=1
+
+[migration_env]
+mode=ubi
+vol_id=8
+vol_type=static
+vol_name=migration_env
+flash_later=1
 EOF
 
 	# generate uboot env binary
