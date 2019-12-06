@@ -1,9 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".3"
+PR_append = ".4"
 
 SRC_URI += "file://ppp.service \
-            file://ppp@.service \
             file://ipv6-up \
             file://ipv6-down \
             file://01_set_routes \
