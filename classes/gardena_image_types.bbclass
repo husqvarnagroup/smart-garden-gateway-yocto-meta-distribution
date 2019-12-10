@@ -15,7 +15,7 @@ vol_name=rootfs0
 mode=ubi
 image=${DEPLOY_DIR_IMAGE}/fitImage
 vol_id=2
-vol_size=0x41e000
+vol_size=0x800000
 vol_type=static
 vol_name=kernel0
 
