@@ -35,11 +35,11 @@ vol_size=0x10000
 vol_type=static
 vol_name=uboot_env1
 
-[migrate]
+[migration]
 mode=ubi
 vol_id=7
 vol_type=static
-vol_name=migrate
+vol_name=migration
 flash_later=1
 
 [migration_env]
