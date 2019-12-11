@@ -7,7 +7,7 @@ cat << EOF > ubinize-migrationubi-${IMAGE_NAME}.cfg
 mode=ubi
 image=${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.squashfs-xz
 vol_id=0
-vol_size=0x2815000
+vol_size=0x3200000
 vol_type=static
 vol_name=rootfs0
 
@@ -15,7 +15,7 @@ vol_name=rootfs0
 mode=ubi
 image=${DEPLOY_DIR_IMAGE}/fitImage
 vol_id=2
-vol_size=0x41e000
+vol_size=0x800000
 vol_type=static
 vol_name=kernel0
 
@@ -35,11 +35,11 @@ vol_size=0x10000
 vol_type=static
 vol_name=uboot_env1
 
-[migrate]
+[migration]
 mode=ubi
 vol_id=7
 vol_type=static
-vol_name=migrate
+vol_name=migration
 flash_later=1
 
 [migration_env]
