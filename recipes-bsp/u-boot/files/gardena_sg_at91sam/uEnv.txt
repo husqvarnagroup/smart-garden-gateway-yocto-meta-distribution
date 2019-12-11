@@ -6,7 +6,7 @@ do_dev_flash_kernel=ubi part ubi && dhcp fitImage-gardena-sg-at91sam.bin && echo
 do_dev_flash_rootfs=ubi part ubi && dhcp gardena-image-prod-gardena-sg-at91sam.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
 do_dev_flash=run do_dev_flash_kernel && run do_dev_flash_rootfs
 do_dev_u_boot_upgrade=dhcp u-boot-with-spl.bin-gardena-sg-at91sam && nand erase 0 180000 && nand write ${fileaddr} 0 ${filesize} && reset
-do_dev_ubi_setup=nand erase 180000 10000000; ubi part ubi && ubi create rootfs0 0x2815000 static 0 && ubi create rootfs1 0x2815000 static 1 && ubi create kernel0 0x800000 static 2 && ubi create kernel1 0x800000 static 3 && ubi create uboot_env0 0x10000 static 4 && ubi create uboot_env1 0x10000 static 5 && ubi create overlay 0x3c00000 dynamic 6
+do_dev_ubi_setup=nand erase 180000 10000000; ubi part ubi && ubi create rootfs0 0x3200000 static 0 && ubi create rootfs1 0x3200000 static 1 && ubi create kernel0 0x800000 static 2 && ubi create kernel1 0x800000 static 3 && ubi create uboot_env0 0x10000 static 4 && ubi create uboot_env1 0x10000 static 5 && ubi create overlay 0x3c00000 dynamic 6
 
 do_dev_led_set_state=for color in blue green red; do led smartgw:${led_name}:${color} ${led_state}; done
 do_dev_led_off=led_state=off; run do_dev_led_set_state
@@ -25,7 +25,7 @@ do_resurrection_reset=echo "resurrection reset triggered" && run do_toggle_boots
 do_if_resurrection_reset=printenv recovery_status || setenv holdtime 0 && while gpio input 24; do if test $holdtime = 1e; then run do_resurrection_reset; fi; setexpr holdtime ${holdtime} + 1; sleep 1; done || true
 
 # migration related commands
-do_migration_ubi_setup=ubi remove rootfs1; ubi remove kernel1; ubi remove overlay; ubi create rootfs1 0x2815000 static 1 && ubi create kernel1 0x800000 static 3 && ubi create overlay 0x3c00000 dynamic 6
+do_migration_ubi_setup=ubi remove rootfs1; ubi remove kernel1; ubi remove overlay; ubi create rootfs1 0x3200000 static 1 && ubi create kernel1 0x800000 static 3 && ubi create overlay 0x3c00000 dynamic 6
 do_if_not_migrated=if test "${migration_done}" != "1"; then ubi read 0x22000000 migration_env && env import -t 0x22000000 ${filesize} ; setenv bootslot 0 && run do_migration_ubi_setup; else true; fi;
 
 ## Relevant for startup

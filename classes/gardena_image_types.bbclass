@@ -7,7 +7,7 @@ cat << EOF > ubinize-migrationubi-${IMAGE_NAME}.cfg
 mode=ubi
 image=${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.squashfs-xz
 vol_id=0
-vol_size=0x2815000
+vol_size=0x3200000
 vol_type=static
 vol_name=rootfs0
 
