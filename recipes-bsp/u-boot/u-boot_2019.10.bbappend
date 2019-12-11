@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/${MACHINE_ARCH}:${THISDIR}/files:"
 
-PR_append = ".0"
+PR_append = ".1"
 
 # Changing UBOOT_LOCALVERSION *and* the PV so that PREFERRED_VERSION_u-boot and
 # PV of the u-boot package match. We need this to generate a sw-description
@@ -24,3 +24,9 @@ SRC_URI += " \
     file://0011-arm-at91-gardena-smart-gateway-at91sam-Enable-UBI-me.patch \
 "
 
+do_deploy_append_at91sam9x5() {
+    # There will be no files with whitespaces
+    for f in u-boot*; do
+        md5sum "$f" | awk '{print $1}' > "$f.md5sum"
+    done
+}
