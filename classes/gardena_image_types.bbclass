@@ -69,10 +69,10 @@ EOF
 	ln -sf ${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.migration.ubi.meta \
 	    ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi.meta
   # checksums
-  md5sum ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi | awk '{print $1}' \
-       > ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi.md5sum
-  md5sum ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi.meta | awk '{print $1}' \
-       > ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi.meta.md5sum
+  sha256sum ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi | awk '{print $1}' \
+          > ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi.sha256
+  sha256sum ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi.meta | awk '{print $1}' \
+          > ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi.meta.sha256
 }
 IMAGE_TYPEDEP_migrationubi = "squashfs-xz"
 

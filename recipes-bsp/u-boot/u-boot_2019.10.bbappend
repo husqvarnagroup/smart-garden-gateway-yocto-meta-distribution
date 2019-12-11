@@ -27,6 +27,6 @@ SRC_URI += " \
 do_deploy_append_at91sam9x5() {
     # There will be no files with whitespaces
     for f in u-boot*; do
-        md5sum "$f" | awk '{print $1}' > "$f.md5sum"
+        sha256sum "$f" | awk '{print $1}' > "$f.sha256"
     done
 }
