@@ -9,5 +9,8 @@
 | Please refrain from contacting customer support as this will cause us  |
 | to lock down future devices in the long run. For questions regarding   |
 | open source, please contact smart.open.source@husqvarnagroup.com.      |
+|                                                                        |
+| To unlock SSH access locally, execute the following:                   |
+| # fw_setenv dev_debug_allow_local_ssh 1 && systemctl restart firewall  |
 +------------------------------------------------------------------------+
 
