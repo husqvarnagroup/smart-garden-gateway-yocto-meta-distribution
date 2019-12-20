@@ -19,6 +19,17 @@ if [ ! -s "${RSYSLOG_CONFIG_FILE}" ]; then
     mv "${RSYSLOG_CONFIG_FILE}.tmp" "${RSYSLOG_CONFIG_FILE}"
 fi
 
+# Configure variables for use in other config files
+RSYSLOG_METADATA_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/02-gateway-metadata.conf"
+if [ ! -s "${RSYSLOG_METADATA_CONFIG_FILE}" ]; then
+    mkdir -p ${RSYSLOG_CONFIG_DIR}
+    echo "set \$!gw.env = '$(fw_printenv -n seluxit_env)';" >> "${RSYSLOG_METADATA_CONFIG_FILE}.tmp"
+    # shellcheck disable=SC1091
+    echo "set \$!gw.swVersion = '$(. /etc/os-release; echo "$VERSION")';" >> "${RSYSLOG_METADATA_CONFIG_FILE}.tmp"
+    sync
+    mv "${RSYSLOG_METADATA_CONFIG_FILE}.tmp" "${RSYSLOG_METADATA_CONFIG_FILE}"
+fi
+
 # Disable verbose logging on prod
 FILTER_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/90-severity-forward-filter.conf"
 SELUXIT_ENV="$(fw_printenv -n "seluxit_env" 2>/dev/null || echo prod)"
