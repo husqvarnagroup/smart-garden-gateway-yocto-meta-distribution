@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".2"
+PR_append = ".3"
 
 RDEPENDS_${PN} += "ca-certificates environment"
 
@@ -8,6 +8,7 @@ SRC_URI += "\
     file://rsyslog.conf \
     file://rsyslog.d/10-shadoway-logs.conf \
     file://rsyslog.d/20-impstats.conf \
+    file://rsyslog.d/90-templates.conf \
     file://rsyslog-gw-init.service \
     file://rsyslog-gw-init.sh \
 "
@@ -22,6 +23,7 @@ do_install_append() {
     install -m 644 ${WORKDIR}/rsyslog.conf ${D}${sysconfdir}/rsyslog.conf
     install -m 644 ${WORKDIR}/rsyslog.d/10-shadoway-logs.conf ${D}${sysconfdir}/rsyslog.d/10-shadoway-logs.conf
     install -m 644 ${WORKDIR}/rsyslog.d/20-impstats.conf ${D}${sysconfdir}/rsyslog.d/20-impstats.conf
+    install -m 644 ${WORKDIR}/rsyslog.d/90-templates.conf ${D}${sysconfdir}/rsyslog.d/90-templates.conf
 
     # Install rsyslog gateway init script
     install -d ${D}${bindir}
