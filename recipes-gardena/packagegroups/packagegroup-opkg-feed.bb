@@ -50,6 +50,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     tshark \
     vim \
     wget \
+    wlan-stresstest \
     xz \
     zsh \
     "
