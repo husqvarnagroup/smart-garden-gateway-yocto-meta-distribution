@@ -25,6 +25,10 @@ IMAGE_INSTALL += " \
     wpa-supplicant-cli \
 "
 
+IMAGE_INSTALL_append_mt7688 = " \
+    valgrind \
+"
+
 # Useful for nfsroot
 IMAGE_FSTYPES += "tar.bz2"
 

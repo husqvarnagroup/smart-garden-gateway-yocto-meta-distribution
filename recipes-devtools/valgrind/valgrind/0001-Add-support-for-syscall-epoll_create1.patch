@@ -1,0 +1,25 @@
+From afaefd47f9a75d5a06ca68ab9a52e2192f5ab77e Mon Sep 17 00:00:00 2001
+From: Reto Schneider <code@reto-schneider.ch>
+Date: Sun, 12 Jan 2020 20:40:37 +0100
+Subject: [PATCH] Add support for syscall epoll_create1
+
+---
+ coregrind/m_syswrap/syswrap-mips32-linux.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/coregrind/m_syswrap/syswrap-mips32-linux.c b/coregrind/m_syswrap/syswrap-mips32-linux.c
+index c0cd811bf..b532c5c98 100644
+--- a/coregrind/m_syswrap/syswrap-mips32-linux.c
++++ b/coregrind/m_syswrap/syswrap-mips32-linux.c
+@@ -1122,7 +1122,7 @@ static SyscallTableEntry syscall_main_table[] = {
+    LINXY (__NR_timerfd_settime,        sys_timerfd_settime),         // 323
+    LINXY (__NR_signalfd4,              sys_signalfd4),               // 324
+    LINXY (__NR_eventfd2,               sys_eventfd2),                // 325
+-   //..
++   LINXY (__NR_epoll_create1,          sys_epoll_create1),           // 326
+    LINXY (__NR_pipe2,                  sys_pipe2),                   // 328
+    LINXY (__NR_inotify_init1,          sys_inotify_init1),           // 329
+    //..
+-- 
+2.20.1
+
