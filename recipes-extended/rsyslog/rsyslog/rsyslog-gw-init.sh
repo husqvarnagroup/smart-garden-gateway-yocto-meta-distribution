@@ -33,13 +33,8 @@ fi
 # Disable verbose logging on prod
 FILTER_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/90-severity-forward-filter.conf"
 SELUXIT_ENV="$(fw_printenv -n "seluxit_env" 2>/dev/null || echo prod)"
-if [ "${SELUXIT_ENV}" = prod ] && [ ! -s "${FILTER_CONFIG_FILE}" ]; then
-    cat > "${FILTER_CONFIG_FILE}.tmp" <<\EOF
-# don't forward notice, info & debug logs
-if $syslogseverity >= 5 then stop
-EOF
-    sync
-    mv "${FILTER_CONFIG_FILE}.tmp" "${FILTER_CONFIG_FILE}"
+if [ "${SELUXIT_ENV}" = prod ]; then
+    cmp "${FILTER_CONFIG_FILE}.prod" "${FILTER_CONFIG_FILE}" 2>/dev/null || cp "${FILTER_CONFIG_FILE}.prod" "${FILTER_CONFIG_FILE}"
 else
     rm -f "${FILTER_CONFIG_FILE}"
 fi

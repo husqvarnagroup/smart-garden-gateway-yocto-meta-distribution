@@ -1,0 +1,2 @@
+# do not forward notice, info and debug logs in prod
+if $syslogseverity >= 5 then stop
