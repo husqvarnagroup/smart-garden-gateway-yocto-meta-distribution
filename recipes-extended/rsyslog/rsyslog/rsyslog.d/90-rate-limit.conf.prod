@@ -1,0 +1,10 @@
+main_queue(
+    # Limit to one message every 10 seconds to save the customers bandwidth
+    # in case there is something going wild.
+    # If you change this to a lower number your gateway might get blocked by
+    # our remote logging server entirely!
+    queue.dequeueSlowDown="10000000"
+    # Avoid batches as those render dequeueSlowDown somewhat ineffective
+    # (Yes, this is bad for the overall performance!)
+    queue.dequeueBatchSize="1"
+)

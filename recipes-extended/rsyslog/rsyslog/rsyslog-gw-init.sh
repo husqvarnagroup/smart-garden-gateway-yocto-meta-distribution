@@ -32,9 +32,12 @@ fi
 
 # Disable verbose logging on prod
 FILTER_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/90-severity-forward-filter.conf"
+RATELIMIT_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/90-rate-limit.conf"
 SELUXIT_ENV="$(fw_printenv -n "seluxit_env" 2>/dev/null || echo prod)"
 if [ "${SELUXIT_ENV}" = prod ]; then
     cmp "${FILTER_CONFIG_FILE}.prod" "${FILTER_CONFIG_FILE}" 2>/dev/null || cp "${FILTER_CONFIG_FILE}.prod" "${FILTER_CONFIG_FILE}"
+    cmp "${RATELIMIT_CONFIG_FILE}.prod" "${RATELIMIT_CONFIG_FILE}" 2>/dev/null || cp "${RATELIMIT_CONFIG_FILE}.prod" "${RATELIMIT_CONFIG_FILE}"
 else
     rm -f "${FILTER_CONFIG_FILE}"
+    rm -f "${RATELIMIT_CONFIG_FILE}"
 fi
