@@ -4,6 +4,8 @@ SRC_URI += "\
     file://journald-ram.conf \
     file://journald-storage.conf \
     file://keep.d/${BPN} \
+    file://system-cpuaccounting.conf \
+    file://system-dumpcore.conf \
     file://system-logcolor.conf \
     file://system-watchdog.conf \
 "
@@ -12,13 +14,19 @@ FILES_${PN} += "\
     ${base_libdir}/upgrade/keep.d \
 "
 
-PR_append = ".1"
+PR_append = ".3"
 
 do_install_append() {
     install -m 0644 ${WORKDIR}/system-watchdog.conf ${D}${systemd_unitdir}/system.conf.d/50-watchdog.conf
 
     # Disable colorized statup messages
     install -m 0644 ${WORKDIR}/system-logcolor.conf ${D}${systemd_unitdir}/system.conf.d/51-logcolor.conf
+
+    # Disable core dumps per default
+    install -m 0644 ${WORKDIR}/system-dumpcore.conf ${D}${systemd_unitdir}/system.conf.d/52-dumpcore.conf
+
+    # Enable CPU accounting per default
+    install -m 0644 ${WORKDIR}/system-cpuaccounting.conf ${D}${systemd_unitdir}/system.conf.d/53-cpuaccounting.conf
 
     # journald: Log to RAM, not storage
     install -m 0644 ${WORKDIR}/journald-storage.conf ${D}${systemd_unitdir}/journald.conf.d/50-storage.conf
