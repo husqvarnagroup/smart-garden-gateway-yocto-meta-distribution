@@ -6,7 +6,8 @@ RDEPENDS_${PN} += "ca-certificates environment"
 
 SRC_URI += "\
     file://rsyslog.conf \
-    file://rsyslog.d/20-impstats.conf \
+    file://rsyslog.d/20-diagnostics.conf.dev \
+    file://rsyslog.d/20-diagnostics.conf.prod \
     file://rsyslog.d/90-rate-limit.conf.prod \
     file://rsyslog.d/90-severity-forward-filter.conf.prod \
     file://rsyslog.d/90-templates.conf \
@@ -22,7 +23,8 @@ do_install_append() {
     # Install rsyslog configuration
     install -d "${D}${sysconfdir}/rsyslog.d"
     install -m 644 ${WORKDIR}/rsyslog.conf ${D}${sysconfdir}/rsyslog.conf
-    install -m 644 ${WORKDIR}/rsyslog.d/20-impstats.conf ${D}${sysconfdir}/rsyslog.d/20-impstats.conf
+    install -m 644 ${WORKDIR}/rsyslog.d/20-diagnostics.conf.dev ${D}${sysconfdir}/rsyslog.d/20-diagnostics.conf.dev
+    install -m 644 ${WORKDIR}/rsyslog.d/20-diagnostics.conf.prod ${D}${sysconfdir}/rsyslog.d/20-diagnostics.conf.prod
     install -m 644 ${WORKDIR}/rsyslog.d/90-rate-limit.conf.prod ${D}${sysconfdir}/rsyslog.d/90-rate-limit.conf.prod
     install -m 644 ${WORKDIR}/rsyslog.d/90-severity-forward-filter.conf.prod ${D}${sysconfdir}/rsyslog.d/90-severity-forward-filter.conf.prod
     install -m 644 ${WORKDIR}/rsyslog.d/90-templates.conf ${D}${sysconfdir}/rsyslog.d/90-templates.conf
