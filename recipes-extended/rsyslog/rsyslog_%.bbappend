@@ -1,7 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".5"
+PR_append = ".6"
 
+DEPENDS += "openssl"
 RDEPENDS_${PN} += "ca-certificates environment"
 
 SRC_URI += "\
@@ -15,8 +16,10 @@ SRC_URI += "\
 "
 
 PACKAGECONFIG[impstats] = "--enable-impstats,--disable-impstats,,"
+PACKAGECONFIG[openssl] = "--enable-openssl,--disable-openssl,,"
 
-PACKAGECONFIG_append = " impstats"
+PACKAGECONFIG_append = " impstats openssl"
+PACKAGECONFIG_remove = "gnutls"
 
 do_install_append() {
     # Install rsyslog configuration
