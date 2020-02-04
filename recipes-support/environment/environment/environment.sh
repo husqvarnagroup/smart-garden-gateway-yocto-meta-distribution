@@ -7,6 +7,7 @@
 #
 # Precondition: The directories /etc/ssl/{certs,private} have to exist
 
+# shellcheck disable=SC2039
 set -eu -o pipefail
 
 ssl_dir="/etc/ssl"
@@ -38,6 +39,9 @@ for environment in ${environments}; do
         fi
         if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
             echo "${content}" | tr '%' '\n' > "${file}".tmp
+            if [ "${ext}" = "key" ]; then
+                chmod go-rwx "$file"
+            fi
             sync
             mv "${file}".tmp "${file}"
         else
