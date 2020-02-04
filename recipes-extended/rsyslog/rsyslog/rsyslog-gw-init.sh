@@ -1,5 +1,5 @@
 #!/bin/sh
-# shellcheck disable=SC2154
+# shellcheck disable=SC2154,SC2039
 #
 # Setup gateway configuration for rsyslog
 
@@ -40,4 +40,15 @@ if [ "${SELUXIT_ENV}" = prod ]; then
 else
     rm -f "${FILTER_CONFIG_FILE}"
     rm -f "${RATELIMIT_CONFIG_FILE}"
+fi
+
+# Configure full, unencrypted logging without rate limiting to local server for development (if enabled)
+# note: run this script and systemctl restart rsyslog if you use this dev setting
+DEV_RSYSLOG_SERVER="$(fw_printenv -n "dev_rsyslog_server" 2>/dev/null || echo "")"
+if [ -n "$DEV_RSYSLOG_SERVER" ]; then
+    rm -f "${FILTER_CONFIG_FILE}"
+    rm -f "${RATELIMIT_CONFIG_FILE}"
+    sed -i '/^ *SysSock\.RateLimit\..*/d' /etc/rsyslog.conf
+    sed -i 's/^ *StreamDriverMode=.*$/        StreamDriverMode=\"0\"/' /etc/rsyslog.conf
+    sed -i "s/^ *Target=.*$/        Target=\"${DEV_RSYSLOG_SERVER}\"/" /etc/rsyslog.conf
 fi
