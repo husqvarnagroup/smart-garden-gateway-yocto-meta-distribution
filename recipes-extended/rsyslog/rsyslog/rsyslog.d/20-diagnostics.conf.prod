@@ -1,0 +1,7 @@
+# --MARK-- message capability
+# https://www.rsyslog.com/doc/master/configuration/modules/immark.html
+module(load="immark" interval="3600")
+
+# Generate Periodic Statistics of Internal Counters
+# https://www.rsyslog.com/doc/v8-stable/configuration/modules/impstats.html
+module(load="impstats" interval="86400" resetCounters="on")

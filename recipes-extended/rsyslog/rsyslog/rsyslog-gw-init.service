@@ -5,6 +5,7 @@ After=environment.service
 Requires=environment.service
 ConditionPathExists=|!/etc/rsyslog.d/01-gateway-id.conf
 ConditionPathExists=|!/etc/rsyslog.d/02-gateway-metadata.conf
+ConditionPathExists=|!/etc/rsyslog.d/20-diagnostics.conf
 ConditionPathExists=|!/etc/rsyslog.d/90-rate-limit.conf
 ConditionPathExists=|!/etc/rsyslog.d/90-severity-forward-filter.conf
 

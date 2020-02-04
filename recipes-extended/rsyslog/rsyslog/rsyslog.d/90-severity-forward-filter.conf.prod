@@ -1,2 +1,12 @@
-# do not forward notice, info and debug logs in prod
-if $syslogseverity >= 5 then stop
+# do not forward notice, info and debug logs in prod (with some exceptions)
+if ($syslogseverity >= 5) then {
+    if ($programname == "rsyslogd" and $msg == "-- MARK --") then {
+        # allow mark message to reach remote logging in order to know if remote logging is working
+        continue
+    else if ($programname == "rsyslogd-pstats") {
+        # allow informational pstats messages to reach remote logging
+        continue
+    } else {
+        stop
+    }
+}
