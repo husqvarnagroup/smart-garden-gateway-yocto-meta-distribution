@@ -40,7 +40,7 @@ for environment in ${environments}; do
         if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
             echo "${content}" | tr '%' '\n' > "${file}".tmp
             if [ "${ext}" = "key" ]; then
-                chmod go-rwx "$file"
+                chmod go-rwx "${file}".tmp
             fi
             sync
             mv "${file}".tmp "${file}"
