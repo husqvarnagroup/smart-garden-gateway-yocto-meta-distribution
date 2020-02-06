@@ -40,6 +40,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     rsyslog \
     screen \
     sed \
+    shadoway-develop \
     socat \
     srecord \
     strace \
