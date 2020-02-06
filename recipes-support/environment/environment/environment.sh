@@ -35,12 +35,15 @@ for environment in ${environments}; do
         fi
         if [ -s "${file}" ]; then
             echo "File '${file}' already exists and is not empty"
+            if [ "${ext}" = "key" ] && [ "$(stat -c "%a" "${file}")" != "600" ]; then
+                chmod 600 "${file}"
+            fi
             continue
         fi
         if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
             echo "${content}" | tr '%' '\n' > "${file}".tmp
             if [ "${ext}" = "key" ]; then
-                chmod go-rwx "${file}".tmp
+                chmod 600 "${file}".tmp
             fi
             sync
             mv "${file}".tmp "${file}"
