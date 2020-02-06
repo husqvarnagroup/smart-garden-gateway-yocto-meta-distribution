@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 inherit systemd allarch
 
 PV = "2019-10-27"
-PR = "r2"
+PR = "r3"
 
 SRC_URI += " \
     file://ca-dev.crt \
