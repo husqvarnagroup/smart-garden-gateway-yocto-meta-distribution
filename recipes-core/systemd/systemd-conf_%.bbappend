@@ -14,7 +14,7 @@ FILES_${PN} += "\
     ${base_libdir}/upgrade/keep.d \
 "
 
-PR_append = ".3"
+PR_append = ".4"
 
 do_install_append() {
     install -m 0644 ${WORKDIR}/system-watchdog.conf ${D}${systemd_unitdir}/system.conf.d/50-watchdog.conf
