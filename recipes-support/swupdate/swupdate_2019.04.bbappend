@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".0"
+PR_append = ".1"
 
 SRC_URI += " \
             file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
@@ -19,10 +19,6 @@ SRC_URI += " \
             file://swupdate-check.sh \
             file://swupdate-check.service \
             file://swupdate-check.timer \
-            file://update-hw-revision.sh \
-            file://update-hw-revision.service \
-            file://update-sw-versions.sh \
-            file://update-sw-versions.service \
             "
 
 # The upstream recipe puts too much in the swupdate package
@@ -54,18 +50,10 @@ do_install_append () {
 FILES_${PN} += " \
     ${datadir}/${PN}/sw-update.cert.pem \
     ${sysconfdir}/swupdate.cfg \
-    ${systemd_unitdir}/system/update-hw-revision.service \
-    ${systemd_unitdir}/system/update-sw-versions.service \
     ${systemd_unitdir}/system/swupdate-check.service \
     ${systemd_unitdir}/system/swupdate-check.timer \
-    ${bindir}/update-hw-revision \
-    ${bindir}/update-sw-versions \
     ${bindir}/swupdate-check \
 "
-
-DEFAULT_BOARD_NAME = "unknown"
-DEFAULT_BOARD_NAME_mt7688 = "smart-gateway-mt7688"
-DEFAULT_BOARD_NAME_at91sam9x5 = "smart-gateway-at91sam"
 
 do_install_append () {
     install -d ${D}${datadir}/${PN}
@@ -79,18 +67,9 @@ do_install_append () {
 
     install -m 644 ${WORKDIR}/swupdate-check.service ${D}${systemd_unitdir}/system
     install -m 644 ${WORKDIR}/swupdate-check.timer ${D}${systemd_unitdir}/system
-
-    install -m 644 ${WORKDIR}/update-hw-revision.service ${D}${systemd_unitdir}/system
-    install -m 755 ${WORKDIR}/update-hw-revision.sh ${D}${bindir}/update-hw-revision
-    sed -i -e 's,@DEFAULT_BOARD_NAME@,${DEFAULT_BOARD_NAME},g' \
-               ${D}${bindir}/update-hw-revision
-
-    install -m 644 ${WORKDIR}/update-sw-versions.service ${D}${systemd_unitdir}/system
-    install -m 755 ${WORKDIR}/update-sw-versions.sh ${D}${bindir}/update-sw-versions
 }
 
-SYSTEMD_SERVICE_${PN} += "update-hw-revision.service"
-SYSTEMD_SERVICE_${PN} += "update-sw-versions.service"
 SYSTEMD_SERVICE_${PN} += "swupdate-check.timer"
 
 DEPENDS += "systemd curl"
+RDEPENDS_${PN} += "components-introspection"
