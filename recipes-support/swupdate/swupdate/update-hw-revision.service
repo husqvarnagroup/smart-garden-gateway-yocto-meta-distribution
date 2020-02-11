@@ -1,9 +1,0 @@
-[Unit]
-Description=Update Hardware Revision file for SWUpdate
-
-[Service]
-ExecStart=/usr/bin/update-hw-revision
-Type=oneshot
-
-[Install]
-WantedBy=multi-user.target

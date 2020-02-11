@@ -1,11 +1,9 @@
 #!/bin/sh
 
-set -u
-
-# Make sure /tmp/hw-revision exists
+# Make sure the version files exist
+# Note: Doing this here might be superflous when executed trough systemd (which
+#       is the expected case).
 /usr/bin/update-hw-revision
-
-# Make sure /tmp/sw-versions exists
 /usr/bin/update-sw-versions
 
 # Get update_url stored in U-Boot to allow using customized update servers
