@@ -23,6 +23,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     iotop \
     iperf3 \
     iputils \
+    lbipsock \
     lsof \
     mc \
     minicom \
