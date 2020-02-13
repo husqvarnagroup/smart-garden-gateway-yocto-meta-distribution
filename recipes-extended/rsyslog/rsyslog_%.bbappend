@@ -1,17 +1,18 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".6"
+PR_append = ".7"
 
 RDEPENDS_${PN} += "ca-certificates environment"
 
 SRC_URI += "\
+    file://rsyslog-gw-init.service \
+    file://rsyslog-gw-init.sh \
     file://rsyslog.conf \
     file://rsyslog.d/20-impstats.conf \
     file://rsyslog.d/90-rate-limit.conf.prod \
     file://rsyslog.d/90-severity-forward-filter.conf.prod \
     file://rsyslog.d/90-templates.conf \
-    file://rsyslog-gw-init.service \
-    file://rsyslog-gw-init.sh \
+    file://rsyslog.service \
 "
 
 PACKAGECONFIG[impstats] = "--enable-impstats,--disable-impstats,,"
@@ -36,6 +37,9 @@ do_install_append() {
     install -m 644 ${WORKDIR}/rsyslog-gw-init.service ${D}${systemd_unitdir}/system
     sed -i -e 's,@BINDIR@,${bindir},g' \
         ${D}${systemd_unitdir}/system/rsyslog-gw-init.service
+
+    # Overwrite upstream service file
+    install -m 644 ${WORKDIR}/rsyslog.service ${D}${systemd_unitdir}/system
 }
 
 SYSTEMD_SERVICE_${PN} += "rsyslog-gw-init.service"
