@@ -28,6 +28,7 @@ IMAGE_INSTALL += " \
     iptables \
     iptables-modules \
     iw \
+    lsof \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \
