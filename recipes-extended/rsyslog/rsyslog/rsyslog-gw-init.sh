@@ -24,7 +24,7 @@ fi
 RSYSLOG_METADATA_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/02-gateway-metadata.conf"
 if [ ! -s "${RSYSLOG_METADATA_CONFIG_FILE}" ]; then
     mkdir -p ${RSYSLOG_CONFIG_DIR}
-    echo "set \$!gw.env = '$(SELUXIT_ENV)';" >> "${RSYSLOG_METADATA_CONFIG_FILE}.tmp"
+    echo "set \$!gw.env = '${SELUXIT_ENV}';" >> "${RSYSLOG_METADATA_CONFIG_FILE}.tmp"
     # shellcheck disable=SC1091
     echo "set \$!gw.swVersion = '$(. /etc/os-release; echo "$VERSION")';" >> "${RSYSLOG_METADATA_CONFIG_FILE}.tmp"
     sync
