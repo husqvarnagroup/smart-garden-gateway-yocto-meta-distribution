@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".10"
+PR_append = ".11"
 
 DEPENDS += "openssl"
 RDEPENDS_${PN} += "ca-certificates environment"
@@ -47,6 +47,9 @@ do_install_append() {
 
     # Overwrite upstream service file
     install -m 644 ${WORKDIR}/rsyslog.service ${D}${systemd_unitdir}/system
+
+    # Create directory for our serialized messages
+    install -d ${D}${localstatedir}/spool/rsyslog
 
     # Install the syslog_caller binary
     cp ${B}/${TESTDIR}/syslog_caller ${D}${bindir}/rsyslog-syslog_caller

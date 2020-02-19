@@ -3,6 +3,8 @@ Description=System Logging Service
 Requires=syslog.socket
 Documentation=man:rsyslogd(8)
 Documentation=https://www.rsyslog.com/doc/
+After=rsyslog-gw-init.service
+Wants=rsyslog-gw-init.service
 
 [Service]
 Type=notify
