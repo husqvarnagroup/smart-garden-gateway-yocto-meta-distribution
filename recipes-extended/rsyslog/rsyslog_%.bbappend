@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".11"
+PR_append = ".12"
 
 DEPENDS += "openssl"
 RDEPENDS_${PN} += "ca-certificates environment"
@@ -34,6 +34,9 @@ do_install_append() {
     install -m 644 ${WORKDIR}/rsyslog.d/20-diagnostics.conf.prod ${D}${sysconfdir}/rsyslog.d/20-diagnostics.conf.prod
     install -m 644 ${WORKDIR}/rsyslog.d/90-severity-forward-filter.conf.prod ${D}${sysconfdir}/rsyslog.d/90-severity-forward-filter.conf.prod
     install -m 644 ${WORKDIR}/rsyslog.d/90-templates.conf ${D}${sysconfdir}/rsyslog.d/90-templates.conf
+
+    # Allow rsyslog-gw-init to access the vanilla configuration at any time
+    cp "${D}${sysconfdir}/rsyslog.conf" "${D}${sysconfdir}/rsyslog.conf.prod"
 
     # Install rsyslog gateway init script
     install -d ${D}${bindir}

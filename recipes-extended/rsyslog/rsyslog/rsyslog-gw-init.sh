@@ -44,12 +44,29 @@ else
     rm -f "${FILTER_CONFIG_FILE}"
 fi
 
-# Configure full, unencrypted logging without rate limiting to local server for development (if enabled)
-# note: run this script and systemctl restart rsyslog if you use this dev setting
-DEV_RSYSLOG_SERVER="$(fw_printenv -n "dev_rsyslog_server" 2>/dev/null || echo "")"
-if [ -n "$DEV_RSYSLOG_SERVER" ]; then
-    rm -f "${FILTER_CONFIG_FILE}"
-    sed -i '/^ *SysSock\.RateLimit\..*/d' /etc/rsyslog.conf
-    sed -i 's/^ *StreamDriverMode=.*$/        StreamDriverMode=\"0\"/' /etc/rsyslog.conf
-    sed -i "s/^ *Target=.*$/        Target=\"${DEV_RSYSLOG_SERVER}\"/" /etc/rsyslog.conf
+# The following lines are for development purposes. On changes to the relevant
+# U-Boot variables, either restart the gateway or run this script and then
+# restart rsyslogd.
+
+# Create temporary copy of the (vanilla) rsyslog.conf to work on
+cp /etc/rsyslog.conf.prod /tmp/rsyslog.conf
+
+# Configure unencrypted logging to local server
+if DEV_RSYSLOG_SERVER="$(fw_printenv -n "dev_rsyslog_server" 2>/dev/null)"; then
+    sed -i "s/Target=.*$/Target=\"${DEV_RSYSLOG_SERVER}\"/" /tmp/rsyslog.conf
+    sed -i 's/StreamDriverMode="1"$/StreamDriverMode=\"0\"/' /tmp/rsyslog.conf
+fi
+
+# Disable rate limiting
+if DEV_RSYSLOG_DISABLE_RATE_LIMIT="$(fw_printenv -n "dev_rsyslog_disable_rate_limit" 2>/dev/null)"; then
+    if [ "${DEV_RSYSLOG_DISABLE_RATE_LIMIT}" -eq "1" ]; then
+        sed -i 's/SysSock\.RateLimit\.Interval=/# SysSock\.RateLimit\.Interval=/' /tmp/rsyslog.conf
+    fi
+fi
+
+# Update configuration (only) if changed
+if cmp /tmp/rsyslog.conf /etc/rsyslog.conf; then
+    rm /tmp/rsyslog.conf
+else
+    mv /tmp/rsyslog.conf /etc/rsyslog.conf
 fi
