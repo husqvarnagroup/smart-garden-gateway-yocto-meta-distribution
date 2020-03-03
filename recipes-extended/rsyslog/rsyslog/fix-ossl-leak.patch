@@ -1,0 +1,12 @@
+diff --git a/runtime/nsd_ossl.c b/runtime/nsd_ossl.c
+index bf42dcfa9..398067158 100644
+--- a/runtime/nsd_ossl.c
++++ b/runtime/nsd_ossl.c
+@@ -968,6 +968,7 @@ osslGlblExit(void)
+ {
+ 	DEFiRet;
+ 	DBGPRINTF("openssl: entering osslGlblExit\n");
++	SSL_CTX_free(ctx);
+ 	ENGINE_cleanup();
+ 	ERR_free_strings();
+ 	EVP_cleanup();
