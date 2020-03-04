@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".12"
+PR_append = ".13"
 
 DEPENDS += "openssl"
 RDEPENDS_${PN} += "ca-certificates environment"
@@ -14,6 +14,7 @@ SRC_URI += "\
     file://rsyslog.d/90-severity-forward-filter.conf.prod \
     file://rsyslog.d/90-templates.conf \
     file://rsyslog.service \
+    file://fix-ossl-leak.patch \
 "
 
 PACKAGECONFIG[impstats] = "--enable-impstats,--disable-impstats,,"
