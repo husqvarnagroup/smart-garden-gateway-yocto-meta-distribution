@@ -238,8 +238,11 @@ BUILDHISTORY_COMMIT = "1"
 # Archive source code for all packages getting built
 # Disabled by default as not relevant for development builds and will be activated
 # by auto.conf on CI infrastructure for release builds.
+# Note: The COPYLEFT_LICENSE_EXCLUDE variable takes precedence over the
+#       COPYLEFT_LICENSE_INCLUDE variable.
 #INHERIT += "archiver"
 ARCHIVER_MODE[src] = "original"
+COPYLEFT_LICENSE_INCLUDE = "*"
 COPYLEFT_LICENSE_EXCLUDE = 'CLOSED Proprietary'
 
 # Copy license files to /usr/share/common-licenses in the image
