@@ -36,6 +36,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     prelink \
     pstree \
     pv \
+    python3-paho-mqtt \
     python3-pip \
     rsync \
     rsyslog \
