@@ -1,0 +1,5 @@
+[Match]
+Name=ppp0
+
+[Route]
+Destination=fc00::/64

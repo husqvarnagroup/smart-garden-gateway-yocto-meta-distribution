@@ -1,2 +1,0 @@
-#!/bin/sh
-ip -6 route add fc00::/64 dev $PPP_IFACE
