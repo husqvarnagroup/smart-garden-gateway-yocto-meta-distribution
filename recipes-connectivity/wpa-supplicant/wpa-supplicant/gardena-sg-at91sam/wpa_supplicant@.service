@@ -1,0 +1,25 @@
+[Unit]
+Description=WPA supplicant daemon (interface-specific version)
+Requires=sys-subsystem-net-devices-%i.device
+After=sys-subsystem-net-devices-%i.device
+Before=network.target
+Wants=network.target
+Conflicts=hostapd.service
+
+# NetworkManager users will probably want the dbus version instead.
+
+[Service]
+Type=simple
+# SG-14607 - only rtl8xxxu is able to scan for APs reliably
+ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
+ExecStartPre=modprobe rtl8xxxu
+# Give the driver some time to initialize
+ExecStartPre=sleep 3
+# Restart on errors (i.e. because the the driver failed to create the wlan
+# interface in time)
+Restart=on-failure
+RestartSec=5s
+ExecStart=/usr/sbin/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
+
+[Install]
+WantedBy=multi-user.target
