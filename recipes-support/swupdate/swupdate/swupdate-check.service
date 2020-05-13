@@ -6,6 +6,7 @@ Requires=swupdate-progress.service
 # prevent swupdate during manufacturing
 ConditionPathExists=/etc/fct_finalized
 ConditionPathExists=/etc/eol_test_passed
+ConditionPathExists=!/run/eol_test_network
 
 [Service]
 ExecStart=/usr/bin/swupdate-check
