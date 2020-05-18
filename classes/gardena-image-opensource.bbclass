@@ -22,6 +22,7 @@ IMAGE_INSTALL += " \
     dhcpcd \
     dnsmasq \
     firewall \
+    healthcheck \
     hostapd \
     i2c-tools \
     initscripts-readonly-rootfs-overlay \
