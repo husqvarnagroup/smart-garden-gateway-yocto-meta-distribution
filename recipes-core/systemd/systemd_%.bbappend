@@ -4,6 +4,7 @@ SRC_URI += "\
     file://keep.d/${BPN} \
     file://systemd-disable-colors.sh \
     file://systemd-disable-pager.sh \
+    file://99-husqvarna-default.conf \
 "
 
 FILES_${PN} += "\
@@ -12,7 +13,7 @@ FILES_${PN} += "\
     ${sysconfdir}/profile.d/systemd-disable-pager.sh \
 "
 
-PR_append = ".2"
+PR_append = ".3"
 
 do_install_append() {
 	# Disable colorized output of system tools (systemctl, etc.)
@@ -21,7 +22,8 @@ do_install_append() {
 	install -m 0644 ${WORKDIR}/systemd-disable-pager.sh ${D}${sysconfdir}/profile.d
 
 	# Use our own NTP server names
-	sed -i 's/#NTP=.*/NTP=time1.iot.sg.dss.husqvarnagroup.net time2.iot.sg.dss.husqvarnagroup.net time3.iot.sg.dss.husqvarnagroup.net time4.iot.sg.dss.husqvarnagroup.net/' ${D}${sysconfdir}/systemd/timesyncd.conf
+	install -d ${D}${sysconfdir}/systemd/timesyncd.conf.d
+	install -m 0644 ${WORKDIR}/99-husqvarna-default.conf ${D}${sysconfdir}/systemd/timesyncd.conf.d
 
 	# Keep relevant systemd data from being erased on update
 	install -d ${D}${base_libdir}/upgrade/keep.d
