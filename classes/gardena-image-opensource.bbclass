@@ -29,6 +29,7 @@ IMAGE_INSTALL += " \
     iptables \
     iptables-modules \
     iw \
+    jq \
     lsof \
     memtester \
     mtd-utils \
