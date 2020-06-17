@@ -21,7 +21,7 @@ do_install_append() {
 	install -m 0644 ${WORKDIR}/systemd-disable-colors.sh ${D}${sysconfdir}/profile.d
 	install -m 0644 ${WORKDIR}/systemd-disable-pager.sh ${D}${sysconfdir}/profile.d
 
-	# Use our own NTP server names
+	# Always append our own NTP server names as a default (99- takes a very low precedence)
 	install -d ${D}${sysconfdir}/systemd/timesyncd.conf.d
 	install -m 0644 ${WORKDIR}/99-husqvarna-default.conf ${D}${sysconfdir}/systemd/timesyncd.conf.d
 
