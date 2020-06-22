@@ -1,9 +1,10 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_append = ".1"
+PR_append = ".2"
 
 SRC_URI += " \
     file://40-swupdate-check.sh \
+    file://50-timesyncd.conf.sh \
     file://dhcpcd.conf \
     file://dhcpcd.service \
     file://keep.d/${BPN} \
@@ -22,6 +23,7 @@ do_install_append() {
 
     install -d ${D}${libexecdir}/dhcpcd-hooks
     install -m 0644 ${WORKDIR}/40-swupdate-check.sh ${D}${libexecdir}/dhcpcd-hooks/40-swupdate-check
+    install -m 0644 ${WORKDIR}/50-timesyncd.conf.sh ${D}${libexecdir}/dhcpcd-hooks/50-timesyncd.conf
 
     # Keep DHCP Unique Identifier on updates
     install -d ${D}${base_libdir}/upgrade/keep.d
