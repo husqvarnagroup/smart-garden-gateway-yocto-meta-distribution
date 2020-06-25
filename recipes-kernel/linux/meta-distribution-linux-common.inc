@@ -2,7 +2,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}:"
 SRC_URI_append = " file://distribution-kmeta;type=kmeta;name=distribution-kmeta;destsuffix=distribution-kmeta"
 
-PR_append = ".1"
+PR_append = ".2"
 
 KERNEL_FEATURES_append = " \
     distro/disable_kernel_samples.cfg \
