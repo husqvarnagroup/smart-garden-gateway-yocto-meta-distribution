@@ -7,7 +7,7 @@
 /usr/bin/update-sw-versions
 
 # Get update_url stored in U-Boot to allow using customized update servers
-update_url=$(fw_printenv -n update_url 2>/dev/null || echo @DISTRO_UPDATE_URL@)
+update_url=$(fw_printenv -n update_url 2>/dev/null || echo @DISTRO_UPDATE_URL@?gwVersion=@DISTRO_VERSION_ID@)
 
 # Get active bootslot
 #
