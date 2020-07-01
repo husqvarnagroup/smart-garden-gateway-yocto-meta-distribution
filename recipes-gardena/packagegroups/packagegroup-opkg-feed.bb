@@ -13,6 +13,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     cuitest \
     curl \
     emc-tools \
+    ethtool \
     file \
     gdb \
     gdbserver \
