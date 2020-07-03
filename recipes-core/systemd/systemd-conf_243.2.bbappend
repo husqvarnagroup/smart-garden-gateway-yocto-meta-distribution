@@ -14,7 +14,7 @@ FILES_${PN} += "\
     ${base_libdir}/upgrade/keep.d \
 "
 
-PR_append = ".4"
+PR_append = ".5"
 
 do_install_append() {
     install -m 0644 ${WORKDIR}/system-watchdog.conf ${D}${systemd_unitdir}/system.conf.d/50-watchdog.conf
@@ -37,4 +37,9 @@ do_install_append() {
     # Keep relevant systemd data from being erased on update
     install -d ${D}${base_libdir}/upgrade/keep.d
     install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
+
+    # See SG-16046
+    # Please review on upgrade to a newer systemd version
+    rm ${D}${systemd_unitdir}/network/80-wired.network
+    rmdir ${D}${systemd_unitdir}/network
 }

@@ -1,5 +1,9 @@
 [Match]
 Name=ppp0
+Type=ppp
 
 [Route]
 Destination=fc00::/64
+
+[Link]
+RequiredForOnline=no
