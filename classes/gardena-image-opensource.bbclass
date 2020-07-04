@@ -46,7 +46,9 @@ IMAGE_INSTALL += " \
     swupdate \
     systemd-conf \
     systemd-container \
-    tcpdump-sherlock \
+    systemd-extra-utils \
+    tcpdump-sherlock-ppp0 \
+    tcpdump-sherlock-vpn0 \
     u-boot-fw-utils \
     unique-hostname \
     wireless-regdb-static \
