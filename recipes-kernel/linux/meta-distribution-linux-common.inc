@@ -2,7 +2,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}:"
 SRC_URI_append = " file://distribution-kmeta;type=kmeta;name=distribution-kmeta;destsuffix=distribution-kmeta"
 
-PR_append = ".2"
+PR_append = ".3"
 
 KERNEL_FEATURES_append = " \
     distro/disable_kernel_samples.cfg \
@@ -22,6 +22,7 @@ KERNEL_FEATURES_append = " \
     distro/enable_notify.cfg \
     distro/enable_panic_on_oops.cfg \
     distro/enable_ppp.cfg \
+    distro/enable_printk.cfg \
     distro/enable_proc_page_monitor.cfg \
     distro/enable_rfkill.cfg \
     distro/enable_shmem.cfg \
