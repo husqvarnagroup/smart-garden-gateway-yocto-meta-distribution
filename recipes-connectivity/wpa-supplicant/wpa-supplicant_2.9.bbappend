@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".3"
+PR_append = ".4"
 
 SRC_URI += " \
     file://keep.d/${BPN} \
@@ -28,10 +28,8 @@ do_install_append() {
     rm ${D}/${systemd_unitdir}/system/wpa_supplicant-nl80211@.service
     rm ${D}/${systemd_unitdir}/system/wpa_supplicant-wired@.service
     rm ${D}/${systemd_unitdir}/system/wpa_supplicant.service
-}
 
-# SG-14607 Load rtl8xxxu in client mode
-do_install_append_gardena-sg-at91sam() {
+    # Install customized unit
     install -m 644 ${WORKDIR}/wpa_supplicant@.service ${D}/${systemd_unitdir}/system/
 }
 
