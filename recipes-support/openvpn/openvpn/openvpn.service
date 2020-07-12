@@ -4,7 +4,6 @@ After=syslog.target network-online.target eoltest-check.service environment.serv
 Wants=network-online.target eoltest-check.service
 Requires=environment.service
 ConditionPathExists=/etc/eol_test_passed
-StopWhenUnneeded=yes
 
 [Service]
 PrivateTmp=true
@@ -13,3 +12,6 @@ EnvironmentFile=/etc/seluxit_env
 PIDFile=/var/run/openvpn/seluxit.pid
 ExecStartPre=/bin/mkdir -p /var/run/openvpn
 ExecStart=/usr/sbin/openvpn --daemon --writepid /var/run/openvpn/seluxit.pid --cd /etc/openvpn/ --config ${SELUXIT_ENV}.conf
+
+[Install]
+WantedBy=multi-user.target
