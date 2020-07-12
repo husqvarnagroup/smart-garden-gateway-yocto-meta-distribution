@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".0"
+PR_append = ".1"
 
 RDEPENDS_${PN} += "environment"
 
@@ -30,5 +30,6 @@ do_install_append() {
     rm ${D}${systemd_unitdir}/system/openvpn@.service
 }
 SYSTEMD_SERVICE_${PN} = "openvpn.service"
+SYSTEMD_AUTO_ENABLE_${PN} = "enable"
 
 DEPENDS += "systemd"
