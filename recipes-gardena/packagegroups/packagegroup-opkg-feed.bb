@@ -54,6 +54,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     traceroute \
     tshark \
     vim \
+    wakaama \
     wget \
     wlan-stresstest \
     xz \
