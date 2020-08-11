@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_append = ".2"
+PR_append = ".3"
 
 SRC_URI += " \
     file://40-swupdate-check.sh \
