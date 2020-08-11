@@ -30,8 +30,10 @@ EOF
 
 remove_servers()
 {
-    rm -f "$SERVERFILE"
-    restart_needed=1
+    if [ -f "$SERVERFILE" ]; then
+        rm -f "$SERVERFILE"
+        restart_needed=1
+    fi
 }
 
 update_servers()
