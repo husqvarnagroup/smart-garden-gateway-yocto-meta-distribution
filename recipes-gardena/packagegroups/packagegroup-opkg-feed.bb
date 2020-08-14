@@ -34,6 +34,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     netcat \
     network-management \
     ntpdate \
+    openssh \
     picocom \
     prelink \
     pstree \
@@ -57,6 +58,8 @@ RDEPENDS_packagegroup-opkg-feed = "\
     vim \
     wakaama \
     wget \
+    wifi-certification-util \
+    wifi-testsuite \
     wlan-stresstest \
     xz \
     zsh \
