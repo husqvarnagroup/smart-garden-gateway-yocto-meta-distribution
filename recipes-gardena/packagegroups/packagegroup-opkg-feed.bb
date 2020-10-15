@@ -22,6 +22,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     i2c-tools \
     iftop \
     iotop \
+    iperf2 \
     iperf3 \
     iputils \
     lbipsock \
