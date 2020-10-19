@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".15"
+PR_append = ".16"
 
 DEPENDS += "openssl"
 RDEPENDS_${PN} += "ca-certificates environment"
