@@ -11,6 +11,8 @@ set -eu -o pipefail
 RSYSLOG_CONFIG_DIR='/etc/rsyslog.d'
 SELUXIT_ENV="$(fw_printenv -n "seluxit_env" 2>/dev/null || echo prod)"
 GATEWAY_ID="$(fw_printenv -n gatewayid)"
+BOARD_NAME="$(fw_printenv -n board_name)"
+HW_REVISION="$(fw_printenv -n gateway_hardware_revision)"
 
 # Configure gateway id as LocalHostName
 RSYSLOG_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/01-gateway-id.conf"
@@ -20,12 +22,20 @@ grep -q ^"${RSYSLOG_CONFIG_FILE_CONTENT}"$ "${RSYSLOG_CONFIG_FILE}" 2>/dev/null 
 # Configure variables for use in other config files
 RSYSLOG_METADATA_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/02-gateway-metadata.conf"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV="set \$!gw.env = '${SELUXIT_ENV}';"
+
 # shellcheck disable=SC1091
-RSYSLOG_METADATA_CONFIG_FILE_CONTENT_VERSION="set \$!gw.swVersion = '$(. /etc/os-release; echo "$VERSION")';"
+RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION="set \$!gw.swVersion = '$(. /etc/os-release; echo "$VERSION")';"
+RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME="set \$!gw.boardName = '${BOARD_NAME}';"
+RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION="set \$!gw.hwRevision = '${HW_REVISION}';"
+
 if ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
-   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_VERSION}"$ "${RSYSLOG_METADATA_CONFIG_FILE}"; then
+   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
+   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
+   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION}"$ "${RSYSLOG_METADATA_CONFIG_FILE}"; then
     echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}" > "${RSYSLOG_METADATA_CONFIG_FILE}"
-    echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_VERSION}" >> "${RSYSLOG_METADATA_CONFIG_FILE}"
+    echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION}" >> "${RSYSLOG_METADATA_CONFIG_FILE}"
+    echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME}" >> "${RSYSLOG_METADATA_CONFIG_FILE}"
+    echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION}" >> "${RSYSLOG_METADATA_CONFIG_FILE}"
 fi
 
 # Configure diagnostics based on environment
