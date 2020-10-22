@@ -10,3 +10,17 @@ if ($syslogseverity >= 5) then {
         stop
     }
 }
+
+# Filter specific messages to prevent spamming during off-season (SG-16537).
+if ($programname == "shadoway") then {
+
+    # Filter out messages like: "[log4cpp@55029 category="filelog"] Device: fc00::6:94bb:ae1c:f3ee name: 'SG Mower' is not reachable"
+    if (re_match($msg, "^.*Device: [a-f0-9:]+ name: '[A-Za-z0-9 ]+' is not reachable")) then {
+        stop
+    }
+
+    # Filter out messages like: "[log4cpp@55029 category="filelog"] CAN'T wake UP device: fc00::6:94bb:ae1e:390 channel 15.... given up"
+    if (re_match($msg, "^.*CAN'T wake UP device: [a-f0-9:]+ channel [0-9]+.... given up")) then {
+        stop
+    }
+}
