@@ -6,6 +6,7 @@ Requires=environment.service
 
 [Service]
 Type=oneshot
+RemainAfterExit=yes
 ExecStart=@BINDIR@/rsyslog-gw-init
 
 [Install]
