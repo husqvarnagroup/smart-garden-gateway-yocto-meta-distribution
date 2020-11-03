@@ -41,6 +41,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     pv \
     python3-paho-mqtt \
     python3-pip \
+    python3-toml \
     rsync \
     rsyslog \
     screen \
