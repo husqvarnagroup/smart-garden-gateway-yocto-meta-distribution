@@ -16,6 +16,8 @@ ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
 ExecStartPre=modprobe rtl8xxxu
 # Give the driver some time to initialize
 ExecStartPre=sleep 3
+# SG-16157 On average, 13dBm generally performs well (throughput wise)
+ExecStartPre=iw wlan0 set txpower limit 1300
 # Restart on errors (i.e. because the the driver failed to create the wlan
 # interface in time)
 Restart=on-failure
