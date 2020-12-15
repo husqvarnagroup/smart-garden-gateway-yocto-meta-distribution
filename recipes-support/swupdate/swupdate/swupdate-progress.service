@@ -2,7 +2,7 @@
 Description=SWUpdate progress service
 
 [Service]
-ExecStart=/usr/bin/swupdate-progress -r -w
+ExecStart=/usr/bin/swupdate-progress -r -w -e /usr/bin/swupdate-handle-result
 Restart=always
 
 [Install]
