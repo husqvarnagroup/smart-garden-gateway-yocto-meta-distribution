@@ -1,0 +1,48 @@
+From 51e3e1a105b3cdef7f642a99a30ace91f8ceb57a Mon Sep 17 00:00:00 2001
+From: Reto Schneider <code@reto-schneider.ch>
+Date: Tue, 5 Jan 2021 02:02:18 +0100
+Subject: [PATCH] fw_printenv: Exit with error code on unset variables
+
+This patch brings back the behavior of the U-Boot based fw_printenv
+tool, allowing it to be used as a drop-in replacement.
+
+Please note: The new behavior is clearly better as it allows to
+differentiate between unset/empty values and errors when reading the
+environment. However, changing all dependants of fw_printenv is work
+which one does not necessarily wants to do for just updating to a new
+SWUpdate version.
+---
+ src/fw_printenv.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/src/fw_printenv.c b/src/fw_printenv.c
+index 8b830d5..ee860e6 100644
+--- a/src/fw_printenv.c
++++ b/src/fw_printenv.c
+@@ -66,6 +66,7 @@ int main (int argc, char **argv) {
+ 	char *progname;
+ 	bool is_setenv = false;
+ 	bool noheader = false;
++	bool printed = false;
+ 
+ 	/*
+ 	 * As old tool, there is just a tool with symbolic link
+@@ -144,11 +145,18 @@ int main (int argc, char **argv) {
+ 		} else {
+ 			for (i = 0; i < argc; i++) {
+ 				value = libuboot_get_env(ctx, argv[i]);
++				if (!value) {
++					fprintf(stderr, "Error: \"%s\" not defined\n", argv[i]);
++					continue;
++				}
+ 				if (noheader)
+ 					fprintf(stdout, "%s\n", value ? value : "");
+ 				else
+ 					fprintf(stdout, "%s=%s\n", argv[i], value ? value : "");
++				printed = true;
+ 			}
++			if (!printed)
++				exit (1);
+ 		}
+ 	} else { /* setenv branch */
+ 		bool need_store = false;
