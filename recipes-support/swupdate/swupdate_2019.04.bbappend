@@ -73,4 +73,4 @@ do_install_append () {
 SYSTEMD_SERVICE_${PN} += "swupdate-check.timer"
 
 DEPENDS += "systemd curl"
-RDEPENDS_${PN} += "components-introspection swupdate-handle-result"
+RDEPENDS_${PN} += "components-introspection"
