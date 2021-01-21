@@ -1,0 +1,17 @@
+[Unit]
+Description=DNS forwarder and DHCP server
+Requires=sys-subsystem-net-devices-%i.device hostapd@%i.service
+After=sys-subsystem-net-devices-%i.device network.target hostapd@%i.service
+
+[Service]
+Type=forking
+PIDFile=/run/dnsmasq.pid
+ExecStartPre=/usr/bin/dnsmasq --test
+ExecStartPre=/usr/bin/env ip a replace 10.0.0.1/24 dev %i
+ExecStart=/usr/bin/dnsmasq -x /run/dnsmasq.pid -7 /etc/dnsmasq.d/%i --local-service -i %i
+ExecStop=/bin/kill $MAINPID
+ExecStopPost=/usr/bin/env ip a del 10.0.0.1/24 dev %i
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

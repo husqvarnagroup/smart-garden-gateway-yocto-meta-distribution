@@ -6,11 +6,23 @@ Before=network.target
 Wants=network.target
 ConditionPathExists=/etc/wpa_supplicant/wpa_supplicant-%I.conf
 
+Conflicts=hostapd@%i.service
+Before=hostapd%i.service
+
 # NetworkManager users will probably want the dbus version instead.
 
 [Service]
 Type=simple
+
+# attach dhcpcd in case hostapd detached it
+ExecStartPre=dhcpcd --rebind %i
+
 ExecStart=/usr/sbin/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
+
+# Restart on errors (i.e. because the the driver failed to create the wlan
+# interface in time)
+Restart=on-failure
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target

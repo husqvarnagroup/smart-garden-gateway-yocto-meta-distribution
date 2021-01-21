@@ -1,3 +1,5 @@
+# NOTE: we do not require %i because the driver may not be loaded
+
 [Unit]
 Description=Hostapd IEEE 802.11 AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
 After=network.target
@@ -5,16 +7,27 @@ After=network.target
 [Service]
 Type=forking
 PIDFile=/run/hostapd.pid
+
 # SG-14607 - only rtl8192cu supports AP mode
 ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
 ExecStartPre=modprobe rtl8192cu
+
 # Give the driver some time to initialize
 ExecStartPre=sleep 3
+
+# generate config
+ExecStartPre=mkdir -p /run/hostapd
+ExecStartPre=hostapd-genconf /run/hostapd/hostapd-%i.conf /etc/hostapd.conf /run/hostapd/hostapd.d /run/hostapd/hostapd.d/%i
+
+# detach dhcpcd
+ExecStartPre=dhcpcd --release %i
+
+ExecStart=hostapd /run/hostapd/hostapd-%i.conf -P /run/hostapd.pid -B -i %i
+
 # Restart on errors (i.e. because the the driver failed to create the wlan
 # interface in time)
 Restart=on-failure
 RestartSec=5
-ExecStart=@SBINDIR@/hostapd @SYSCONFDIR@/hostapd.conf -P /run/hostapd.pid -B
 
 [Install]
 WantedBy=multi-user.target
