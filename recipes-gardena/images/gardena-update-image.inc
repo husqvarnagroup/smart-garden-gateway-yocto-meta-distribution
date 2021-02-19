@@ -1,17 +1,34 @@
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-inherit swupdate
+inherit swupdate deploy
 
-INC_PR = "r8"
+INC_PR = "r11"
 
 # Images to build before building swupdate image
 IMAGE_DEPENDS = "virtual/kernel u-boot"
 
-# Define U-Boot filename and version
+# Define U-Boot filename and version. This is only relevant when the "freshly"
+# built U-Boot binary should get used. See comment below this section.
 UBOOT_FILENAME = "u-boot-${MACHINE}.bin"
 UBOOT_FILENAME_at91sam9x5 = "u-boot-with-spl.bin-${MACHINE}"
 UBOOT_VERSION = "${@d.getVar("PREFERRED_VERSION_u-boot", False).replace("-prebuilt", "")}"
+UBOOT_VERSION = "XXX"
+
+# Since we want the bootloaders binaries to be buit (just) once and only
+# updated when absolutely needed, keep them stable by using prebuilt binaries.
+# The sources for the binaries can be found here:
+# - mt7688 (2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto): https://github.com/husqvarnagroup/smart-garden-u-boot/commit/e6f4ac2a81f76be4e07f200f1aa6e9c2e389859e
+# - at91am (2019.10-gardena-2): https://github.com/husqvarnagroup/smart-garden-gateway-public/tree/release/linux-system-4.3.2
+UBOOT_FILENAME_mt7688 = "prebuilt-u-boot-${MACHINE}_${UBOOT_VERSION}.bin"
+UBOOT_FILENAME_at91sam9x5 = "prebuilt-u-boot-with-spl-${MACHINE}_${UBOOT_VERSION}.bin"
+UBOOT_VERSION_mt7688 = "2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto"
+UBOOT_VERSION_at91sam9x5 = "2019.10-gardena-2"
+SRC_URI_append = "file://${UBOOT_FILENAME}"
+do_deploy() {
+    install -D -m 644 ${WORKDIR}/${UBOOT_FILENAME} ${DEPLOYDIR}/${UBOOT_FILENAME}
+}
+addtask deploy before do_swuimage after do_unpack
 
 # Images and files that will be included in the .swu image
 SWUPDATE_IMAGES = "fitImage uEnv"

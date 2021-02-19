@@ -30,6 +30,7 @@ IMAGE_INSTALL += " \
     iptables-modules \
     iw \
     jq \
+    libubootenv-bin \
     lsof \
     memtester \
     mtd-utils \
@@ -49,7 +50,6 @@ IMAGE_INSTALL += " \
     systemd-extra-utils \
     tcpdump-sherlock-ppp0 \
     tcpdump-sherlock-vpn0 \
-    u-boot-fw-utils \
     unique-hostname \
     wireless-regdb-static \
     wpa-supplicant \

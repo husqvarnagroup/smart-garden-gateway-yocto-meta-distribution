@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".4"
+PR_append = ".0"
 
 SRC_URI += " \
             file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
@@ -21,32 +21,20 @@ SRC_URI += " \
             file://swupdate-check.timer \
             "
 
-# The upstream recipe puts too much in the swupdate package
-# a) slim down swupdate
-FILES_${PN} = " \
-    ${bindir}/swupdate \
-"
-# b) erase all unwanted files
+# The upstream recipe puts too much in the swupdate package.
 do_install_append () {
-    # HawkBit
-    rm -r ${D}${bindir}/sendtohawkbit ${D}${bindir}/client ${D}${bindir}/hawkbitcfg ${D}${bindir}/progress ${D}${libdir}/tmpfiles.d
-    # USB
-    rm -r ${D}${sysconfdir}/udev ${D}${systemd_unitdir}/system/swupdate-usb@.service
-    # www
-    rm ${D}${systemd_unitdir}/system/swupdate.service
+     # Remove unwanted swupdate package content
+     rm -r ${D}${bindir}/swupdate-sysrestart ${D}${libdir}/swupdate ${D}${libdir}/tmpfiles.d ${D}${systemd_unitdir}/system/swupdate.service ${D}${systemd_unitdir}/system/swupdate.socket
 }
-SYSTEMD_SERVICE_${PN}_remove = "swupdate.service swupdate-usb@.service"
+SYSTEMD_SERVICE_${PN}_remove = "swupdate.service swupdate.socket"
 
 # We need/abuse swupdate-progress to issue a reset after updating
-FILES_${PN} += " \
-    ${bindir}/swupdate-progress \
-    ${systemd_unitdir}/system/swupdate-progress.service \
+FILES_${PN}-progress_remove = " \
+    ${libdir}/swupdate/conf.d/90-start-progress \
 "
-FILES_${PN}-tools_remove = "/usr/bin/swupdate-progress"
-do_install_append () {
-    install -m 0755 tools/progress_unstripped ${D}${bindir}/swupdate-progress
-}
+RDEPENDS_${PN} += "${PN}-progress"
 
+# Move on with actually adapting the package to our needs
 FILES_${PN} += " \
     ${datadir}/${PN}/sw-update.cert.pem \
     ${sysconfdir}/swupdate.cfg \
