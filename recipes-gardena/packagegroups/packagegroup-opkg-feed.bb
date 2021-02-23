@@ -32,7 +32,6 @@ RDEPENDS_packagegroup-opkg-feed = "\
     mtd-utils \
     net-tools \
     netcat \
-    network-management \
     ntpdate \
     openssh \
     picocom \

@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".5"
+PR_append = ".6"
 
 SRC_URI += " \
     file://keep.d/${BPN} \
@@ -20,10 +20,6 @@ do_install_append() {
     install -d ${D}${base_libdir}/upgrade/keep.d
     install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
 
-    # Install wlan0 specific wpa_supplicant@.service instance
-    install -d ${D}/${systemd_unitdir}/system/network-online.target.wants
-    ln -sf ${systemd_unitdir}/system/wpa_supplicant@.service ${D}/${systemd_unitdir}/system/network-online.target.wants/wpa_supplicant@wlan0.service
-
     # Remove unneeded service files
     rm ${D}/${systemd_unitdir}/system/wpa_supplicant-nl80211@.service
     rm ${D}/${systemd_unitdir}/system/wpa_supplicant-wired@.service
@@ -34,4 +30,4 @@ do_install_append() {
 }
 
 SYSTEMD_SERVICE_${PN} = "wpa_supplicant@.service wpa_supplicant@wlan0.service"
-SYSTEMD_AUTO_ENABLE_${PN} = "enable"
+SYSTEMD_AUTO_ENABLE_${PN} = "disable"

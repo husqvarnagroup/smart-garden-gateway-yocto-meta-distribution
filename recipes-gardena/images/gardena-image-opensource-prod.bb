@@ -13,7 +13,6 @@ IMAGE_INSTALL += " \
     led-indicator \
     mbedtls \
     mdns \
-    network-management \
     u-boot-fw-utils \
     util-linux \
 "
