@@ -9,8 +9,10 @@ BBLAYERS ?= " \
   ##OEROOT##/meta \
   ##OEROOT##/../meta-mediatek \
   ##OEROOT##/../meta-atmel \
+  ##OEROOT##/../meta-aws \
   ##OEROOT##/../meta-distribution \
   ##OEROOT##/../meta-gardena \
+  ##OEROOT##/../meta-gardena-incubator \
   ##OEROOT##/../meta-homekit \
   ##OEROOT##/../meta-lemonbeat-firmware \
   ##OEROOT##/../meta-openembedded/meta-oe \
