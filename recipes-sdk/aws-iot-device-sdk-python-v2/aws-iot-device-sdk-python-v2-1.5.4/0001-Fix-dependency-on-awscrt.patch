@@ -1,0 +1,25 @@
+From 08add698fdc9fe28cfaa6d6258b18c3a6a66dd77 Mon Sep 17 00:00:00 2001
+From: Reto Schneider <code@reto-schneider.ch>
+Date: Tue, 2 Mar 2021 19:11:02 +0100
+Subject: [PATCH] Fix dependency on awscrt
+
+---
+ setup.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/setup.py b/setup.py
+index 7128bf0..b9443f0 100644
+--- a/setup.py
++++ b/setup.py
+@@ -13,7 +13,7 @@ setup(
+     url='https://github.com/aws/aws-iot-device-sdk-python-v2',
+     packages=find_packages(include=['awsiot*']),
+     install_requires=[
+-        'awscrt==0.9.15',
++        'awscrt==0.10.3',
+     ],
+     python_requires='>=3.5',
+ )
+-- 
+2.29.2
+
