@@ -1,10 +1,11 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:${THISDIR}/files/${MACHINE_ARCH}:"
 
-PR_append = ".0"
+PR_append = ".1"
 
 SRC_URI += " \
   file://fw_env.config \
   file://0001-fw_printenv-Exit-with-error-code-on-unset-variables.patch \
+  file://0002-shared-library-Link-against-zlib.patch \
 "
 
 # Prevent U-Boot from being built
