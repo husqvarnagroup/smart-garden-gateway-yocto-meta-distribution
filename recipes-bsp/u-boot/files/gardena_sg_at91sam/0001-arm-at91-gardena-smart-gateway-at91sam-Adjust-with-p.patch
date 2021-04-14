@@ -1,0 +1,56 @@
+From a3acac8b3b2550958ea11ca5d7e6cb260d10dc1f Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Wed, 23 Oct 2019 14:09:16 +0000
+Subject: [PATCH] arm: at91: gardena-smart-gateway-at91sam: Adjust with
+ production values
+
+This commit updates the default config with the values that are actually
+used "in the wild" and which are close to what is used on the MediaTek
+MT7688 based, 2nd generation of the GARDENA smart gateway:
+ - Reduce startup time by setting bootdelay to 0 (still allows accessing
+   the shell, one just has to send a key press quicker)
+ - Adjusting U-Boot environment volume names and MTD partitions to
+   the actual layout
+
+Signed-off-by: Reto Schneider <reto.schneider@husqvarnagroup.com>
+---
+ configs/gardena-smart-gateway-at91sam_defconfig | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/configs/gardena-smart-gateway-at91sam_defconfig b/configs/gardena-smart-gateway-at91sam_defconfig
+index e3d5bc47d6..76a1c42ce0 100644
+--- a/configs/gardena-smart-gateway-at91sam_defconfig
++++ b/configs/gardena-smart-gateway-at91sam_defconfig
+@@ -24,6 +24,7 @@ CONFIG_NAND_BOOT=y
+ CONFIG_BOOTDELAY=3
+ CONFIG_USE_BOOTARGS=y
+ CONFIG_BOOTARGS="console=ttyS0,115200 earlyprintk mtdparts=atmel_nand:256k(bootstrap)ro,768k(uboot)ro,256k(env_redundant),256k(env),512k(dtb),6M(kernel)ro,-(rootfs) rootfstype=ubifs ubi.mtd=6 root=ubi0:rootfs rw"
++CONFIG_BOOTDELAY=0
+ CONFIG_SYS_CONSOLE_IS_IN_ENV=y
+ CONFIG_SYS_CONSOLE_INFO_QUIET=y
+ CONFIG_SPL_SYS_MALLOC_SIMPLE=y
+@@ -46,8 +47,8 @@ CONFIG_CMD_CACHE=y
+ CONFIG_CMD_TIME=y
+ CONFIG_CMD_FAT=y
+ CONFIG_CMD_MTDPARTS=y
+-CONFIG_MTDIDS_DEFAULT="nand0=nand0"
+-CONFIG_MTDPARTS_DEFAULT="nand0:1536k(uboot),1024k(unused),512k(dtb_old),4608k(kernel_old),86528k(ubi),-(rootfs_old)"
++CONFIG_MTDIDS_DEFAULT="nand0=atmel_nand"
++CONFIG_MTDPARTS_DEFAULT="atmel_nand:1536k(uboot),10752k(unused),-(ubi)"
+ CONFIG_CMD_UBI=y
+ CONFIG_OF_CONTROL=y
+ CONFIG_SPL_OF_CONTROL=y
+@@ -55,8 +56,8 @@ CONFIG_OF_SPL_REMOVE_PROPS="pinctrl-0 pinctrl-names clocks clock-names interrupt
+ CONFIG_ENV_IS_IN_UBI=y
+ CONFIG_SYS_REDUNDAND_ENVIRONMENT=y
+ CONFIG_ENV_UBI_PART="ubi"
+-CONFIG_ENV_UBI_VOLUME="env"
+-CONFIG_ENV_UBI_VOLUME_REDUND="env_r"
++CONFIG_ENV_UBI_VOLUME="uboot_env0"
++CONFIG_ENV_UBI_VOLUME_REDUND="uboot_env1"
+ CONFIG_SYS_RELOC_GD_ENV_ADDR=y
+ CONFIG_NET_RANDOM_ETHADDR=y
+ CONFIG_DM=y
+-- 
+2.29.2
+
