@@ -2,6 +2,12 @@
 Name=ppp0
 Type=ppp
 
+[Network]
+# SG-16012: Disable router advertisements on the ppp0 interface.
+# We don't want the ppp0 interface to be able to be configured
+# via RAs.
+IPv6AcceptRA=no
+
 [Route]
 Destination=fc00::/64
 

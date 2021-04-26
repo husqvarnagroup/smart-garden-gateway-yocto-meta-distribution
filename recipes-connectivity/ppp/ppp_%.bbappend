@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".7"
+PR_append = ".8"
 
 SRC_URI += "file://ppp.service \
             file://ppp0.network \
