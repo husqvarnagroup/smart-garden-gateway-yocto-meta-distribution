@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".2"
+PR_append = ".3"
 
 RDEPENDS_${PN} += "environment"
 
