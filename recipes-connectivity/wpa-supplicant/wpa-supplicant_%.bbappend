@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".6"
+PR_append = ".7"
 
 SRC_URI += " \
     file://keep.d/${BPN} \
@@ -27,6 +27,10 @@ do_install_append() {
 
     # Install customized unit
     install -m 644 ${WORKDIR}/wpa_supplicant@.service ${D}/${systemd_unitdir}/system/
+
+    # SG-17288 Avoid warning by HomeKit Accessory Server
+    mkdir ${D}/${sysconfdir}/wpa_supplicant
+    touch ${D}/${sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 }
 
 SYSTEMD_SERVICE_${PN} = "wpa_supplicant@.service wpa_supplicant@wlan0.service"
