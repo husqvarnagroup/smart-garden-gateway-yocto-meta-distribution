@@ -5,7 +5,6 @@ IMAGE_INSTALL += " \
     gateway-config-backend \
     gateway-firmware \
     lemonbeat-firmware-upload \
-    lsdl-serializer-log \
     otau \
     python3-lemonbeat \
     rm-test-firmware \
