@@ -8,7 +8,6 @@ IMAGE_INSTALL += " \
     otau \
     python3-lemonbeat \
     rm-test-firmware \
-    shadoway \
     snapshot \
     sysupgrade \
 "

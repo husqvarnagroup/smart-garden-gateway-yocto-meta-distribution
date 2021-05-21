@@ -1,0 +1,202 @@
+software = {
+    version = "@@DISTRO_VERSION_ID@@";
+    description = "Linux System Firmware for the GARDENA smart Gateway @@MACHINE@@";
+
+    embedded-script ="
+function write_to_file_best_effort(filename, data)
+  local file, err = io.open (filename, \"w\")
+  if file then
+    file:write(data)
+    file:close()
+  else
+    print(\"Error opening file: \" .. err)
+  end
+end
+
+function set_power_led_yellow_flash()
+  -- note: we're not using 'led-indicator flash' here as it will lead
+  -- to a visible delay between red and green
+  local green = \"/sys/class/leds/smartgw:power:green\"
+  local red = \"/sys/class/leds/smartgw:power:red\"
+  local blue = \"/sys/class/leds/smartgw:power:blue\"
+
+  -- Disable the blue power LED
+  write_to_file_best_effort(blue .. \"/trigger\", \"oneshot\")
+  write_to_file_best_effort(blue .. \"/brightness\", \"0\")
+
+  -- Expose and configure timer interface for red and green power LEDs
+  write_to_file_best_effort(green .. \"/trigger\", \"timer\")
+  write_to_file_best_effort(green .. \"/delay_on\", \"500\")
+  write_to_file_best_effort(green .. \"/delay_off\", \"500\")
+  write_to_file_best_effort(red .. \"/trigger\", \"timer\")
+  write_to_file_best_effort(red .. \"/delay_on\", \"500\")
+  write_to_file_best_effort(red .. \"/delay_off\", \"500\")
+
+  -- Keep these two together for synchronicity between red and green LEDs
+  write_to_file_best_effort(red .. \"/trigger\", \"timer\")
+  write_to_file_best_effort(green .. \"/trigger\", \"timer\")
+end
+
+function check_version_and_leds(image)
+  local version_id_new = \"@@DISTRO_VERSION_ID@@\"
+  local os_release = io.open (\"/etc/os-release\")
+  for line in os_release:lines() do
+    version_id_current = string.match(line, \"^VERSION_ID=\\\"(.+)\\\"$\")
+    if (version_id_new == version_id_current) then
+      return false, \"Version \" .. version_id_new .. \" is already installed\"
+    end
+  end
+
+  set_power_led_yellow_flash()
+
+  return true, \"Installing \" .. version_id_new
+end";
+
+    @@SWUPDATE_HARDWARE_NAME@@ = {
+        hardware-compatibility: @@HARDWARE_COMPATIBILITY@@;
+
+        stable = {
+            bootslot0 = {
+                images = (
+                    {
+                        filename = "gardena-image-lona-@@MACHINE@@.squashfs-xz";
+                        volume = "rootfs1";
+                        sha256 = "@gardena-image-lona-@@MACHINE@@.squashfs-xz";
+                        hook = "check_version_and_leds";
+                        installed-directly = true;
+                    },
+                    {
+                        filename = "fitImage-@@MACHINE@@.bin";
+                        volume = "kernel1";
+                        sha256 = "@fitImage-@@MACHINE@@.bin";
+                        installed-directly = true;
+                    },
+                    {
+                        filename = "uEnv-@@MACHINE@@.txt";
+                        type = "bootloader";
+                        sha256 = "@uEnv-@@MACHINE@@.txt";
+                    },
+                    {
+                        name = "u-boot";
+                        filename = "@@UBOOT_FILENAME_IN_DEPLOYDIR@@";
+                        mtdname = "uboot";
+                        type = "flash";
+                        sha256 = "@@@UBOOT_FILENAME_IN_DEPLOYDIR@@";
+                        install-if-different = true;
+                        version = "@@UBOOT_VERSION@@";
+                    }
+                )
+
+                bootenv = (
+                    {
+                        name = "bootslot";
+                        value = "1";
+                    },
+                    {
+                        name = "swupdate_done";
+                        value = "1";
+                    },
+                    {
+                        name = "bootdelay"; /* Introduced as part of SG-10770. We can still get into U-Boot with a key press. */
+                        value = "0";
+                    },
+                    {
+                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
+                        value = "1";
+                    },
+                    {
+                        name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
+                        value = "";
+                    },
+                    {
+                        name = "mtdids"; /* Delete potentially no longer valid mapping (SG-10970) */
+                        value = "";
+                    },
+                    {
+                        name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
+                        value = "";
+                    },
+                    {
+                        name = "linux_system_version"; /* No longer needed since SG-10583 */
+                        value = "";
+                    },
+                    {
+                        name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
+                        value = "";
+                    }
+                )
+            }
+
+            bootslot1 = {
+                images = (
+                    {
+                        filename = "gardena-image-lona-@@MACHINE@@.squashfs-xz";
+                        volume = "rootfs0";
+                        sha256 = "@gardena-image-lona-@@MACHINE@@.squashfs-xz";
+                        hook = "check_version_and_leds";
+                        installed-directly = true;
+                    },
+                    {
+                        filename = "fitImage-@@MACHINE@@.bin";
+                        volume = "kernel0";
+                        sha256 = "@fitImage-@@MACHINE@@.bin";
+                        installed-directly = true;
+                    },
+                    {
+                        filename = "uEnv-@@MACHINE@@.txt";
+                        type = "bootloader";
+                        sha256 = "@uEnv-@@MACHINE@@.txt";
+                    },
+                    {
+                        name = "u-boot";
+                        filename = "@@UBOOT_FILENAME_IN_DEPLOYDIR@@";
+                        mtdname = "uboot";
+                        type = "flash";
+                        sha256 = "@@@UBOOT_FILENAME_IN_DEPLOYDIR@@";
+                        install-if-different = true;
+                        version = "@@UBOOT_VERSION@@";
+                    }
+                )
+
+                bootenv = (
+                    {
+                        name = "bootslot";
+                        value = "0";
+                    },
+                    {
+                        name = "swupdate_done";
+                        value = "1";
+                    },
+                    {
+                        name = "bootdelay"; /* Introduced as part of SG-10770. We can still get into U-Boot with a key press. */
+                        value = "0";
+                    },
+                    {
+                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
+                        value = "1";
+                    },
+                    {
+                        name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
+                        value = "";
+                    },
+                    {
+                        name = "mtdids"; /* Delete potentially no longer valid mapping (SG-10970) */
+                        value = "";
+                    },
+                    {
+                        name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
+                        value = "";
+                    },
+                    {
+                        name = "linux_system_version"; /* No longer needed since SG-10583 */
+                        value = "";
+                    },
+                    {
+                        name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
+                        value = "";
+                    }
+                )
+            }
+        }
+    }
+}
