@@ -8,9 +8,9 @@ PV = "0.2"
 
 SRC_URI = " \
     file://andreas-müller.pub \
+    file://andrej-gessel.pub \
     file://reto-schneider_homeoffice.pub \
     file://reto-schneider_office.pub \
-    file://andrej-gessel.pub \
 "
 
 inherit ssh-authorized-keys
