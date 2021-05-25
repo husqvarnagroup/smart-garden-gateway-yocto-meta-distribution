@@ -59,9 +59,9 @@ end";
             bootslot0 = {
                 images = (
                     {
-                        filename = "gardena-image-prod-@@MACHINE@@.squashfs-xz";
+                        filename = "gardena-image-lona-@@MACHINE@@.squashfs-xz";
                         volume = "rootfs1";
-                        sha256 = "@gardena-image-prod-@@MACHINE@@.squashfs-xz";
+                        sha256 = "@gardena-image-lona-@@MACHINE@@.squashfs-xz";
                         hook = "check_version_and_leds";
                         installed-directly = true;
                     },
@@ -130,9 +130,9 @@ end";
             bootslot1 = {
                 images = (
                     {
-                        filename = "gardena-image-prod-@@MACHINE@@.squashfs-xz";
+                        filename = "gardena-image-lona-@@MACHINE@@.squashfs-xz";
                         volume = "rootfs0";
-                        sha256 = "@gardena-image-prod-@@MACHINE@@.squashfs-xz";
+                        sha256 = "@gardena-image-lona-@@MACHINE@@.squashfs-xz";
                         hook = "check_version_and_leds";
                         installed-directly = true;
                     },

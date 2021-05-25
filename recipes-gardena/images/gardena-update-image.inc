@@ -1,12 +1,15 @@
+# To be set by whoever includes this file.
+IMAGE_FLAVOR ?= "please-set-me"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+DESCRIPTION = "SWUpdate compound image for gardena-image-${IMAGE_FLAVOR}"
 
 inherit swupdate deploy
 
-INC_PR = "r11"
+INC_PR = "r12"
 
 # Images to build before building swupdate image
-IMAGE_DEPENDS = "virtual/kernel u-boot"
+IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_FLAVOR}"
 
 # Define U-Boot filename and version. This is only relevant when the "freshly"
 # built U-Boot binary should get used. See comment below this section.
@@ -14,6 +17,9 @@ UBOOT_FILENAME = "u-boot-${MACHINE}.bin"
 UBOOT_FILENAME_at91sam9x5 = "u-boot-with-spl.bin-${MACHINE}"
 UBOOT_VERSION = "${@d.getVar("PREFERRED_VERSION_u-boot", False).replace("-prebuilt", "")}"
 UBOOT_VERSION = "XXX"
+# This is a workaround to allow multiple SWUpdate images having their "own"
+# copy of U-Boot.
+UBOOT_FILENAME_IN_DEPLOYDIR = "${UBOOT_FILENAME}-${IMAGE_FLAVOR}"
 
 # Since we want the bootloaders binaries to be buit (just) once and only
 # updated when absolutely needed, keep them stable by using prebuilt binaries.
@@ -26,12 +32,12 @@ UBOOT_VERSION_mt7688 = "2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto"
 UBOOT_VERSION_at91sam9x5 = "2019.10-gardena-2"
 SRC_URI_append = "file://${UBOOT_FILENAME}"
 do_deploy() {
-    install -D -m 644 ${WORKDIR}/${UBOOT_FILENAME} ${DEPLOYDIR}/${UBOOT_FILENAME}
+    install -D -m 644 ${WORKDIR}/${UBOOT_FILENAME} ${DEPLOYDIR}/${UBOOT_FILENAME_IN_DEPLOYDIR}
 }
 addtask deploy before do_swuimage after do_unpack
 
 # Images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "fitImage uEnv"
+SWUPDATE_IMAGES = "fitImage uEnv gardena-image-${IMAGE_FLAVOR}"
 SWUPDATE_IMAGES_append_mt7688 = " u-boot"
 SWUPDATE_IMAGES_append_at91sam9x5 = " u-boot-with-spl.bin"
 
