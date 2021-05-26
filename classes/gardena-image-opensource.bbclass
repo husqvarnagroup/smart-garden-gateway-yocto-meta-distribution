@@ -43,16 +43,19 @@ IMAGE_INSTALL += " \
     reset-rm \
     rfkill \
     rsyslog \
+    snapshot \
     squashfs-tools \
     swupdate \
     systemd-conf \
     systemd-container \
     systemd-extra-utils \
+    sysupgrade \
     tcpdump-sherlock-ppp0 \
     tcpdump-sherlock-vpn0 \
     unique-hostname \
     wireless-regdb-static \
     wpa-supplicant \
+    wpa-supplicant-cli \
 "
 
 IMAGE_INSTALL_append_mt7688 += " \

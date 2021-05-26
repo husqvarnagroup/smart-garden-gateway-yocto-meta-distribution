@@ -8,8 +8,6 @@ IMAGE_INSTALL += " \
     otau \
     python3-lemonbeat \
     rm-test-firmware \
-    snapshot \
-    sysupgrade \
 "
 
 IMAGE_INSTALL_append_mt7688 += " \

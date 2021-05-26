@@ -11,10 +11,14 @@ IMAGE_INSTALL += " \
     gnutls \
     hostapd \
     led-indicator \
+    libevdev \
     mbedtls \
     mdns \
+    openssl \
+    systemd \
     u-boot-fw-utils \
     util-linux \
+    wpa-supplicant-cli \
 "
 
 # Gateway configuration backend dependencies
@@ -31,6 +35,7 @@ IMAGE_INSTALL += " \
     libev \
     libnl \
     log4cpp \
+    mbedtls \
     util-linux \
     zeromq \
 "
@@ -38,10 +43,27 @@ IMAGE_INSTALL += " \
 # Manufacturing tools dependencies
 IMAGE_INSTALL += " \
     python3-core \
+    python3-crcmod \
     python3-datetime \
     python3-json \
+    python3-pyserial \
     python3-threading \
     python3-unittest \
+"
+
+# FCT tool dependencies
+IMAGE_INSTALL += " \
+    iw \
+    openocd \
+    python3-core \
+    python3-datetime \
+    python3-evdev \
+    systemd \
+"
+
+# python3-lemonbeat tool dependencies
+IMAGE_INSTALL += " \
+    python3-pycrypto \
 "
 
 # Allow the image to start
