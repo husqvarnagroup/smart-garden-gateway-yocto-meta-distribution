@@ -36,7 +36,6 @@ IMAGE_INSTALL += " \
     mtd-utils \
     mtd-utils-ubifs \
     openocd \
-    openvpn \
     os-release \
     packagegroup-core-boot \
     ppp \
