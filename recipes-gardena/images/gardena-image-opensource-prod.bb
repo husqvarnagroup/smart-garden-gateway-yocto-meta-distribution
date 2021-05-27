@@ -36,6 +36,7 @@ IMAGE_INSTALL += " \
     libnl \
     log4cpp \
     mbedtls \
+    openvpn \
     util-linux \
     zeromq \
 "
