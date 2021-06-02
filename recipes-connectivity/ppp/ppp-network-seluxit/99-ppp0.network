@@ -1,3 +1,4 @@
+# Seluxit ppp0 configuration
 [Match]
 Name=ppp0
 Type=ppp

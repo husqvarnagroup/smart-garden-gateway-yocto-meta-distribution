@@ -1,0 +1,21 @@
+# BNW ppp0 configuration
+[Match]
+Name=ppp0
+Type=ppp
+
+[Network]
+# The gateway needs a unicast address with the fc00::/64 prefix to be used
+# as source address by lwm2mserver when communicating with a device.
+Address=fc00::6:0:0:1/64
+
+# Setup additional link-local address, replies from a unincluded Lemonbeat
+# device are forwarded to this address by the radio module.
+Address=fe80::106:100:0:0/10
+
+# SG-16012: Disable router advertisements on the ppp0 interface.
+# We don't want the ppp0 interface to be able to be configured
+# via RAs.
+IPv6AcceptRA=no
+
+[Link]
+RequiredForOnline=no

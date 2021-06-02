@@ -4,6 +4,7 @@ SUMMARY = "The GARDENA image for gateways using the Seluxit platform"
 
 IMAGE_INSTALL += " \
     openvpn \
+    ppp-network-seluxit \
     shadoway \
     ssh-authorized-keys-prod \
 "
