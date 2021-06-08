@@ -1,4 +1,4 @@
-From ac98166d970eb786551038e28eb5b6ed32289f93 Mon Sep 17 00:00:00 2001
+From f1d49c90518b3a8a335fbb9e8dde435e550290e3 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Sun, 6 Jun 2021 01:43:57 +0200
 Subject: [PATCH] mtd: spi-nor-ids: Add XMC XM25QH64C flash
@@ -15,10 +15,10 @@ Signed-off-by: Reto Schneider <reto.schneider@husqvarnagroup.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/mtd/spi/spi-nor-ids.c b/drivers/mtd/spi/spi-nor-ids.c
-index 973b6f86c9..3ea625c8c9 100644
+index 2b57797954..b91be10fc3 100644
 --- a/drivers/mtd/spi/spi-nor-ids.c
 +++ b/drivers/mtd/spi/spi-nor-ids.c
-@@ -314,6 +314,7 @@ const struct flash_info spi_nor_ids[] = {
+@@ -335,6 +335,7 @@ const struct flash_info spi_nor_ids[] = {
  #ifdef CONFIG_SPI_FLASH_XMC
  	/* XMC (Wuhan Xinxin Semiconductor Manufacturing Corp.) */
  	{ INFO("XM25QH64A", 0x207017, 0, 64 * 1024, 128, SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
