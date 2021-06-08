@@ -4,6 +4,7 @@ SUMMARY = "The GARDENA image for usage on LONA gateways"
 
 IMAGE_INSTALL += " \
     openvpn \
+    ppp-network-seluxit \
     shadoway-lona \
     ssh-authorized-keys-dev \
 "
