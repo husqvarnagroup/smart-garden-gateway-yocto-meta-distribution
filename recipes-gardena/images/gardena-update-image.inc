@@ -6,7 +6,7 @@ DESCRIPTION = "SWUpdate compound image for gardena-image-${IMAGE_FLAVOR}"
 
 inherit swupdate deploy
 
-INC_PR = "r13"
+INC_PR = "r14"
 
 # Images to build before building swupdate image
 IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_FLAVOR}"
@@ -26,10 +26,10 @@ UBOOT_FILENAME_IN_DEPLOYDIR = "${@d.getVar('UBOOT_FILENAME').replace('.bin', '-'
 # The sources for the binaries can be found here:
 # - mt7688 (2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto): https://github.com/husqvarnagroup/smart-garden-u-boot/commit/e6f4ac2a81f76be4e07f200f1aa6e9c2e389859e
 # - at91am (2019.10-gardena-2): https://github.com/husqvarnagroup/smart-garden-gateway-public/tree/release/linux-system-4.3.2
-UBOOT_FILENAME_mt7688 = "prebuilt-u-boot-${MACHINE}_${UBOOT_VERSION}.bin"
+UBOOT_FILENAME_mt7688 = "prebuilt-u-boot-with-spl-${MACHINE}_${UBOOT_VERSION}.bin"
 UBOOT_FILENAME_at91sam9x5 = "prebuilt-u-boot-with-spl-${MACHINE}_${UBOOT_VERSION}.bin"
-UBOOT_VERSION_mt7688 = "2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto"
-UBOOT_VERSION_at91sam9x5 = "2019.10-gardena-2"
+UBOOT_VERSION_mt7688 = "2021.04-gardena-6"
+UBOOT_VERSION_at91sam9x5 = "2021.04-gardena-6"
 SRC_URI_append = "file://${UBOOT_FILENAME}"
 do_deploy() {
     install -D -m 644 ${WORKDIR}/${UBOOT_FILENAME} ${DEPLOYDIR}/${UBOOT_FILENAME_IN_DEPLOYDIR}

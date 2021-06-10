@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/${MACHINE_ARCH}:${THISDIR}/${PN}:"
 
-PR_append = ".0"
+PR_append = ".1"
 
 UBOOT_LOCALVERSION = "-gardena-6"
 PV_append = "${UBOOT_LOCALVERSION}"
