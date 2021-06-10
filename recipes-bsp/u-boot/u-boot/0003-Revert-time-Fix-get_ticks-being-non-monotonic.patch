@@ -1,0 +1,44 @@
+From aa18bd9f2fa807ef60017b476dd53ba74a01b80f Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Thu, 10 Jun 2021 02:27:39 +0200
+Subject: [PATCH] Revert "time: Fix get_ticks being non-monotonic"
+
+This (partially) reverts commit 4b2be78ab66ca3f6f177823c0f81fcdd1d476e9b
+(time: Fix get_ticks being non-monotonic).
+
+Without this, my GARDENA smart gateway does not boot up, prints an
+endless stream of errors:
+
+> U-Boot SPL 2020.10-00698-g4b2be78ab6 (Jun 10 2021 - 02:19:19 +0200)
+> Could not initialize timer (err -19)
+>
+> Could not initialize timer (err -19)
+>
+> Could not initialize timer (err -19)
+>
+> Could not initialize timer (err -19)
+>
+> Could not initialize timer (err -19)
+>
+> Could not initialize timer (err -19)
+> ...
+---
+ lib/time.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/time.c b/lib/time.c
+index 38a9758292..8a7b82be0b 100644
+--- a/lib/time.c
++++ b/lib/time.c
+@@ -93,7 +93,7 @@ uint64_t notrace get_ticks(void)
+ 
+ 		ret = dm_timer_init();
+ 		if (ret)
+-			panic("Could not initialize timer (err %d)\n", ret);
++			return ret;
+ #endif
+ 	}
+ 
+-- 
+2.30.2
+
