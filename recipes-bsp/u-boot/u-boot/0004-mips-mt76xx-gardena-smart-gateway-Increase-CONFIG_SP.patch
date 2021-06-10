@@ -1,0 +1,27 @@
+From 2c3e6e1f4266830b54b5420600751d253331d7c4 Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Thu, 10 Jun 2021 17:13:58 +0200
+Subject: [PATCH] mips: mt76xx: gardena-smart-gateway:: Increase
+ CONFIG_SPL_SYS_MALLOC_F_LEN
+
+256k is too small when enabling some extra features.
+---
+ configs/gardena-smart-gateway-mt7688_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configs/gardena-smart-gateway-mt7688_defconfig b/configs/gardena-smart-gateway-mt7688_defconfig
+index c03123f6e4..c48fdbaac4 100644
+--- a/configs/gardena-smart-gateway-mt7688_defconfig
++++ b/configs/gardena-smart-gateway-mt7688_defconfig
+@@ -7,7 +7,7 @@ CONFIG_ENV_OFFSET=0xA0000
+ CONFIG_ENV_SECT_SIZE=0x10000
+ CONFIG_SPL_SERIAL_SUPPORT=y
+ CONFIG_SYS_BOOTCOUNT_ADDR=0xb000006c
+-CONFIG_SPL_SYS_MALLOC_F_LEN=0x40000
++CONFIG_SPL_SYS_MALLOC_F_LEN=0x80000
+ CONFIG_SPL=y
+ CONFIG_SYS_BOOTCOUNT_SINGLEWORD=y
+ CONFIG_ENV_OFFSET_REDUND=0xB0000
+-- 
+2.30.2
+
