@@ -25,13 +25,10 @@ do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
 do_factory_reset=run do_reset_overlay && led smartgw:power:blue off && led smartgw:power:green on && led smartgw:power:red on
 do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi && if test "${enable_factory_reset}" = "1"; then echo "Factory reset enabled via u-boot variable" && run do_factory_reset && setenv enable_factory_reset && saveenv; else true; fi
 do_resurrection_reset=echo "resurrection reset triggered" && run do_toggle_bootslot && saveenv && led smartgw:power:blue off && led smartgw:power:green off && led smartgw:power:red on
-# note: checking for holdtime 0x2d (45) equals ~ 30 seconds (due to a bug in
-# U-Boot before 2019.04); once our sleep is precise, we will likely want to
-# reduce the value to 0x1e (30)
-do_if_resurrection_reset=printenv recovery_status || setenv holdtime 0 && while gpio input PA11; do if test $holdtime = 2d; then run do_resurrection_reset; fi; setexpr holdtime ${holdtime} + 1; sleep 1; done || true
+do_if_resurrection_reset=printenv recovery_status || setenv holdtime 0 && while gpio input PA11; do if test $holdtime = 1e; then run do_resurrection_reset; fi; setexpr holdtime ${holdtime} + 1; sleep 1; done || true
 do_start_over=env default -f -a && saveenv && reset
-do_u_boot_upgrade=dhcp u-boot-with-spl.bin-gardena-sg-mt7688 && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
-do_if_u_boot_upgrade=if test "$ver" = "U-Boot 2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto (Jan 04 2019 - 03:45:05 +0000)"; then echo "U-Boot is up-to-date"; else echo "U-Boot is outdated, upgrade needed"; run do_u_boot_upgrade; fi
+do_u_boot_upgrade=dhcp prebuilt-u-boot-with-spl-gardena-sg-mt7688_2021.04-gardena-6-prod.bin && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
+do_if_u_boot_upgrade=if test "$ver" = "U-Boot 2021.04-gardena-6 (Jun 10 2021 - 16:05:31 +0000)"; then echo "U-Boot is up-to-date"; else echo "U-Boot is outdated, upgrade needed"; run do_u_boot_upgrade; fi
 
 ## Relevant for startup
 bootcmd=run do_show_bootstrap_error && run do_if_ubi_setup && run do_if_flashing_setup && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset
