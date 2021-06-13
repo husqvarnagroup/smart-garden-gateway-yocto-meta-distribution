@@ -1,6 +1,6 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/${MACHINE_ARCH}:${THISDIR}/files:"
 
-PR_append = ".4"
+PR_append = ".5"
 
 SRC_URI += " \
     file://40-swupdate-check.sh \
@@ -28,6 +28,14 @@ do_install_append() {
     # Keep DHCP Unique Identifier on updates
     install -d ${D}${base_libdir}/upgrade/keep.d
     install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
+}
+
+SRC_URI_append_mt7688 = " \
+    file://60-purge-mac0.sh \
+"
+
+do_install_append_mt7688() {
+    install -m 0644 ${WORKDIR}/60-purge-mac0.sh ${D}${libexecdir}/dhcpcd-hooks/60-purge-mac0
 }
 
 inherit systemd
