@@ -1,7 +1,8 @@
-From 51e3e1a105b3cdef7f642a99a30ace91f8ceb57a Mon Sep 17 00:00:00 2001
+From 215c90d8a844f19655649bafeae73233cc69ef98 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <code@reto-schneider.ch>
 Date: Tue, 5 Jan 2021 02:02:18 +0100
-Subject: [PATCH] fw_printenv: Exit with error code on unset variables
+Subject: [PATCH] [sg noup] fw_printenv: Exit with error code on unset
+ variables
 
 This patch brings back the behavior of the U-Boot based fw_printenv
 tool, allowing it to be used as a drop-in replacement.
@@ -46,3 +47,6 @@ index 8b830d5..ee860e6 100644
  		}
  	} else { /* setenv branch */
  		bool need_store = false;
+-- 
+2.30.2
+
