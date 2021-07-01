@@ -1,0 +1,32 @@
+From c759ff7673633bb51b5a75151e9adeda3d282d4b Mon Sep 17 00:00:00 2001
+From: Reto Schneider <code@reto-schneider.ch>
+Date: Tue, 5 Jan 2021 02:02:18 +0100
+Subject: [PATCH] [sg noup] fw_setenv: batch mode: Separate key/value by space
+
+This patch brings back the behavior of the U-Boot based fw_printenv
+tool, allowing it to be used as a drop-in replacement for the U-Boot
+tools.
+
+Please note: The new behavior is probably better as it aligns with the
+format of "env import -t". However, until SG-17574 is implemented, we
+need to stick to the old format.
+---
+ src/uboot_env.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/uboot_env.c b/src/uboot_env.c
+index c9a900f..1a922d2 100644
+--- a/src/uboot_env.c
++++ b/src/uboot_env.c
+@@ -1164,7 +1164,7 @@ int libuboot_load_file(struct uboot_ctx *ctx, const char *filename)
+ 		if (len == 0 || buf[0] == '#')
+ 			continue;
+ 
+-		value = strchr(buf, '=');
++		value = strchr(buf, ' ');
+ 		if (!value)
+ 			continue;
+ 
+-- 
+2.30.2
+

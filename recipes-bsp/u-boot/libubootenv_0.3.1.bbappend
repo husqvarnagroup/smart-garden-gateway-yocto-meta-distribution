@@ -1,11 +1,12 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:${THISDIR}/files/${MACHINE_ARCH}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:${THISDIR}/files/${MACHINE_ARCH}:"
 
-PR_append = ".1"
+PR_append = ".2"
 
 SRC_URI += " \
   file://fw_env.config \
-  file://0001-fw_printenv-Exit-with-error-code-on-unset-variables.patch \
-  file://0002-shared-library-Link-against-zlib.patch \
+  file://0001-sg-noup-fw_printenv-Exit-with-error-code-on-unset-va.patch \
+  file://0002-sg-fromtree-shared-library-Link-against-zlib.patch \
+  file://0003-sg-noup-fw_setenv-batch-mode-Separate-key-value-by-s.patch \
 "
 
 # Prevent U-Boot from being built
