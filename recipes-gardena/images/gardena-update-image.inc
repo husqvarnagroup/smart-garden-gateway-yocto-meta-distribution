@@ -6,7 +6,7 @@ DESCRIPTION = "SWUpdate compound image for gardena-image-${IMAGE_FLAVOR}"
 
 inherit swupdate deploy
 
-INC_PR = "r14"
+INC_PR = "r15"
 
 # Images to build before building swupdate image
 IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_FLAVOR}"
@@ -52,7 +52,7 @@ SWUPDATE_IMAGES_FSTYPES[uEnv] = ".txt"
 SWUPDATE_HARDWARE_NAME = "smart-gateway-${@d.getVar("MACHINE", False).replace("gardena-sg-", "")}"
 
 # Set the compatible hardware revisions which are different for all architectures
-HARDWARE_COMPATIBILITY_mt7688 = "[ "0.5", "1.0", "1.1.0", "1.2.0" ]"
+HARDWARE_COMPATIBILITY_mt7688 = "[ "0.5", "1.0", "1.1.0", "1.2.0", "1.2.1" ]"
 HARDWARE_COMPATIBILITY_at91sam9x5 = "[ "1.1b" ]"
 
 # In order to sign the image, the variables SWUPDATE_SIGNING, SWUPDATE_CMS_KEY,
