@@ -12,6 +12,9 @@ do_dev_led_set_state=for color in blue green red; do led smartgw:${led_name}:${c
 do_dev_led_off=led_state=off; run do_dev_led_set_state
 do_dev_led_on=led_state=on; run do_dev_led_set_state
 
+do_dev_nfs_set_bootargs=setenv bootargs root=/dev/nfs ip=${ipaddr}:${serverip}:${ipaddr}:${netmask}:${vendor}:eth0:off:${serverip} nfsroot=${serverip}:${dev_nfsroot:-/srv/rootfs-gardena-sg-at91sam},v3,tcp rw mtdparts="${mtdparts}" ${dev_bootargs} console=ttyS0,115200
+do_dev_nfs_bootcmd=dhcp 22000000 fitImage-gardena-sg-at91sam.bin && run do_dev_nfs_set_bootargs && bootm ${fileaddr}
+
 # Custom commands required regular startup
 # Warning: Removing or changing any of this lines requires care as gateways in
 #          the field need to be updated with all changes!
