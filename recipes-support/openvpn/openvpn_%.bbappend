@@ -1,13 +1,12 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".5"
+PR_append = ".6"
 
-RDEPENDS_${PN} += "environment"
+RDEPENDS_${PN} += "environment virtual/openvpn-config"
 
 SRC_URI += " \
     file://dev.conf \
     file://openvpn.service \
-    file://prod.conf \
     file://qa.conf \
 "
 
@@ -19,7 +18,6 @@ FILES_${PN} += " \
 do_install_append() {
     install -d ${D}${sysconfdir}/openvpn
     install -m 644 ${WORKDIR}/dev.conf ${D}${sysconfdir}/openvpn
-    install -m 644 ${WORKDIR}/prod.conf ${D}${sysconfdir}/openvpn
     install -m 644 ${WORKDIR}/qa.conf ${D}${sysconfdir}/openvpn
 
     install -m 644 ${WORKDIR}/openvpn.service ${D}${systemd_unitdir}/system

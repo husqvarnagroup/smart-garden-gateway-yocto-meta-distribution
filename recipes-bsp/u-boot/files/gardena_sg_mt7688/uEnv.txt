@@ -20,7 +20,7 @@ bootcmd=run do_print_ids && run do_show_bootstrap_error && run do_if_ubi_setup &
 do_show_bootstrap_error=if test "${ubi_setup_done}" != "1" -o "${flashing_done}" != "1" -a ${bootcount} -ge 7; then led smartgw:internet:blue off; led smartgw:internet:green off; led smartgw:internet:red on; sleep 86400; else true; fi
 do_if_ubi_setup=if test "${ubi_setup_done}" != "1"; then mtd erase spi-nand0; ubi part nand && ubi create rootfs0 0x2815000 static 0 && ubi create rootfs1 0x2815000 static 1 && ubi create kernel0 0x41e000 static 2 && ubi create kernel1 0x41e000 static 3 && ubi create overlay 0x1e00000 dynamic 4 && setenv ubi_setup_done 1; else ubi part nand; fi
 do_flash_kernel=dhcp fitImage-gardena-sg-mt7688.bin && echo "Writing to kernel${bootslot}" && ubi write ${fileaddr} kernel${bootslot} ${filesize}
-do_flash_rootfs=dhcp gardena-image-prod-gardena-sg-mt7688.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
+do_flash_rootfs=dhcp gardena-image-factory-gardena-sg-mt7688.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
 do_flash=run do_flash_kernel && run do_flash_rootfs
 do_if_flashing_setup=if test "${flashing_done}" != "1"; then run do_toggle_bootslot && run do_flash && setenv flashing_done 1 && saveenv && reset; else true; fi
 do_start_over=env default -f -a && saveenv && reset
