@@ -15,6 +15,8 @@ do_dev_led_on=led_state=on; run do_dev_led_set_state
 do_dev_nfs_set_bootargs=setenv bootargs root=/dev/nfs ip=${ipaddr}:${serverip}:${ipaddr}:${netmask}:${vendor}:eth0:off:${serverip} nfsroot=${serverip}:${dev_nfsroot:-/srv/rootfs-gardena-sg-at91sam},v3,tcp rw mtdparts="${mtdparts}" ${dev_bootargs} console=ttyS0,115200
 do_dev_nfs_bootcmd=dhcp 22000000 fitImage-gardena-sg-at91sam.bin && run do_dev_nfs_set_bootargs && bootm ${fileaddr}
 
+do_dev_u_boot_upgrade=dhcp ${dev_u_boot_filename:-prebuilt-u-boot-with-spl.bin-gardena-sg-at91sam} && nand erase 0 180000 && nand write ${fileaddr} 0 ${filesize} && reset
+
 # Migration related commands
 do_migration_ubi_setup=ubi remove rootfs1; ubi remove kernel1; ubi remove overlay; ubi create rootfs1 0x3200000 static 1 && ubi create kernel1 0x800000 static 3 && ubi create overlay 0x3c00000 dynamic 6
 do_if_migration=if test "${migration_done}" != "1"; then ubi read 0x22000000 migration_env && env import -t 0x22000000 ${filesize} ; setenv bootslot 0 && run do_migration_ubi_setup; else true; fi;

@@ -24,7 +24,7 @@ do_flash_rootfs=dhcp gardena-image-prod-gardena-sg-mt7688.squashfs-xz && echo "W
 do_flash=run do_flash_kernel && run do_flash_rootfs
 do_if_flashing_setup=if test "${flashing_done}" != "1"; then run do_toggle_bootslot && run do_flash && setenv flashing_done 1 && saveenv && reset; else true; fi
 do_start_over=env default -f -a && saveenv && reset
-do_u_boot_upgrade=dhcp prebuilt-u-boot-with-spl-gardena-sg-mt7688_2021.04-gardena-6-prod.bin && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
+do_u_boot_upgrade=dhcp ${dev_u_boot_filename:-prebuilt-u-boot-with-spl.bin-gardena-sg-mt7688} && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
 do_if_u_boot_upgrade=if test "$ver" = "U-Boot 2021.04-gardena-6 (Jun 10 2021 - 16:05:31 +0000)"; then echo "U-Boot is up-to-date"; else echo "U-Boot is outdated, upgrade needed"; run do_u_boot_upgrade; fi
 
 ## Relevant for initial configuration. Run by U-Boot with default env.
