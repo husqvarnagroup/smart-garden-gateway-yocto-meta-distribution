@@ -123,6 +123,10 @@ end";
                     {
                         name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
                         value = "";
+                    },
+                    {
+                        name = "bootcmd"; /* Introduced as part of SG-16934 */
+                        value = "run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset";
                     }
                 )
             }
@@ -194,6 +198,10 @@ end";
                     {
                         name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
                         value = "";
+                    },
+                    {
+                        name = "bootcmd"; /* Introduced as part of SG-16934 */
+                        value = "run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset";
                     }
                 )
             }
