@@ -28,7 +28,11 @@ do_u_boot_upgrade=dhcp ${dev_u_boot_filename:-prebuilt-u-boot-with-spl.bin-garde
 do_if_u_boot_upgrade=if test "$ver" = "U-Boot 2021.04-gardena-6 (Jun 10 2021 - 16:05:31 +0000)"; then echo "U-Boot is up-to-date"; else echo "U-Boot is outdated, upgrade needed"; run do_u_boot_upgrade; fi
 
 ## Relevant for initial configuration. Run by U-Boot with default env.
-do_u_boot_init=led smartgw:internet:green on && run do_if_u_boot_upgrade && run bootcmd
+do_u_boot_init=led smartgw:internet:green on && run do_if_u_boot_upgrade && run do_u_boot_verify && run bootcmd
+do_u_boot_verify=if dhcp ${dev_u_boot_filename:-prebuilt-u-boot-with-spl.bin-gardena-sg-mt7688} && setexpr crcaddr_ram ${fileaddr} + ${filesize} && echo ${crcaddr_ram} && setexpr crcaddr_flash ${crcaddr_ram} + 4 && echo ${crcaddr_flash} && crc32 ${fileaddr} ${filesize} ${crcaddr_ram} && mtd read nor0 ${fileaddr} 0 ${filesize} && crc32 ${fileaddr} ${filesize} ${crcaddr_flash}; then if cmp.b ${crcaddr_ram} ${crcaddr_flash} 4; then run do_u_boot_verify_pass; else run do_u_boot_verify_fail; sleep 86400; reset; fi; else run do_u_boot_verify_error; sleep 86400; reset; fi
+do_u_boot_verify_error=echo "U-Boot checksum comparisation error"; led smartgw:internet:green off; led smartgw:internet:red on; led smartgw:radio:blue on
+do_u_boot_verify_fail=echo "U-Boot checksum does not match"; led smartgw:internet:green off; led smartgw:internet:red on; led smartgw:radio:red on
+do_u_boot_verify_pass=echo "U-Boot checksum matches"; led smartgw:internet:green on
 
 # Custom commands required for booting the gateway at customers site
 # Warning: Removing or changing any of this lines requires care as gateways in
