@@ -12,29 +12,38 @@ do_dev_led_on=led_state=on; run do_dev_led_set_state
 do_dev_nfs_set_bootargs=setenv bootargs root=/dev/nfs ip=${ipaddr}:${serverip}:${ipaddr}:${netmask}:${vendor}:eth0:off:${serverip} nfsroot=${serverip}:${dev_nfsroot:-/srv/rootfs-gardena-sg-mt7688},v3,tcp rw mtdparts="${mtdparts}" ${dev_bootargs} console=ttyS0,115200
 do_dev_nfs_bootcmd=dhcp 80a00000 fitImage-gardena-sg-mt7688.bin && run do_dev_nfs_set_bootargs && bootm ${fileaddr}
 
-# Custom commands required for production and regular startup
-# Warning: Removing or changing any of this lines requires care as gateways in
-#          the field need to be updated with all changes!
-do_toggle_bootslot=if test "${bootslot}" = "0"; then setenv bootslot 1; else setenv bootslot 0;fi;
+# Startup command for manufacturing and *initial* startup in field. Will get
+# overwritten with a simplified one on the first run of SWUpdate.
+bootcmd=run do_print_ids && run do_show_bootstrap_error && run do_if_ubi_setup && run do_if_flashing_setup && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset
+
+# Custom commands required for manufacturing
 do_show_bootstrap_error=if test "${ubi_setup_done}" != "1" -o "${flashing_done}" != "1" -a ${bootcount} -ge 7; then led smartgw:internet:blue off; led smartgw:internet:green off; led smartgw:internet:red on; sleep 86400; else true; fi
-do_set_bootargs=setenv bootargs console=ttyS0,${baudrate} root=/dev/ubiblock0_${bootslot} rootrw=ubi0:overlay rootrwfstype=ubifs rootrwoptions=rw,noatime ubi.block=0,rootfs${bootslot} ubi.mtd=nand init=/init mtdparts="${mtdparts}" ${dev_bootargs}
 do_if_ubi_setup=if test "${ubi_setup_done}" != "1"; then mtd erase spi-nand0; ubi part nand && ubi create rootfs0 0x2815000 static 0 && ubi create rootfs1 0x2815000 static 1 && ubi create kernel0 0x41e000 static 2 && ubi create kernel1 0x41e000 static 3 && ubi create overlay 0x1e00000 dynamic 4 && setenv ubi_setup_done 1; else ubi part nand; fi
 do_flash_kernel=dhcp fitImage-gardena-sg-mt7688.bin && echo "Writing to kernel${bootslot}" && ubi write ${fileaddr} kernel${bootslot} ${filesize}
-do_flash_rootfs=dhcp gardena-image-prod-gardena-sg-mt7688.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
+do_flash_rootfs=dhcp gardena-image-factory-gardena-sg-mt7688.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
 do_flash=run do_flash_kernel && run do_flash_rootfs
-do_reset_overlay=ubi part nand && ubi remove overlay; ubi create overlay 0x1e00000 dynamic 4
 do_if_flashing_setup=if test "${flashing_done}" != "1"; then run do_toggle_bootslot && run do_flash && setenv flashing_done 1 && saveenv && reset; else true; fi
+do_start_over=env default -f -a && saveenv && reset
+do_u_boot_upgrade=dhcp ${dev_u_boot_filename:-prebuilt-u-boot-with-spl.bin-gardena-sg-mt7688} && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
+do_if_u_boot_upgrade=if test "$ver" = "U-Boot 2021.04-gardena-6 (Jun 10 2021 - 16:05:31 +0000)"; then echo "U-Boot is up-to-date"; else echo "U-Boot is outdated, upgrade needed"; run do_u_boot_upgrade; fi
+
+## Relevant for initial configuration. Run by U-Boot with default env.
+do_u_boot_init=led smartgw:internet:green on && run do_if_u_boot_upgrade && run do_u_boot_verify && run bootcmd
+do_u_boot_verify=if dhcp ${dev_u_boot_filename:-prebuilt-u-boot-with-spl.bin-gardena-sg-mt7688} && setexpr crcaddr_ram ${fileaddr} + ${filesize} && echo ${crcaddr_ram} && setexpr crcaddr_flash ${crcaddr_ram} + 4 && echo ${crcaddr_flash} && crc32 ${fileaddr} ${filesize} ${crcaddr_ram} && mtd read nor0 ${fileaddr} 0 ${filesize} && crc32 ${fileaddr} ${filesize} ${crcaddr_flash}; then if cmp.b ${crcaddr_ram} ${crcaddr_flash} 4; then run do_u_boot_verify_pass; else run do_u_boot_verify_fail; sleep 86400; reset; fi; else run do_u_boot_verify_error; sleep 86400; reset; fi
+do_u_boot_verify_error=echo "U-Boot checksum comparisation error"; led smartgw:internet:green off; led smartgw:internet:red on; led smartgw:radio:blue on
+do_u_boot_verify_fail=echo "U-Boot checksum does not match"; led smartgw:internet:green off; led smartgw:internet:red on; led smartgw:radio:red on
+do_u_boot_verify_pass=echo "U-Boot checksum matches"; led smartgw:internet:green on
+
+# Custom commands required for booting the gateway at customers site
+# Warning: Removing or changing any of this lines requires care as gateways in
+#          the field need to be updated with all changes in order to avoid
+#          us having to maintain different startup sequences!
+do_toggle_bootslot=if test "${bootslot}" = "0"; then setenv bootslot 1; else setenv bootslot 0;fi;
+do_set_bootargs=setenv bootargs console=ttyS0,${baudrate} root=/dev/ubiblock0_${bootslot} rootrw=ubi0:overlay rootrwfstype=ubifs rootrwoptions=rw,noatime ubi.block=0,rootfs${bootslot} ubi.mtd=nand init=/init mtdparts="${mtdparts}" ${dev_bootargs}
+do_reset_overlay=ubi part nand && ubi remove overlay; ubi create overlay 0x1e00000 dynamic 4
 do_boot_from_flash=ubi read 80a00000 kernel${bootslot} && bootm 80a00000
 do_factory_reset=run do_reset_overlay && led smartgw:power:blue off && led smartgw:power:green on && led smartgw:power:red on
 do_if_factory_reset=if gpio input PA11; then echo "Button pressed, issuing factory reset"; run do_factory_reset; else true; fi && if test "${enable_factory_reset}" = "1"; then echo "Factory reset enabled via u-boot variable" && run do_factory_reset && setenv enable_factory_reset && saveenv; else true; fi
 do_resurrection_reset=echo "resurrection reset triggered" && run do_toggle_bootslot && saveenv && led smartgw:power:blue off && led smartgw:power:green off && led smartgw:power:red on
 do_if_resurrection_reset=printenv recovery_status || setenv holdtime 0 && while gpio input PA11; do if test $holdtime = 1e; then run do_resurrection_reset; fi; setexpr holdtime ${holdtime} + 1; sleep 1; done || true
-do_start_over=env default -f -a && saveenv && reset
-do_u_boot_upgrade=dhcp prebuilt-u-boot-with-spl-gardena-sg-mt7688_2021.04-gardena-6-prod.bin && mtd erase nor0 0 a0000 && mtd write nor0 ${fileaddr} 0 ${filesize} && reset
-do_if_u_boot_upgrade=if test "$ver" = "U-Boot 2021.04-gardena-6 (Jun 10 2021 - 16:05:31 +0000)"; then echo "U-Boot is up-to-date"; else echo "U-Boot is outdated, upgrade needed"; run do_u_boot_upgrade; fi
-
-## Relevant for startup
-bootcmd=run do_show_bootstrap_error && run do_if_ubi_setup && run do_if_flashing_setup && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset
-
-## Relevant for initial configuration
-do_u_boot_init=led smartgw:internet:green on && run do_if_u_boot_upgrade && run bootcmd
+do_print_ids=echo linuxmoduleid=${linuxmoduleid:-unset} && echo gatewayid=${gatewayid:-unset} && echo radiomoduleid=${radiomoduleid:-unset}

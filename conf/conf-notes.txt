@@ -5,6 +5,7 @@ You can now run 'bitbake <target>'
 
 Common targets are:
     gardena-image-dev-nfsboot
+    gardena-image-factory
     gardena-image-opensource-prod
     gardena-image-prod
     gardena-update-image-prod

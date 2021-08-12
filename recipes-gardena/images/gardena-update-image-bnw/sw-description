@@ -123,6 +123,14 @@ end";
                     {
                         name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
                         value = "";
+                    },
+                    {
+                        name = "do_print_ids"; /* Introduced as part of SG-16934 */
+                        value = "echo linuxmoduleid=${linuxmoduleid:-unset} && echo gatewayid=${gatewayid:-unset} && echo radiomoduleid=${radiomoduleid:-unset}";
+                    },
+                    {
+                        name = "bootcmd"; /* Introduced as part of SG-16934 */
+                        value = "run do_print_ids && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset";
                     }
                 )
             }
@@ -194,6 +202,14 @@ end";
                     {
                         name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
                         value = "";
+                    },
+                    {
+                        name = "do_print_ids"; /* Introduced as part of SG-16934 */
+                        value = "echo linuxmoduleid=${linuxmoduleid:-unset} && echo gatewayid=${gatewayid:-unset} && echo radiomoduleid=${radiomoduleid:-unset}";
+                    },
+                    {
+                        name = "bootcmd"; /* Introduced as part of SG-16934 */
+                        value = "run do_print_ids && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset";
                     }
                 )
             }
