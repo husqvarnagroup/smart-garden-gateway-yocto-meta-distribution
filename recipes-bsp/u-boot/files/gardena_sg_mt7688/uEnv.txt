@@ -10,7 +10,7 @@ do_dev_led_off=led_state=off; run do_dev_led_set_state
 do_dev_led_on=led_state=on; run do_dev_led_set_state
 
 do_dev_nfs_set_bootargs=setenv bootargs root=/dev/nfs ip=${ipaddr}:${serverip}:${ipaddr}:${netmask}:${vendor}:eth0:off:${serverip} nfsroot=${serverip}:${dev_nfsroot:-/srv/rootfs-gardena-sg-mt7688},v3,tcp rw mtdparts="${mtdparts}" ${dev_bootargs} console=ttyS0,115200
-do_dev_nfs_bootcmd=dhcp 80a00000 fitImage-gardena-sg-mt7688.bin && run do_dev_nfs_set_bootargs && bootm ${fileaddr}
+do_dev_nfs_bootcmd=dhcp 80a00000 ${dev_kernel_filename:-fitImage-gardena-sg-mt7688.bin} && run do_dev_nfs_set_bootargs && bootm ${fileaddr}
 
 # Startup command for manufacturing and *initial* startup in field. Will get
 # overwritten with a simplified one on the first run of SWUpdate.
@@ -19,8 +19,8 @@ bootcmd=run do_print_ids && run do_show_bootstrap_error && run do_if_ubi_setup &
 # Custom commands required for manufacturing
 do_show_bootstrap_error=if test "${ubi_setup_done}" != "1" -o "${flashing_done}" != "1" -a ${bootcount} -ge 7; then led smartgw:internet:blue off; led smartgw:internet:green off; led smartgw:internet:red on; sleep 86400; else true; fi
 do_if_ubi_setup=if test "${ubi_setup_done}" != "1"; then mtd erase spi-nand0; ubi part nand && ubi create rootfs0 0x2815000 static 0 && ubi create rootfs1 0x2815000 static 1 && ubi create kernel0 0x41e000 static 2 && ubi create kernel1 0x41e000 static 3 && ubi create overlay 0x1e00000 dynamic 4 && setenv ubi_setup_done 1; else ubi part nand; fi
-do_flash_kernel=dhcp fitImage-gardena-sg-mt7688.bin && echo "Writing to kernel${bootslot}" && ubi write ${fileaddr} kernel${bootslot} ${filesize}
-do_flash_rootfs=dhcp gardena-image-factory-gardena-sg-mt7688.squashfs-xz && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
+do_flash_kernel=dhcp ${dev_kernel_filename:-fitImage-gardena-sg-mt7688.bin} && echo "Writing to kernel${bootslot}" && ubi write ${fileaddr} kernel${bootslot} ${filesize}
+do_flash_rootfs=dhcp ${dev_rootfs_filename:-gardena-image-factory-gardena-sg-mt7688.squashfs-xz} && echo "Writing to rootfs${bootslot}" && ubi write ${fileaddr} rootfs${bootslot} ${filesize}
 do_flash=run do_flash_kernel && run do_flash_rootfs
 do_if_flashing_setup=if test "${flashing_done}" != "1"; then run do_toggle_bootslot && run do_flash && setenv flashing_done 1 && saveenv && reset; else true; fi
 do_start_over=env default -f -a && saveenv && reset
