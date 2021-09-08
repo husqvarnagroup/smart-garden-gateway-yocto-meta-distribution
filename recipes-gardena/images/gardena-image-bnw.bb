@@ -4,6 +4,7 @@ SUMMARY = "The GARDENA for gateways using the BNW platform"
 
 IMAGE_INSTALL += " \
     cloudadapter \
+    lemonbeatd \
     lwm2mserver \
     ppp-network-bnw \
     ssh-authorized-keys-dev \
