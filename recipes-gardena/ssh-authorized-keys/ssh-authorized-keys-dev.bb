@@ -15,7 +15,7 @@ SRC_URI = " \
     file://gerald-reisinger.pub \
     file://low-cost-gateway-prod.pub \
     file://marc-lasch.pub \
-    file://marcel.mueller@husqvarnagroup.com \
+    file://marcel-mueller.pub \
     file://markus-gruber.pub \
     file://michel-werren.pub \
     file://pascal-brogle.pub \
