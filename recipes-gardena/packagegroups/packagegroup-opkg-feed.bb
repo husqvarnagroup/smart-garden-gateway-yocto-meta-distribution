@@ -53,7 +53,6 @@ RDEPENDS_packagegroup-opkg-feed = "\
     srecord \
     strace \
     stresstest-download \
-    swdtool \
     tar \
     tcpdump \
     traceroute \
