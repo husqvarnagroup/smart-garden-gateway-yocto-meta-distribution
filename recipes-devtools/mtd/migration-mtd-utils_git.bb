@@ -14,7 +14,7 @@ PV = "2.1.1"
 PR = "r1"
 
 SRCREV = "18d7bd618cda71cc664cbdb3366ac30a5c3479cc"
-SRC_URI = "git://stash.dss.husqvarnagroup.com:7999/sg/mtd-utils.git;protocol=ssh;branch=gardena/master \
+SRC_URI = "git://ssh.dev.azure.com/v3/HQV-Gardena/SG-Gateway/mtd-utils;protocol=ssh;branch=gardena/master \
            file://add-exclusion-to-mkfs-jffs2-git-2.patch \
 "
 
