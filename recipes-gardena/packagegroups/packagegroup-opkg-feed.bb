@@ -47,7 +47,6 @@ RDEPENDS_packagegroup-opkg-feed = "\
     rsyslog \
     screen \
     sed \
-    shadoway-develop \
     shadoway-lona \
     socat \
     srecord \
