@@ -6,6 +6,7 @@ IMAGE_INSTALL += " \
     cloudadapter \
     lemonbeatd \
     lwm2mserver \
+    nngforward \
     ppp-network-bnw \
     ssh-authorized-keys-dev \
 "
