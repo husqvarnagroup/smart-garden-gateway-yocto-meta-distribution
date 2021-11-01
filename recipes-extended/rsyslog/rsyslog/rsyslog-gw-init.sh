@@ -13,6 +13,8 @@ SELUXIT_ENV="$(fw_printenv -n "seluxit_env" 2>/dev/null || echo prod)"
 GATEWAY_ID="$(fw_printenv -n gatewayid)"
 BOARD_NAME="$(fw_printenv -n board_name)"
 HW_REVISION="$(fw_printenv -n gateway_hardware_revision)"
+FEED="$(fw_printenv -n update_url | sed -nE 's/.*feeds\/(.*)\/images\/.*/\1/p')"
+UPDATE_IMAGE_TYPE="$(fw_printenv -n update_url | sed -nE 's/.*gardena-update-image-(.*)-gardena-sg-.*/\1/p')"
 
 # Configure gateway id as LocalHostName
 RSYSLOG_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/01-gateway-id.conf"
@@ -27,16 +29,22 @@ RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV="set \$!gw.env = '${SELUXIT_ENV}';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION="set \$!gw.swVersion = '$(. /etc/os-release; echo "$VERSION")';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME="set \$!gw.boardName = '${BOARD_NAME}';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION="set \$!gw.hwRevision = '${HW_REVISION}';"
+RSYSLOG_METADATA_CONFIG_FILE_CONTENT_FEED="set \$!gw.feed = '${FEED}';"
+RSYSLOG_METADATA_CONFIG_FILE_CONTENT_UPDATE_IMAGE_TYPE="set \$!gw.updateImageType = '${UPDATE_IMAGE_TYPE}';"
 
 if ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
-   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION}"$ "${RSYSLOG_METADATA_CONFIG_FILE}"; then
+   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
+   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_FEED}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
+   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_UPDATE_IMAGE_TYPE}"$ "${RSYSLOG_METADATA_CONFIG_FILE}"; then
     {
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION}"
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME}"
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION}"
+      echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_FEED}"
+      echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_UPDATE_IMAGE_TYPE}"
     } > "${RSYSLOG_METADATA_CONFIG_FILE}"
 fi
 
