@@ -10,6 +10,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     bind-utils \
     chrony \
     chronyc \
+    conntrack-tools \
     cuitest \
     curl \
     emc-tools \
