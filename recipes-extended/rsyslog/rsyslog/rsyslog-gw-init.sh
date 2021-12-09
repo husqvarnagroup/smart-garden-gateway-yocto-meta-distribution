@@ -13,8 +13,8 @@ SELUXIT_ENV="$(fw_printenv -n "seluxit_env" 2>/dev/null || echo prod)"
 GATEWAY_ID="$(fw_printenv -n gatewayid)"
 BOARD_NAME="$(fw_printenv -n board_name)"
 HW_REVISION="$(fw_printenv -n gateway_hardware_revision)"
-FEED="$(fw_printenv -n update_url | sed -nE 's/.*feeds\/(.*)\/images\/.*/\1/p')"
-UPDATE_IMAGE_TYPE="$(fw_printenv -n update_url | sed -nE 's/.*gardena-update-image-(.*)-gardena-sg-.*/\1/p')"
+FEED="$( (fw_printenv -n update_url 2>/dev/null || true) | sed -nE 's/.*feeds\/(.*)\/images\/.*/\1/p')"
+UPDATE_IMAGE_TYPE="$( (fw_printenv -n update_url 2>/dev/null || true) | sed -nE 's/.*gardena-update-image-(.*)-gardena-sg-.*/\1/p')"
 
 # Configure gateway id as LocalHostName
 RSYSLOG_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/01-gateway-id.conf"
