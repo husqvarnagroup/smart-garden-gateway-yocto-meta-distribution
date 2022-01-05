@@ -3,6 +3,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 SUMMARY = "The GARDENA manufacturing image"
 
 IMAGE_INSTALL += " \
+    gateway-firmware \
     openvpn-factory \
     ppp-network-seluxit \
     ssh-authorized-keys-prod \
