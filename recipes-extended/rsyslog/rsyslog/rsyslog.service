@@ -11,6 +11,8 @@ Type=notify
 ExecStart=/usr/sbin/rsyslogd -n -iNONE
 StandardOutput=null
 Restart=on-failure
+# lower stop timeout from default 90s to prevent reboot slowdown (SG-14931)
+TimeoutStopSec=10
 
 # Increase the default a bit in order to allow many simultaneous
 # files to be monitored, we might need a lot of fds.
