@@ -40,6 +40,8 @@ RDEPENDS_packagegroup-opkg-feed = "\
     prelink \
     pstree \
     pv \
+    python3-opentelemetry-exporter-otlp-proto-http \
+    python3-opentelemetry-sdk \
     python3-paho-mqtt \
     python3-pip \
     python3-toml \
