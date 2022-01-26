@@ -1,0 +1,13 @@
+[Unit]
+Description=Mount /run/log/journal as zram
+DefaultDependencies=no
+Before=local-fs.target umount.target systemd-journald.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/sbin/zram-init -d0 -s0 -azstd -text2 -S24 -oX-mount.mkdir 128 /run/log/journal
+ExecStop=/sbin/zram-init -d0 0 /run/log/journal
+
+[Install]
+WantedBy=local-fs-pre.target umount.target systemd-journald.service

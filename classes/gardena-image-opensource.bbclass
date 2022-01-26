@@ -55,6 +55,7 @@ IMAGE_INSTALL += " \
     wireless-regdb-static \
     wpa-supplicant \
     wpa-supplicant-cli \
+    zram-init \
 "
 
 IMAGE_INSTALL_append_mt7688 += " \
