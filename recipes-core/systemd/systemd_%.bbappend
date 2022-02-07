@@ -15,7 +15,7 @@ FILES_${PN} += "\
     ${systemd_unitdir}/system/systemd-random-seed.service.d \
 "
 
-PR_append = ".4"
+PR_append = ".5"
 
 do_install_append() {
     # Disable colorized output of system tools (systemctl, etc.)
