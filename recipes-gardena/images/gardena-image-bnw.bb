@@ -4,7 +4,6 @@ SUMMARY = "The GARDENA for gateways using the BNW platform"
 
 IMAGE_INSTALL += " \
     cloudadapter \
-    gateway-firmware-rc \
     lemonbeatd \
     lwm2mserver \
     nngforward \

@@ -14,7 +14,6 @@ IMAGE_INSTALL_remove = "swupdate"
 IMAGE_INSTALL += " \
     ca-certificates \
     curl \
-    gateway-firmware \
     iw \
     led-indicator \
     libubootenv-bin \
