@@ -1,10 +1,13 @@
-# NOTE: we do not require %i because the driver may not be loaded
+# NOTE:
+#  - we do not require %i because the driver may not be loaded
+#  - template actually works only for wlan0
 
 [Unit]
 Description=WPA supplicant daemon (interface-specific version)
 Before=network.target
 Wants=network.target
 ConditionPathExists=/etc/wpa_supplicant/wpa_supplicant-%I.conf
+ConditionPathIsDirectory=/sys/bus/usb/devices/1-2:1.0
 
 Conflicts=hostapd@%i.service
 Before=hostapd%i.service

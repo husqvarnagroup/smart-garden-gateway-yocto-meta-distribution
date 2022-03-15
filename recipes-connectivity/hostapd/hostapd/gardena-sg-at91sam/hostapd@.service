@@ -1,8 +1,11 @@
-# NOTE: we do not require %i because the driver may not be loaded
+# NOTE:
+#  - we do not require %i because the driver may not be loaded
+#  - template actually works only for wlan0
 
 [Unit]
 Description=Hostapd IEEE 802.11 AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
 After=network.target
+ConditionPathIsDirectory=/sys/bus/usb/devices/1-2:1.0
 
 # SG-18437 Ignore errors in (long running) ExecStartPre= lines to prevent the
 # unit from failing when being stopped before reaching ExecStart=.
