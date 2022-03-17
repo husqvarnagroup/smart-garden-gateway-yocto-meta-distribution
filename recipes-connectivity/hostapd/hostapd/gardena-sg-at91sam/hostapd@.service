@@ -4,16 +4,18 @@
 Description=Hostapd IEEE 802.11 AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
 After=network.target
 
+# SG-18437 Ignore errors in (long running) ExecStartPre= lines to prevent the
+# unit from failing when being stopped before reaching ExecStart=.
 [Service]
 Type=forking
 PIDFile=/run/hostapd.pid
 
 # SG-14607 - only rtl8192cu supports AP mode
 ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
-ExecStartPre=modprobe rtl8192cu
+ExecStartPre=-modprobe rtl8192cu
 
 # Give the driver some time to initialize
-ExecStartPre=sleep 3
+ExecStartPre=-sleep 3
 
 # generate config
 ExecStartPre=mkdir -p /run/hostapd

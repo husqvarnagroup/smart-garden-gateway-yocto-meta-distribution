@@ -9,18 +9,19 @@ ConditionPathExists=/etc/wpa_supplicant/wpa_supplicant-%I.conf
 Conflicts=hostapd@%i.service
 Before=hostapd%i.service
 
-[Service]
-Type=simple
+# SG-18437 Ignore errors in (long running) ExecStartPre= lines to prevent the
+# unit from failing when being stopped before reaching ExecStart=.
+[Service] Type=simple
 
 # SG-14607 - only rtl8xxxu is able to scan for APs reliably
 ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
-ExecStartPre=modprobe rtl8xxxu
+ExecStartPre=-modprobe rtl8xxxu
 
 # Give the driver some time to initialize
-ExecStartPre=sleep 3
+ExecStartPre=-sleep 3
 
 # SG-16157 Limiting to 15dBm due to EMC requirements
-ExecStartPre=iw wlan0 set txpower limit 1500
+ExecStartPre=-iw wlan0 set txpower limit 1500
 
 # attach dhcpcd in case hostapd detached it
 ExecStartPre=dhcpcd --rebind %i
