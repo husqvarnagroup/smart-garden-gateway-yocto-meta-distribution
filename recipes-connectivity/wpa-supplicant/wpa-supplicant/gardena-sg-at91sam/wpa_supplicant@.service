@@ -9,8 +9,6 @@ ConditionPathExists=/etc/wpa_supplicant/wpa_supplicant-%I.conf
 Conflicts=hostapd@%i.service
 Before=hostapd%i.service
 
-# NetworkManager users will probably want the dbus version instead.
-
 [Service]
 Type=simple
 
