@@ -4,8 +4,19 @@ Before=network.target
 After=manufacturing-statusfiles.service rm-flashing.service
 Requires=manufacturing-statusfiles.service rm-flashing.service
 ConditionPathExists=/etc/fct_finalized
+# Prevent futile restart attempts
+StartLimitIntervalSec=300
+StartLimitBurst=3
+OnFailure=ppp-failure.service
 
 [Service]
+# Ensure the red RM LED works as configured in the device tree (keep in sync!).
+# Needed (only) in case ppp-failure.service ran before, reconfigured the LED.
+# See ppp-failure.service for why this does not affect at91sam based gateways.
+ExecStartPre=/bin/sh -c 'echo netdev > /sys/class/leds/smartgw:radio:red/trigger'
+ExecStartPre=/bin/sh -c 'echo 1      > /sys/class/leds/smartgw:radio:red/tx'
+ExecStartPre=/bin/sh -c 'echo ppp0   > /sys/class/leds/smartgw:radio:red/device_name'
+
 ExecStart=@SBINDIR@/pppd local crtscts @TTY@ 115200 +ipv6 noauth nodetach noip
 Restart=on-failure
 RestartSec=10s

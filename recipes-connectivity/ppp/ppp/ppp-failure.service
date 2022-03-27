@@ -1,0 +1,7 @@
+[Unit]
+Description=Show PPP failure
+
+[Service]
+Type=oneshot
+# No visible effect on at91sam because the RM, not Linux, controls the RM LEDs.
+ExecStart=/bin/sh -c 'echo 1 > /sys/class/leds/smartgw:radio:red/brightness'
