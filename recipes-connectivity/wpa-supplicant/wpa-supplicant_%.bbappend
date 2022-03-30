@@ -1,6 +1,6 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".8"
+PR_append = ".9"
 
 SRC_URI += " \
     file://keep.d/${BPN} \

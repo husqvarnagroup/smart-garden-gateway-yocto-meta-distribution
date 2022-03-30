@@ -14,7 +14,8 @@ Before=hostapd%i.service
 
 # SG-18437 Ignore errors in (long running) ExecStartPre= lines to prevent the
 # unit from failing when being stopped before reaching ExecStart=.
-[Service] Type=simple
+[Service]
+Type=simple
 
 # SG-14607 - only rtl8xxxu is able to scan for APs reliably
 ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
