@@ -8,8 +8,8 @@ After=network-online.target
 OnActiveSec=5s
 # Fallback once after boot
 OnBootSec=300s
-# Twice a day
-OnUnitActiveSec=12h
+# Roughly every 1.5 days. Prime to cover every day time eventually.
+OnUnitActiveSec=31h
 
 [Install]
 WantedBy=timers.target
