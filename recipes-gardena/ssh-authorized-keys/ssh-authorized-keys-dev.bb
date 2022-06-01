@@ -4,21 +4,26 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PV = "0.4"
+PV = "0.5"
 
 SRC_URI = " \
-    file://adrian-gross.pub \
+    file://agash-thamo.pub \
     file://alexey-nezhdanov.pub \
     file://andreas-müller.pub \
-    file://andrej-gessel.pub \
+    file://andreas_boerrnert.pub \
+    file://boris-ruch.pub \
     file://felix-bruelisauer.pub \
     file://gerald-reisinger.pub \
+    file://jessica-eichberg.pub \
     file://low-cost-gateway-prod.pub \
+    file://manuel-knobel.pub \
     file://marc-lasch.pub \
     file://marcel-mueller.pub \
     file://markus-gruber.pub \
     file://michel-werren.pub \
     file://pascal-brogle.pub \
+    file://peter-penkalla.pub \
+    file://renato-staehli.pub \
     file://reto-schneider_homeoffice.pub \
     file://reto-schneider_office.pub \
     file://timon-braendli.pub \
