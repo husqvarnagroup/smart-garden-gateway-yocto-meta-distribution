@@ -7,6 +7,7 @@ IMAGE_INSTALL += " \
     lemonbeatd \
     lwm2mserver \
     nngforward \
+    openvpn-seluxit \
     ppp-network-bnw \
     ssh-authorized-keys-dev \
 "
