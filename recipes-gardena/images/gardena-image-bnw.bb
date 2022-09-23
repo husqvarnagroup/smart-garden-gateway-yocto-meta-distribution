@@ -12,6 +12,7 @@ IMAGE_INSTALL += " \
     openvpn-seluxit \
     ppp-network-bnw \
     ssh-authorized-keys-dev \
+    sshtunnel \
 "
 
 inherit gardena-image-proprietary
