@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PV = "0.6"
+PV = "0.7"
 
 SRC_URI = " \
     file://agash-thamo.pub \
@@ -12,6 +12,7 @@ SRC_URI = " \
     file://andreas-müller.pub \
     file://andreas_boerrnert.pub \
     file://boris-ruch.pub \
+    file://ezra-buehler.pub \
     file://felix-bruelisauer.pub \
     file://florian-schweikert.pub \
     file://gerald-reisinger.pub \
