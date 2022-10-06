@@ -1,20 +1,22 @@
-From e457053784d4fe6374ae377fc0861f316ebeacc5 Mon Sep 17 00:00:00 2001
+From e6d55abdb1ef878ceec7c6633c3ed22385a8ae83 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Tue, 8 Feb 2022 16:19:53 +0100
-Subject: [PATCH] [sg noup] fw_setenv: Support extra long lines
+Subject: [PATCH 2/3] [sg noup] fw_setenv: Support extra long lines
 
 Our certificates are bigger than 1024 bytes (seen: 1722 bytes). Bumping the
 line length to a value which certainly is enough.
+
+Upstream-Status: Inappropriate [hack]
 ---
  src/uboot_env.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/src/uboot_env.c b/src/uboot_env.c
-index c9a900f..823a022 100644
+index 3320753..96dd39c 100644
 --- a/src/uboot_env.c
 +++ b/src/uboot_env.c
-@@ -1131,7 +1131,8 @@ static int libuboot_load(struct uboot_ctx *ctx)
- 	return ctx->valid ? 0 : -ENODATA;
+@@ -1524,7 +1524,8 @@ cleanup:
+ 	return status;
  }
  
 -#define LINE_LENGTH 1024
@@ -24,5 +26,5 @@ index c9a900f..823a022 100644
  {
  	FILE *fp;
 -- 
-2.30.2
+2.39.2
 
