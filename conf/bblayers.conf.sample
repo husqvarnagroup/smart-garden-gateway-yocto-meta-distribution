@@ -18,5 +18,4 @@ BBLAYERS ?= " \
   ##OEROOT##/../meta-openembedded/meta-networking \
   ##OEROOT##/../meta-readonly-rootfs-overlay \
   ##OEROOT##/../meta-swupdate \
-  ##OEROOT##/../meta-rust \
   "
