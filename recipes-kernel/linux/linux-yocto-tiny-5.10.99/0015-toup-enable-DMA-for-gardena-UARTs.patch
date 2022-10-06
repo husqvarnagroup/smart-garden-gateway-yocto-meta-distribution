@@ -1,0 +1,45 @@
+From 2e06493d0236d443488fcb3aa41966e7c083d428 Mon Sep 17 00:00:00 2001
+From: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Date: Wed, 25 Jan 2023 14:20:38 +0100
+Subject: [PATCH] [toup] enable DMA for gardena UARTs
+
+the UART controller isn't fast enough to receive data (at 115200)
+without dropping bytes with DMA disabled.
+
+This was easy to notice when e.g. pasting SSH keys via the dbgu console.
+You always had to do that multiple times until you had a successful
+paste without missing bytes.
+---
+ arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts | 2 ++
+ arch/arm/boot/dts/at91sam9x5ek.dtsi                     | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts b/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
+index 7da70aeeb528..331ed968f27e 100644
+--- a/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
++++ b/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
+@@ -121,6 +121,8 @@ &usart2 {
+ };
+ 
+ &usart3 {
++	atmel,use-dma-rx;
++	atmel,use-dma-tx;
+ 	status = "okay";
+ 
+ 	pinctrl-0 = <&pinctrl_usart3
+diff --git a/arch/arm/boot/dts/at91sam9x5ek.dtsi b/arch/arm/boot/dts/at91sam9x5ek.dtsi
+index 6d1264de6060..20fafd700c2c 100644
+--- a/arch/arm/boot/dts/at91sam9x5ek.dtsi
++++ b/arch/arm/boot/dts/at91sam9x5ek.dtsi
+@@ -39,6 +39,8 @@ &adc0 {
+ };
+ 
+ &dbgu {
++	atmel,use-dma-rx;
++	atmel,use-dma-tx;
+ 	status = "okay";
+ };
+ 
+-- 
+2.39.2
+

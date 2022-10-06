@@ -1,0 +1,84 @@
+From 6b67b99b74451b0b92fd2002e0e8340904464e5f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
+Date: Tue, 11 May 2021 09:19:27 +0200
+Subject: [PATCH] [fromup] rtl8xxxu: avoid parsing short RX packet
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+One USB data buffer can contain multiple received network
+packets. If that's the case, they're processed this way:
+1. Original buffer is cloned
+2. Original buffer is trimmed to contain only the first
+   network packet
+3. This first network packet is passed to network stack
+4. Cloned buffer is trimmed to eliminate the first network
+   packet
+5. Repeat with the cloned buffer until there are no more
+   network packets inside
+
+However, if the space remaining in original buffer after
+the first network packet is not enough to contain at least
+another network packet descriptor, it is not cloned.
+
+The loop parsing this packets ended if remaining space == 0.
+But if the remaining space was > 0 but < packet descriptor
+size, another iteration of the loop was done, processing again
+the previous packet because cloning didn't happen. Moreover,
+the ownership of this packet had been passed to network
+stack in the previous iteration.
+
+This patch ensures that no extra iteration is done if the
+remaining size is not enough for one packet, and also avoid
+the first iteration for the same reason.
+
+Probably this doesn't happen in practice, but can happen
+theoretically.
+
+Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210511071926.8951-1-ihuguet@redhat.com
+(cherry picked from commit adf6a0f8c0a656df3d29403f314bf3e0dbb2dd77)
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index dbd89c1dc63b..7abea33e78dd 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -5565,6 +5565,11 @@ int rtl8xxxu_parse_rxdesc16(struct rtl8xxxu_priv *priv, struct sk_buff *skb)
+ 	urb_len = skb->len;
+ 	pkt_cnt = 0;
+ 
++	if (urb_len < sizeof(struct rtl8xxxu_rxdesc16)) {
++		kfree_skb(skb);
++		return RX_TYPE_ERROR;
++	}
++
+ 	do {
+ 		rx_desc = (struct rtl8xxxu_rxdesc16 *)skb->data;
+ 		_rx_desc_le = (__le32 *)skb->data;
+@@ -5592,7 +5597,7 @@ int rtl8xxxu_parse_rxdesc16(struct rtl8xxxu_priv *priv, struct sk_buff *skb)
+ 		 * at least cover the rx descriptor
+ 		 */
+ 		if (pkt_cnt > 1 &&
+-		    urb_len > (pkt_offset + sizeof(struct rtl8xxxu_rxdesc16)))
++		    urb_len >= (pkt_offset + sizeof(struct rtl8xxxu_rxdesc16)))
+ 			next_skb = skb_clone(skb, GFP_ATOMIC);
+ 
+ 		rx_status = IEEE80211_SKB_RXCB(skb);
+@@ -5638,7 +5643,9 @@ int rtl8xxxu_parse_rxdesc16(struct rtl8xxxu_priv *priv, struct sk_buff *skb)
+ 
+ 		pkt_cnt--;
+ 		urb_len -= pkt_offset;
+-	} while (skb && urb_len > 0 && pkt_cnt > 0);
++		next_skb = NULL;
++	} while (skb && pkt_cnt > 0 &&
++		 urb_len >= sizeof(struct rtl8xxxu_rxdesc16));
+ 
+ 	return RX_TYPE_DATA_PKT;
+ }
+-- 
+2.30.2
+

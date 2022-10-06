@@ -1,0 +1,51 @@
+From 6751121bc81ace79eb7e9e09307f8819e2cdaedd Mon Sep 17 00:00:00 2001
+From: Chris Chiu <chris.chiu@canonical.com>
+Date: Fri, 2 Jul 2021 00:33:54 +0800
+Subject: [PATCH] [fromup] rtl8xxxu: disable interrupt_in transfer for 8188cu
+ and 8192cu
+
+There will be crazy numbers of interrupts triggered by 8188cu and
+8192cu module, around 8000~10000 interrupts per second, on the usb
+host controller. Compare with the vendor driver source code, it's
+mapping to the configuration CONFIG_USB_INTERRUPT_IN_PIPE and it is
+disabled by default.
+
+Since the interrupt transfer is neither used for TX/RX nor H2C
+commands. Disable it to avoid the excessive amount of interrupts
+for the 8188cu and 8192cu module which I only have for verification.
+
+Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
+Tested-by: reto.schneider@husqvarnagroup.com
+Acked-by: Jes Sorensen <Jes.Sorensen@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20210701163354.118403-1-chris.chiu@canonical.com
+(cherry picked from commit f62cdab7f5db4552067996f888d3874e2171c604)
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 7abea33e78dd..5cbada789e2d 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -1670,7 +1670,7 @@ static int rtl8xxxu_identify_chip(struct rtl8xxxu_priv *priv)
+ 			priv->rf_paths = 2;
+ 			priv->rx_paths = 2;
+ 			priv->tx_paths = 2;
+-			priv->usb_interrupts = 1;
++			priv->usb_interrupts = 0;
+ 			priv->rtl_chip = RTL8192C;
+ 		}
+ 		priv->has_wifi = 1;
+@@ -1680,7 +1680,7 @@ static int rtl8xxxu_identify_chip(struct rtl8xxxu_priv *priv)
+ 		priv->rx_paths = 1;
+ 		priv->tx_paths = 1;
+ 		priv->rtl_chip = RTL8188C;
+-		priv->usb_interrupts = 1;
++		priv->usb_interrupts = 0;
+ 		priv->has_wifi = 1;
+ 	}
+ 
+-- 
+2.30.2
+

@@ -1,0 +1,66 @@
+From 7a01c7cdcef4c04d0029ec6e2b270e92a32c084f Mon Sep 17 00:00:00 2001
+From: Chris Chiu <chris.chiu@canonical.com>
+Date: Fri, 1 Oct 2021 12:00:44 +0800
+Subject: [PATCH] [fromup] rtl8xxxu: Use lower tx rates for the ack packet
+
+According to the Realtek propritary driver and the rtw88 driver, the
+tx rates of the ack (includes block ack) are initialized with lower
+tx rates (no HT rates) which is set by the RRSR register value. In
+real cases, ack rate higher than current tx rate could lead to
+difficulty for the receiving end to receive management/control frames.
+The retransmission rate would be higher then expected when the driver
+is acting as receiver and the RSSI is not good.
+
+Cross out higer rates for ack packet before implementing dynamic rrsr
+configuration like the commit 4830872685f8 ("rtw88: add dynamic rrsr
+configuration").
+
+Signed-off-by: Chris Chiu <chris.chiu@canonical.com>
+Acked-by: Jes Sorensen <Jes.Sorensen@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211001040044.1028708-1-chris.chiu@canonical.com
+(cherry picked from commit 7acd723c30c002293860bc17e15acdc4413b7272)
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 6 +++++-
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h | 2 ++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 5cbada789e2d..6480a45aecc8 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -4460,13 +4460,17 @@ void rtl8xxxu_gen1_init_aggregation(struct rtl8xxxu_priv *priv)
+ 
+ static void rtl8xxxu_set_basic_rates(struct rtl8xxxu_priv *priv, u32 rate_cfg)
+ {
++	struct ieee80211_hw *hw = priv->hw;
+ 	u32 val32;
+ 	u8 rate_idx = 0;
+ 
+ 	rate_cfg &= RESPONSE_RATE_BITMAP_ALL;
+ 
+ 	val32 = rtl8xxxu_read32(priv, REG_RESPONSE_RATE_SET);
+-	val32 &= ~RESPONSE_RATE_BITMAP_ALL;
++	if (hw->conf.chandef.chan->band == NL80211_BAND_5GHZ)
++		val32 &= RESPONSE_RATE_RRSR_INIT_5G;
++	else
++		val32 &= RESPONSE_RATE_RRSR_INIT_2G;
+ 	val32 |= rate_cfg;
+ 	rtl8xxxu_write32(priv, REG_RESPONSE_RATE_SET, val32);
+ 
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h
+index a2a31f374a82..438b65ba9640 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h
+@@ -516,6 +516,8 @@
+ #define REG_RESPONSE_RATE_SET		0x0440
+ #define  RESPONSE_RATE_BITMAP_ALL	0xfffff
+ #define  RESPONSE_RATE_RRSR_CCK_ONLY_1M	0xffff1
++#define  RESPONSE_RATE_RRSR_INIT_2G	0x15f
++#define  RESPONSE_RATE_RRSR_INIT_5G	0x150
+ #define  RSR_1M				BIT(0)
+ #define  RSR_2M				BIT(1)
+ #define  RSR_5_5M			BIT(2)
+-- 
+2.30.2
+

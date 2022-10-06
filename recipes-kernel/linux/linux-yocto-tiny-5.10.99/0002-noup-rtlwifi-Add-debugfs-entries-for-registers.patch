@@ -1,0 +1,138 @@
+From c1ed2f0e8f52e2f7ae5f77c02f1edca163edaeef Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Thu, 6 Jan 2022 00:23:01 +0100
+Subject: [PATCH] [noup] rtlwifi: Add debugfs entries for registers
+
+This is similar to what the vendor driver, e.g. 8192cu, offers.
+
+In the current state, the RF dumping functionality works only for path
+A.
+---
+ drivers/net/wireless/realtek/rtlwifi/debug.c | 90 ++++++++++++++++++++
+ 1 file changed, 90 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
+index 51db0552be7a..f1e476799577 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/debug.c
++++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
+@@ -69,6 +69,31 @@ static const struct file_operations file_ops_common = {
+ 	.release = single_release,
+ };
+ 
++static int rtl_debug_get_macregs(struct seq_file *m, void *v)
++{
++	struct rtl_debugfs_priv *debugfs_priv = m->private;
++	struct rtl_priv *rtlpriv = debugfs_priv->rtlpriv;
++	int i;
++
++	seq_printf(m, "======= MAC REG (rtlwifi) =======\n");
++	for (i = 0; i < 0x800; i += 16) {
++		seq_printf(
++			m,
++			"0x%03x: 0x%08x 0x%08x 0x%08x 0x%08x\n",
++			i, rtl_read_dword(rtlpriv, i + 0),
++			rtl_read_dword(rtlpriv, i + 4),
++			rtl_read_dword(rtlpriv, i + 8),
++			rtl_read_dword(rtlpriv, i + 12));
++	}
++	return 0;
++}
++
++static struct rtl_debugfs_priv rtl_debug_priv_macregs = {
++	.cb_read = rtl_debug_get_macregs,
++	.cb_write = 0,
++	.cb_data = 0,
++};
++
+ static int rtl_debug_get_mac_page(struct seq_file *m, void *v)
+ {
+ 	struct rtl_debugfs_priv *debugfs_priv = m->private;
+@@ -110,6 +135,30 @@ RTL_DEBUG_IMPL_MAC_SERIES(15, 0x1500);
+ RTL_DEBUG_IMPL_MAC_SERIES(16, 0x1600);
+ RTL_DEBUG_IMPL_MAC_SERIES(17, 0x1700);
+ 
++static int rtl_debug_get_bbregs(struct seq_file *m, void *v)
++{
++	struct rtl_debugfs_priv *debugfs_priv = m->private;
++	struct rtl_priv *rtlpriv = debugfs_priv->rtlpriv;
++	int i;
++
++	seq_printf(m, "======= BB REG (rtlwifi) =======\n");
++	for (i = 0x800; i < 0x1000; i += 16) {
++		seq_printf(
++			m,
++			"0x%03x: 0x%08x 0x%08x 0x%08x 0x%08x\n",
++			i, rtl_read_dword(rtlpriv, i + 0),
++			rtl_read_dword(rtlpriv, i + 4),
++			rtl_read_dword(rtlpriv, i + 8),
++			rtl_read_dword(rtlpriv, i + 12));
++	}
++	return 0;
++}
++
++static struct rtl_debugfs_priv rtl_debug_priv_bbregs = {
++	.cb_read = rtl_debug_get_bbregs,
++	.cb_data = 0,
++};
++
+ static int rtl_debug_get_bb_page(struct seq_file *m, void *v)
+ {
+ 	struct rtl_debugfs_priv *debugfs_priv = m->private;
+@@ -152,6 +201,37 @@ RTL_DEBUG_IMPL_BB_SERIES(1d, 0x1d00);
+ RTL_DEBUG_IMPL_BB_SERIES(1e, 0x1e00);
+ RTL_DEBUG_IMPL_BB_SERIES(1f, 0x1f00);
+ 
++static int rtl_debug_get_rfregs(struct seq_file *m, void *v)
++{
++	struct rtl_debugfs_priv *debugfs_priv = m->private;
++	struct rtl_priv *rtlpriv = debugfs_priv->rtlpriv;
++	struct ieee80211_hw *hw = rtlpriv->hw;
++	int i;
++	int max = 0x40;
++
++	if (IS_HARDWARE_TYPE_8822B(rtlpriv))
++		max = 0xff;
++
++	seq_printf(m, "======== RF REG (rtlwifi) =======\n");
++	for (i = 0; i < max; i += 4) {
++		seq_printf(
++			m,
++			"0x%03x: 0x%08x 0x%08x 0x%08x 0x%08x\n",
++			i,
++			rtl_get_rfreg(hw, RF90_PATH_A, i, 0xffffffff),
++			rtl_get_rfreg(hw, RF90_PATH_A, i + 1, 0xffffffff),
++			rtl_get_rfreg(hw, RF90_PATH_A, i + 2, 0xffffffff),
++			rtl_get_rfreg(hw, RF90_PATH_A, i + 3, 0xffffffff));
++	}
++
++	return 0;
++}
++
++static struct rtl_debugfs_priv rtl_debug_priv_rfregs = {
++	.cb_read = rtl_debug_get_rfregs,
++	.cb_data = 0,
++};
++
+ static int rtl_debug_get_reg_rf(struct seq_file *m, void *v)
+ {
+ 	struct rtl_debugfs_priv *debugfs_priv = m->private;
+@@ -440,6 +520,16 @@ void rtl_debug_add_one(struct ieee80211_hw *hw)
+ 
+ 	parent = rtlpriv->dbg.debugfs_dir;
+ 
++	rtl_debug_priv_macregs.rtlpriv = rtlpriv;
++	debugfs_create_file("mac_reg_dump", S_IFREG | 0444, parent,
++			    &rtl_debug_priv_macregs, &file_ops_common);
++	rtl_debug_priv_bbregs.rtlpriv = rtlpriv;
++	debugfs_create_file("bb_reg_dump", S_IFREG | 0444, parent,
++			    &rtl_debug_priv_bbregs, &file_ops_common);
++	rtl_debug_priv_rfregs.rtlpriv = rtlpriv;
++	debugfs_create_file("rf_reg_dump", S_IFREG | 0444, parent,
++			    &rtl_debug_priv_rfregs, &file_ops_common);
++
+ 	RTL_DEBUGFS_ADD(mac_0);
+ 	RTL_DEBUGFS_ADD(mac_1);
+ 	RTL_DEBUGFS_ADD(mac_2);
+-- 
+2.30.2
+

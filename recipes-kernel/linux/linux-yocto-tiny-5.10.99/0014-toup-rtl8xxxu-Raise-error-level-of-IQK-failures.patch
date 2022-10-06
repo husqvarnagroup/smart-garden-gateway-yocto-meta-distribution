@@ -1,0 +1,55 @@
+From 67777152da5355a0dd81d92d80498acec9f084da Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Sun, 23 Jan 2022 19:46:46 +0100
+Subject: [PATCH] [toup] rtl8xxxu: Raise error level of IQK failures
+
+Despite being recoverable, RX IQ calibration failure prints a warning.
+Final IQ calibration errors should be noticed even more so.
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index ff37cdab201c..c741b2231288 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -3306,7 +3306,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
+ 			break;
+ 		} else if (i == (retry - 1) && path_a_ok == 0x01) {
+ 			/* TX IQK OK */
+-			dev_dbg(dev, "%s: Path A IQK Only Tx Success!!\n",
++			dev_err(dev, "%s: Path A IQK only TX success!\n",
+ 				__func__);
+ 
+ 			val32 = rtl8xxxu_read32(priv,
+@@ -3319,7 +3319,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
+ 	}
+ 
+ 	if (!path_a_ok)
+-		dev_dbg(dev, "%s: Path A IQK failed!\n", __func__);
++		dev_err(dev, "%s: Path A IQK failed!\n", __func__);
+ 
+ 	if (priv->tx_paths > 1) {
+ 		/*
+@@ -3346,6 +3346,9 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
+ 				break;
+ 			} else if (i == (retry - 1) && path_b_ok == 0x01) {
+ 				/* TX IQK OK */
++				dev_err(dev,
++					"%s: Path B IQK only TX success!\n",
++					__func__);
+ 				val32 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_B);
+ 				result[t][4] = (val32 >> 16) & 0x3ff;
+ 				val32 = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_B);
+@@ -3354,7 +3357,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
+ 		}
+ 
+ 		if (!path_b_ok)
+-			dev_dbg(dev, "%s: Path B IQK failed!\n", __func__);
++			dev_err(dev, "%s: Path B IQK failed!\n", __func__);
+ 	}
+ 
+ 	/* Back to BB mode, load original value */
+-- 
+2.30.2
+

@@ -1,0 +1,152 @@
+From 32d66120b18d5dd0372f8f7a4ba13dcd6afec5f3 Mon Sep 17 00:00:00 2001
+From: Chris Chiu <chiu@endlessos.org>
+Date: Wed, 30 Sep 2020 10:20:15 +0800
+Subject: [PATCH] [toup] rtl8xxxu: Handle mac80211 get_txpower
+
+iAdd .get_txpower handle for mac80211 operations for `iw` and `wext`
+tools to get the underlying tx power (max limit).
+
+Signed-off-by: Chris Chiu <chiu@endlessos.org>
+(cherry picked from commit 2295263455630bd53eb51379e6e745b943d5017d)
+---
+ .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  |  3 +
+ .../realtek/rtl8xxxu/rtl8xxxu_8192c.c         |  1 +
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 59 ++++++++++++++++++-
+ 3 files changed, 61 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+index fdb95531ecfb..0475096402b2 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+@@ -1320,6 +1320,7 @@ struct rtl8xxxu_priv {
+ 	struct rtl8723au_idx ht20_tx_power_diff[RTL8723B_TX_COUNT];
+ 	struct rtl8723au_idx ht40_tx_power_diff[RTL8723B_TX_COUNT];
+ 	struct rtl8xxxu_power_base *power_base;
++	u8 cur_cck_txpwridx, cur_ofdm24g_txpwridx;
+ 	u32 chip_cut:4;
+ 	u32 rom_rev:4;
+ 	u32 is_multi_func:1;
+@@ -1430,6 +1431,7 @@ struct rtl8xxxu_fileops {
+ 	void (*disable_rf) (struct rtl8xxxu_priv *priv);
+ 	void (*usb_quirks) (struct rtl8xxxu_priv *priv);
+ 	u8 (*dbm_to_txpwridx)(struct rtl8xxxu_priv *priv, u16 mode, int dbm);
++	int (*get_tx_power)(struct rtl8xxxu_priv *priv);
+ 	void (*set_tx_power) (struct rtl8xxxu_priv *priv, int channel,
+ 			      bool ht40);
+ 	void (*update_rate_mask) (struct rtl8xxxu_priv *priv,
+@@ -1516,6 +1518,7 @@ u8 rtl8xxxu_gen1_dbm_to_txpwridx(struct rtl8xxxu_priv *priv,
+ 				 u16 mode, int dbm);
+ void rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv,
+ 				int channel, bool ht40);
++int rtl8xxxu_gen1_get_tx_power(struct rtl8xxxu_priv *priv);
+ void rtl8xxxu_gen1_config_channel(struct ieee80211_hw *hw);
+ void rtl8xxxu_gen2_config_channel(struct ieee80211_hw *hw);
+ void rtl8xxxu_gen1_usb_quirks(struct rtl8xxxu_priv *priv);
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192c.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192c.c
+index bb6df8cac82f..54f41af1015e 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192c.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_8192c.c
+@@ -558,6 +558,7 @@ struct rtl8xxxu_fileops rtl8192cu_fops = {
+ 	.usb_quirks = rtl8xxxu_gen1_usb_quirks,
+ 	.dbm_to_txpwridx = rtl8xxxu_gen1_dbm_to_txpwridx,
+ 	.set_tx_power = rtl8xxxu_gen1_set_tx_power,
++	.get_tx_power = rtl8xxxu_gen1_get_tx_power,
+ 	.update_rate_mask = rtl8xxxu_update_rate_mask,
+ 	.report_connect = rtl8xxxu_gen1_report_connect,
+ 	.fill_txdesc = rtl8xxxu_fill_txdesc_v1,
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index f59f9c06a21a..2c53b9ccde41 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -1414,6 +1414,55 @@ rtl8xxxu_gen1_dbm_to_txpwridx(struct rtl8xxxu_priv *priv, u16 mode, int dbm)
+ 	return txpwridx;
+ }
+ 
++static int
++rtl8xxxu_gen1_txpwridx_to_dbm(struct rtl8xxxu_priv *priv, u16 mode, u8 idx)
++{
++	int offset;
++	int pwrout_dbm;
++
++	switch (mode) {
++	case WIRELESS_MODE_B:
++		offset = -7;
++		break;
++	case WIRELESS_MODE_G:
++	case WIRELESS_MODE_N_24G:
++		offset = -8;
++		break;
++	default:
++		offset = -8;
++		break;
++	}
++	pwrout_dbm = idx / 2 + offset;
++
++	return pwrout_dbm;
++}
++
++int
++rtl8xxxu_gen1_get_tx_power(struct rtl8xxxu_priv *priv)
++{
++	u8 txpwr_level;
++	int txpwr_dbm;
++
++	txpwr_level = priv->cur_cck_txpwridx;
++	txpwr_dbm = rtl8xxxu_gen1_txpwridx_to_dbm(priv, WIRELESS_MODE_B,
++						  txpwr_level);
++	txpwr_level = priv->cur_ofdm24g_txpwridx +
++		      priv->ofdm_tx_power_index_diff[1].a;
++
++	if (rtl8xxxu_gen1_txpwridx_to_dbm(priv, WIRELESS_MODE_G, txpwr_level)
++	    > txpwr_dbm)
++		txpwr_dbm = rtl8xxxu_gen1_txpwridx_to_dbm(priv, WIRELESS_MODE_G,
++							  txpwr_level);
++	txpwr_level = priv->cur_ofdm24g_txpwridx;
++	if (rtl8xxxu_gen1_txpwridx_to_dbm(priv, WIRELESS_MODE_N_24G,
++					  txpwr_level) > txpwr_dbm)
++		txpwr_dbm = rtl8xxxu_gen1_txpwridx_to_dbm(priv,
++							  WIRELESS_MODE_N_24G,
++							  txpwr_level);
++
++	return txpwr_dbm;
++}
++
+ void
+ rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv, int channel, bool ht40)
+ {
+@@ -4586,10 +4635,12 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
+ 	ofdm_txpwridx = priv->fops->dbm_to_txpwridx(priv, WIRELESS_MODE_N_24G,
+ 						    dbm);
+ 
+-	if (ofdm_txpwridx - priv->ofdm_tx_power_index_diff[1].a > 0)
++	if (ofdm_txpwridx - priv->ofdm_tx_power_index_diff[1].a > 0) {
++		/* refer to rtlefuse->legacy_ht_txpowerdiff in vendor driver */
+ 		ofdm_txpwridx -= priv->ofdm_tx_power_index_diff[1].a;
+-	else
++	} else {
+ 		ofdm_txpwridx = 0;
++	}
+ 
+ 	group = rtl8xxxu_gen1_channel_to_group(channel);
+ 
+@@ -4603,6 +4654,9 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
+ 		priv->ht40_1s_tx_power_index_B[group] = ofdm_txpwridx;
+ 	}
+ 
++	priv->cur_cck_txpwridx = priv->cck_tx_power_index_A[group];
++	priv->cur_ofdm24g_txpwridx = priv->ht40_1s_tx_power_index_A[group];
++
+ 	priv->fops->set_tx_power(priv, channel, ht40);
+ }
+ 
+@@ -6701,6 +6755,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
+ 	.set_key = rtl8xxxu_set_key,
+ 	.ampdu_action = rtl8xxxu_ampdu_action,
+ 	.sta_statistics = rtl8xxxu_sta_statistics,
++	.get_txpower = rtl8xxxu_get_txpower,
+ };
+ 
+ static int rtl8xxxu_parse_usb(struct rtl8xxxu_priv *priv,
+-- 
+2.30.2
+

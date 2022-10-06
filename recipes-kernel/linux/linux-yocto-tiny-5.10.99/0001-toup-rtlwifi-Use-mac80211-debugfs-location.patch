@@ -1,0 +1,109 @@
+From fb0ab78dcadea9aecd72dc129faf83d44798136c Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Thu, 6 Jan 2022 00:06:58 +0100
+Subject: [PATCH] [toup] rtlwifi: Use mac80211 debugfs location
+
+Align behavior with other drivers, allow to determine the location of
+the debugfs entries using the iw phy number instead of the MAC address.
+---
+ drivers/net/wireless/realtek/rtlwifi/base.c  |  6 ------
+ drivers/net/wireless/realtek/rtlwifi/debug.c | 17 +----------------
+ drivers/net/wireless/realtek/rtlwifi/debug.h |  2 --
+ drivers/net/wireless/realtek/rtlwifi/wifi.h  |  1 -
+ 4 files changed, 1 insertion(+), 25 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/base.c b/drivers/net/wireless/realtek/rtlwifi/base.c
+index 1866f6c2acab..d60fea856d15 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/base.c
++++ b/drivers/net/wireless/realtek/rtlwifi/base.c
+@@ -2748,9 +2748,6 @@ static int __init rtl_core_module_init(void)
+ 	if (rtl_rate_control_register())
+ 		pr_err("rtl: Unable to register rtl_rc, use default RC !!\n");
+ 
+-	/* add debugfs */
+-	rtl_debugfs_add_topdir();
+-
+ 	/* init some global vars */
+ 	INIT_LIST_HEAD(&rtl_global_var.glb_priv_list);
+ 	spin_lock_init(&rtl_global_var.glb_list_lock);
+@@ -2762,9 +2759,6 @@ static void __exit rtl_core_module_exit(void)
+ {
+ 	/*RC*/
+ 	rtl_rate_control_unregister();
+-
+-	/* remove debugfs */
+-	rtl_debugfs_remove_topdir();
+ }
+ 
+ module_init(rtl_core_module_init);
+diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
+index 901cdfe3723c..51db0552be7a 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/debug.c
++++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
+@@ -50,8 +50,6 @@ struct rtl_debugfs_priv {
+ 	u32 cb_data;
+ };
+ 
+-static struct dentry *debugfs_topdir;
+-
+ static int rtl_debug_get_common(struct seq_file *m, void *v)
+ {
+ 	struct rtl_debugfs_priv *debugfs_priv = m->private;
+@@ -435,13 +433,10 @@ static const struct file_operations file_ops_common_write = {
+ void rtl_debug_add_one(struct ieee80211_hw *hw)
+ {
+ 	struct rtl_priv *rtlpriv = rtl_priv(hw);
+-	struct rtl_efuse *rtlefuse = rtl_efuse(rtl_priv(hw));
+ 	struct dentry *parent;
+ 
+-	snprintf(rtlpriv->dbg.debugfs_name, 18, "%pMF", rtlefuse->dev_addr);
+-
+ 	rtlpriv->dbg.debugfs_dir =
+-		debugfs_create_dir(rtlpriv->dbg.debugfs_name, debugfs_topdir);
++		debugfs_create_dir("rtlwifi", rtlpriv->hw->wiphy->debugfsdir);
+ 
+ 	parent = rtlpriv->dbg.debugfs_dir;
+ 
+@@ -501,14 +496,4 @@ void rtl_debug_remove_one(struct ieee80211_hw *hw)
+ }
+ EXPORT_SYMBOL_GPL(rtl_debug_remove_one);
+ 
+-void rtl_debugfs_add_topdir(void)
+-{
+-	debugfs_topdir = debugfs_create_dir("rtlwifi", NULL);
+-}
+-
+-void rtl_debugfs_remove_topdir(void)
+-{
+-	debugfs_remove_recursive(debugfs_topdir);
+-}
+-
+ #endif
+diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.h b/drivers/net/wireless/realtek/rtlwifi/debug.h
+index 1c0bcf8ec1a9..ac3cb66eaf67 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/debug.h
++++ b/drivers/net/wireless/realtek/rtlwifi/debug.h
+@@ -198,8 +198,6 @@ static inline void RT_PRINT_DATA(struct rtl_priv *rtlpriv,
+ #ifdef CONFIG_RTLWIFI_DEBUG
+ void rtl_debug_add_one(struct ieee80211_hw *hw);
+ void rtl_debug_remove_one(struct ieee80211_hw *hw);
+-void rtl_debugfs_add_topdir(void);
+-void rtl_debugfs_remove_topdir(void);
+ #else
+ #define rtl_debug_add_one(hw)
+ #define rtl_debug_remove_one(hw)
+diff --git a/drivers/net/wireless/realtek/rtlwifi/wifi.h b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+index fdccfd29fd61..46ef674970af 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/wifi.h
++++ b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+@@ -2492,7 +2492,6 @@ struct rtl_works {
+ struct rtl_debug {
+ 	/* add for debug */
+ 	struct dentry *debugfs_dir;
+-	char debugfs_name[20];
+ };
+ 
+ #define MIMO_PS_STATIC			0
+-- 
+2.30.2
+
