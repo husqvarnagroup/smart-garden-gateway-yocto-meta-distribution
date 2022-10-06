@@ -36,5 +36,27 @@ do_install:append() {
     install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
 }
 
-# Removed due to SG-12020
-PACKAGECONFIG:remove = "resolved nss-resolve"
+PACKAGECONFIG:remove = " \
+    backlight \
+    binfmt \
+    gshadow \
+    hibernate \
+    hostnamed \
+    idn \
+    ima \
+    localed \
+    logind \
+    machined \
+    myhostname \
+    nss \
+    nss-mymachines \
+    nss-resolve \
+    quotacheck \
+    resolved \
+    sysusers \
+    sysvinit \
+    userdb \
+    utmp \
+    vconsole \
+    wheel-group \
+"
