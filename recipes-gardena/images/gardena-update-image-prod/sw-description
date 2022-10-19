@@ -13,6 +13,17 @@ function write_to_file_best_effort(filename, data)
   end
 end
 
+function create_dhcp_fw_update_check_delay_file()
+  -- The existence of the file is checked by a dhcpd hook (40-swupdate-check.sh)
+  -- to reduce the excessive number of checks for updates
+  local file, err = io.open (\"/tmp/dhcp_fw_update_check_delay\", \"w\")
+  if file then
+    file:close()
+  else
+    print(\"Error creating file '/tmp/dhcp_fw_update_check_delay': \" .. err)
+  end
+end
+
 function set_power_led_yellow_flash()
   -- note: we're not using 'led-indicator flash' here as it will lead
   -- to a visible delay between red and green
@@ -43,6 +54,7 @@ function check_version_and_leds(image)
   for line in os_release:lines() do
     version_id_current = string.match(line, \"^VERSION_ID=\\\"(.+)\\\"$\")
     if (version_id_new == version_id_current) then
+      create_dhcp_fw_update_check_delay_file()
       return false, \"Version \" .. version_id_new .. \" is already installed\"
     end
   end
