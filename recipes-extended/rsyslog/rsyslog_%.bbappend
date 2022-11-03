@@ -19,7 +19,6 @@ SRC_URI += "\
     file://rsyslog.d/90-severity-forward-filter.conf.prod \
     file://rsyslog.d/90-templates.conf \
     file://rsyslog.service \
-    file://fix-ossl-leak.patch \
 "
 
 PACKAGECONFIG[impstats] = "--enable-impstats,--disable-impstats,,"
