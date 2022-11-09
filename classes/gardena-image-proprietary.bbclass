@@ -3,7 +3,6 @@
 IMAGE_INSTALL += " \
     gateway-firmware \
     lemonbeat-firmware-upload \
-    otau \
     python3-lemonbeat \
     rm-test-firmware \
 "

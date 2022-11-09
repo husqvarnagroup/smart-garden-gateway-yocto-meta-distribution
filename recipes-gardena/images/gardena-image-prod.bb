@@ -6,6 +6,7 @@ IMAGE_INSTALL += " \
     accessory-server-seluxit \
     gateway-config-backend-seluxit \
     openvpn-seluxit \
+    otau \
     ppp-network-seluxit \
     shadoway \
     ssh-authorized-keys-prod \
