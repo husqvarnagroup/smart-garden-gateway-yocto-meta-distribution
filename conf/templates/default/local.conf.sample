@@ -13,7 +13,7 @@ SSTATE_DIR ?= "${HOME}/.cache/yocto/sstate-cache"
 PACKAGE_CLASSES ?= "package_ipk"
 
 # Enable collection of build statistics, reduce shared library files size
-USER_CLASSES ?= "buildstats image-mklibs"
+USER_CLASSES ?= "buildstats"
 
 # Reduce image size by not installing recommended packages
 NO_RECOMMENDATIONS = "1"
