@@ -18,6 +18,7 @@ IMAGE_INSTALL += " \
     sshtunnel \
     sshtunnel-check \
     swupdate-check \
+    openssl-ossl-module-legacy \
 "
 
 inherit gardena-image-foss
