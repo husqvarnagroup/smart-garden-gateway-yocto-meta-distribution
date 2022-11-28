@@ -41,6 +41,7 @@ RDEPENDS_packagegroup-opkg-feed = "\
     prelink \
     pstree \
     pv \
+    python3-aiocoap \
     python3-dbus-next \
     python3-opentelemetry-exporter-otlp-proto-http \
     python3-opentelemetry-sdk \
