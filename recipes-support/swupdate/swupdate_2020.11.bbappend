@@ -16,9 +16,6 @@ SRC_URI += " \
             file://set_hw_revision_file_path.cfg \
             file://set_sw_versions_file_path.cfg \
             file://swupdate.cfg \
-            file://swupdate-check.sh \
-            file://swupdate-check.service \
-            file://swupdate-check.timer \
             "
 
 # The upstream recipe puts too much in the swupdate package.
@@ -38,9 +35,6 @@ RDEPENDS_${PN} += "${PN}-progress"
 FILES_${PN} += " \
     ${datadir}/${PN}/sw-update.cert.pem \
     ${sysconfdir}/swupdate.cfg \
-    ${systemd_unitdir}/system/swupdate-check.service \
-    ${systemd_unitdir}/system/swupdate-check.timer \
-    ${bindir}/swupdate-check \
 "
 
 do_install_append () {
@@ -49,16 +43,6 @@ do_install_append () {
 
     install -d ${D}${sysconfdir}
     install -m 644 ${WORKDIR}/swupdate.cfg ${D}${sysconfdir}
-
-    install -m 0755 ${WORKDIR}/swupdate-check.sh ${D}${bindir}/swupdate-check
-    sed -i 's#@DISTRO_UPDATE_URL@#${DISTRO_UPDATE_URL}#g' ${D}${bindir}/swupdate-check
-    sed -i 's#@DISTRO_VERSION_ID@#${DISTRO_VERSION_ID}#g' ${D}${bindir}/swupdate-check
-
-    install -m 644 ${WORKDIR}/swupdate-check.service ${D}${systemd_unitdir}/system
-    install -m 644 ${WORKDIR}/swupdate-check.timer ${D}${systemd_unitdir}/system
 }
 
-SYSTEMD_SERVICE_${PN} += "swupdate-check.timer"
-
-DEPENDS += "systemd curl"
 RDEPENDS_${PN} += "components-introspection"

@@ -10,6 +10,7 @@ IMAGE_INSTALL += " \
     ppp-network-seluxit \
     shadoway \
     ssh-authorized-keys-prod \
+    swupdate-check \
 "
 
 inherit gardena-image-proprietary
