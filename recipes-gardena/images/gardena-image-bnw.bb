@@ -14,7 +14,7 @@ IMAGE_INSTALL += " \
     ppp-network-bnw \
     ssh-authorized-keys-dev \
     sshtunnel \
-    swupdate-check \
+    swupdate-check-bnw \
 "
 
 inherit gardena-image-proprietary
