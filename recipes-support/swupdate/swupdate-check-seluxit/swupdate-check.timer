@@ -1,5 +1,5 @@
 [Unit]
-Description=Run swupdate-check.service on startup and again every 12 hours
+Description=Run swupdate-check.service on startup and periodically thereafter
 After=network-online.target
 
 [Timer]
@@ -8,8 +8,8 @@ After=network-online.target
 OnActiveSec=5s
 # Fallback once after boot
 OnBootSec=300s
-# Roughly every 1.5 days. Prime to cover every day time eventually.
-OnUnitActiveSec=31h
+# Run more frequently for BNW rollout
+OnUnitActiveSec=11h
 
 [Install]
 WantedBy=timers.target

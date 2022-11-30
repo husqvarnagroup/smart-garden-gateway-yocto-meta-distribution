@@ -1,4 +1,20 @@
-#!/bin/sh
+#!/bin/ash
+
+set -eu -o pipefail
+
+readonly MIGRATION_SERVER=gateway-migration-bnw.iot.sg.dss.husqvarnagroup.net
+
+log_info() {
+    logger -p user.info -t swupdate-check "$@"
+}
+
+log_warning() {
+    logger -p user.warning -t swupdate-check "$@"
+}
+
+log_error() {
+    logger -p user.err -t swupdate-check "$@"
+}
 
 # Make sure the version files exist
 # Note: Doing this here might be superflous when executed trough systemd (which
@@ -8,6 +24,27 @@
 
 # Get update_url stored in U-Boot to allow using customized update servers
 update_url=$(fw_printenv -n update_url 2>/dev/null || echo @DISTRO_UPDATE_URL@?gwVersion=@DISTRO_VERSION_ID@)
+
+# Gateway ID servers (among other) as login credentials for the web interface.
+# Guard it by hashing it.
+if ! gw_id_hash="$(fw_printenv -n gatewayid | tr -d '\n' | openssl sha1 | awk '{print $2}')"; then
+    log_error "Failed to generate a hash of the gateway ID" || true
+fi
+
+if shall_update="$(curl -sf "https://${MIGRATION_SERVER}/shall-update/${gw_id_hash}")"; then
+    if [ "${shall_update}" = "ok" ]; then
+        if ! fw_printenv update_url >/dev/null 2>&1; then
+            log_warning "Migrating to BNW..." || true
+            update_url=$(echo "$update_url" | sed 's/prod/bnw/')
+        else
+            log_warning "\"update_url\" is set in U-Boot, not migrating to BNW" || true
+        fi
+    else
+        log_warning "BNW migration is diabled for this gateway" || true
+    fi
+else
+    log_info "Individual BNW migration information missing" || true
+fi
 
 # Get active bootslot
 #
