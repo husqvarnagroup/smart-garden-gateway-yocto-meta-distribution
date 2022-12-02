@@ -34,10 +34,8 @@ RDEPENDS:packagegroup-opkg-feed = "\
     net-tools \
     netcat-openbsd \
     nftables \
-    ntpdate \
     openssh \
     picocom \
-    prelink \
     pstree \
     pv \
     python3-aiocoap \
@@ -67,12 +65,7 @@ RDEPENDS:packagegroup-opkg-feed = "\
     wakaama \
     wget \
     wifi-certification-util \
-    wifi-testsuite \
     wlan-stresstest \
     xz \
     zsh \
     "
-
-RDEPENDS:packagegroup-opkg-feed:append:mt7688 = "\
-    valgrind \
-"
