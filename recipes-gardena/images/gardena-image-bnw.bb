@@ -12,7 +12,7 @@ IMAGE_INSTALL += " \
     nngforward \
     openvpn-seluxit \
     ppp-network-bnw \
-    ssh-authorized-keys-dev \
+    ssh-authorized-keys-prod \
     sshtunnel \
     swupdate-check-bnw \
 "
