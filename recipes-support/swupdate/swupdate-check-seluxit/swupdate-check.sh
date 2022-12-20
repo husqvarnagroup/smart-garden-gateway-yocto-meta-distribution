@@ -36,6 +36,8 @@ if shall_update="$(curl -sf "https://${MIGRATION_SERVER}/shall-update/${gw_id_ha
         if ! fw_printenv update_url >/dev/null 2>&1; then
             log_warning "Migrating to BNW..." || true
             update_url=$(echo "$update_url" | sed 's/prod/bnw/')
+            # Report a magic gateway version number to indicate that the migration has started
+            echo "6.16.999" > /usr/lib/shadoway/version || true
         else
             log_warning "\"update_url\" is set in U-Boot, not migrating to BNW" || true
         fi
