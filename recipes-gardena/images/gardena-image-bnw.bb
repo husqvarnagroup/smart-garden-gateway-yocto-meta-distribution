@@ -11,7 +11,7 @@ IMAGE_INSTALL += " \
     lwm2mserver \
     nngforward \
     openvpn-seluxit \
-    ppp-network-bnw \
+    ppp-network \
     ssh-authorized-keys-prod \
     sshtunnel \
     swupdate-check \
