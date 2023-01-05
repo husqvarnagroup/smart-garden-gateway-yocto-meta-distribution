@@ -4,7 +4,7 @@ SUMMARY = "The GARDENA manufacturing image"
 
 IMAGE_INSTALL += " \
     openvpn-factory \
-    ppp-network-seluxit \
+    ppp-network \
     ssh-authorized-keys-prod \
 "
 
