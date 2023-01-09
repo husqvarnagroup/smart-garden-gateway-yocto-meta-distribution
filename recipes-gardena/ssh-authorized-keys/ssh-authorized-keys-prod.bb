@@ -8,6 +8,7 @@ PV = "0.2"
 
 SRC_URI = " \
     file://low-cost-gateway-prod.pub \
+    file://sshportal-dev.pub \
 "
 
 inherit ssh-authorized-keys
