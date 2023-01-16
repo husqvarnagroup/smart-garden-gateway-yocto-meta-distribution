@@ -1,10 +1,8 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-PR_append = ".5"
+PR_append = ".4"
 
 SRC_URI += " \
-    file://0001-Normalise-dhcpcd-is-not-running-message.patch \
-    file://0002-dhcpcd-Fix-sending-interface-specific-commands-to-ma.patch \
     file://40-swupdate-check.sh \
     file://50-timesyncd.conf.sh \
     file://dhcpcd.conf \
