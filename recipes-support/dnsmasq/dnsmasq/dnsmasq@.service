@@ -2,6 +2,7 @@
 Description=DNS forwarder and DHCP server
 Requires=sys-subsystem-net-devices-%i.device hostapd@%i.service
 After=sys-subsystem-net-devices-%i.device network.target hostapd@%i.service
+PartOf=hostapd@%i.service
 
 [Service]
 Type=forking
