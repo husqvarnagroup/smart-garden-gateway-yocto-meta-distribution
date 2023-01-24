@@ -1,0 +1,32 @@
+From a49ec75844cd1273583938b4ad734337df9bced0 Mon Sep 17 00:00:00 2001
+From: Anita Zhang <the.anitazha@gmail.com>
+Date: Wed, 10 Jun 2020 01:18:00 -0700
+Subject: [PATCH] core: don't consider SERVICE_SKIP_CONDITION for abnormal or
+ failure restarts
+
+Fixes: #16115
+(cherry picked from commit bb9244781c6fc7608f7cac910269f8987b8adc01)
+---
+ src/core/service.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/service.c b/src/core/service.c
+index 49ad166c26..f13ccdd5a6 100644
+--- a/src/core/service.c
++++ b/src/core/service.c
+@@ -1686,10 +1686,10 @@ static bool service_shall_restart(Service *s, const char **reason) {
+                 return s->result == SERVICE_SUCCESS;
+ 
+         case SERVICE_RESTART_ON_FAILURE:
+-                return s->result != SERVICE_SUCCESS;
++                return !IN_SET(s->result, SERVICE_SUCCESS, SERVICE_SKIP_CONDITION);
+ 
+         case SERVICE_RESTART_ON_ABNORMAL:
+-                return !IN_SET(s->result, SERVICE_SUCCESS, SERVICE_FAILURE_EXIT_CODE);
++                return !IN_SET(s->result, SERVICE_SUCCESS, SERVICE_FAILURE_EXIT_CODE, SERVICE_SKIP_CONDITION);
+ 
+         case SERVICE_RESTART_ON_WATCHDOG:
+                 return s->result == SERVICE_FAILURE_WATCHDOG;
+-- 
+2.34.1
+

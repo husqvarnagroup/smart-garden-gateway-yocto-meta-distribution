@@ -1,6 +1,7 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
+    file://0001-core-don-t-consider-SERVICE_SKIP_CONDITION-for-abnor.patch \
     file://credit-random-seed.conf \
     file://keep.d/${BPN} \
     file://systemd-disable-colors.sh \
@@ -15,7 +16,7 @@ FILES_${PN} += "\
     ${systemd_unitdir}/system/systemd-random-seed.service.d \
 "
 
-PR_append = ".5"
+PR_append = ".6"
 
 do_install_append() {
     # Disable colorized output of system tools (systemctl, etc.)
