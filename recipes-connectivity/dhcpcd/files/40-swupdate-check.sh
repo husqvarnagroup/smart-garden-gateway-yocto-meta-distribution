@@ -19,7 +19,7 @@ try_update()
 {
     [ -e "${update_marker}" ] && return 0
 
-    systemctl start swupdate-check.service
+    systemctl restart swupdate-check.timer
 }
 
 # The only interesting interfaces are Ethernet and WiFi
