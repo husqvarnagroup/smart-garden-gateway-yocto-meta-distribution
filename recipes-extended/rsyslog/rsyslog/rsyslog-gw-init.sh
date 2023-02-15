@@ -9,12 +9,23 @@
 set -eu -o pipefail
 
 RSYSLOG_CONFIG_DIR='/etc/rsyslog.d'
-SELUXIT_ENV="$(fw_printenv -n "seluxit_env" 2>/dev/null || echo prod)"
+TENANT="$(fw_printenv -n "bnw_cloud_tenant" 2>/dev/null || echo sg-live)"
 GATEWAY_ID="$(fw_printenv -n gatewayid)"
 BOARD_NAME="$(fw_printenv -n board_name)"
 HW_REVISION="$(fw_printenv -n gateway_hardware_revision)"
 FEED="$( (fw_printenv -n update_url 2>/dev/null || true) | sed -nE 's/.*feeds\/(.*)\/images\/.*/\1/p')"
 UPDATE_IMAGE_TYPE="$( (fw_printenv -n update_url 2>/dev/null || true) | sed -nE 's/.*gardena-update-image-(.*)-gardena-sg-.*/\1/p')"
+case "${TENANT}" in
+    sg-live|sg-staging)
+        ENV="prod"
+        ;;
+    sg-qa)
+        ENV="qa"
+        ;;
+    *)
+        ENV="dev"
+        ;;
+esac
 
 # Configure gateway id as LocalHostName
 RSYSLOG_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/01-gateway-id.conf"
@@ -23,7 +34,9 @@ grep -q ^"${RSYSLOG_CONFIG_FILE_CONTENT}"$ "${RSYSLOG_CONFIG_FILE}" 2>/dev/null 
 
 # Configure variables for use in other config files
 RSYSLOG_METADATA_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/02-gateway-metadata.conf"
-RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV="set \$!gw.env = '${SELUXIT_ENV}';"
+# Since the introduction of gw.tenant, gw.env is redundant, nonetheless, we (currently) need to set it in order for the logs to be forwarded correctly.
+RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV="set \$!gw.env = '${ENV}';"
+RSYSLOG_METADATA_CONFIG_FILE_CONTENT_TENANT="set \$!gw.tenant = '${TENANT}';"
 
 # shellcheck disable=SC1091
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION="set \$!gw.swVersion = '$(. /etc/os-release; echo "$VERSION")';"
@@ -33,6 +46,7 @@ RSYSLOG_METADATA_CONFIG_FILE_CONTENT_FEED="set \$!gw.feed = '${FEED}';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_UPDATE_IMAGE_TYPE="set \$!gw.updateImageType = '${UPDATE_IMAGE_TYPE}';"
 
 if ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
+   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_TENANT}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
@@ -40,6 +54,7 @@ if ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"$ "${RSYSLOG_METADATA
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_UPDATE_IMAGE_TYPE}"$ "${RSYSLOG_METADATA_CONFIG_FILE}"; then
     {
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"
+      echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_TENANT}"
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION}"
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME}"
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION}"
@@ -50,7 +65,7 @@ fi
 
 # Configure diagnostics based on environment
 DIAGNOSTICS_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/20-diagnostics.conf"
-if [ "${SELUXIT_ENV}" = prod ]; then
+if [ "${ENV}" = prod ]; then
     cmp "${DIAGNOSTICS_CONFIG_FILE}.prod" "${DIAGNOSTICS_CONFIG_FILE}" || cp "${DIAGNOSTICS_CONFIG_FILE}.prod" "${DIAGNOSTICS_CONFIG_FILE}"
 else
     cmp "${DIAGNOSTICS_CONFIG_FILE}.dev" "${DIAGNOSTICS_CONFIG_FILE}" || cp "${DIAGNOSTICS_CONFIG_FILE}.dev" "${DIAGNOSTICS_CONFIG_FILE}"
@@ -58,7 +73,7 @@ fi
 
 # Disable verbose logging on prod
 FILTER_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/90-severity-forward-filter.conf"
-if [ "${SELUXIT_ENV}" = prod ]; then
+if [ "${ENV}" = prod ]; then
     cmp "${FILTER_CONFIG_FILE}.prod" "${FILTER_CONFIG_FILE}" || cp "${FILTER_CONFIG_FILE}.prod" "${FILTER_CONFIG_FILE}"
 else
     rm -f "${FILTER_CONFIG_FILE}"
