@@ -1,7 +1,6 @@
 [Unit]
 Description=Run swupdate-check.service on startup and periodically thereafter
 After=network-online.target
-StartLimitIntervalSec=0
 
 [Timer]
 # Triggered on boot (this timer unit activated) and interfaces (wlan0, eth0)
