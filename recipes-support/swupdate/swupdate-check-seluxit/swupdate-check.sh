@@ -74,4 +74,11 @@ else
     exit 1
 fi
 
+# Prevent swupdate from being run again after the update has been successfully
+# installed and the system is about to be rebooted. Otherwise, e.g. ICMP router
+# advertisement packets triggering the dhcpcd hook in the wrong moment can lead
+# to a corrupted partition/filesystem (SG-19847).
+test -f /tmp/swupdate-reboot-pending && exit || true
 swupdate -f /etc/swupdate.cfg -e stable,bootslot"${bootslot}" --download "-u ${update_url}"
+result=$?
+test $result -eq 0 && touch /tmp/swupdate-reboot-pending || exit $result
