@@ -50,7 +50,6 @@ IMAGE_INSTALL += " \
     systemd-extra-utils \
     sysupgrade \
     tcpdump-sherlock-ppp0 \
-    tcpdump-sherlock-vpn0 \
     unique-hostname \
     wireless-regdb-static \
     wpa-supplicant \
