@@ -35,7 +35,14 @@ fi
 # installed and the system is about to be rebooted. Otherwise, e.g. ICMP router
 # advertisement packets triggering the dhcpcd hook in the wrong moment can lead
 # to a corrupted partition/filesystem (SG-19847).
-test -f /tmp/swupdate-reboot-pending && exit || true
+reboot_pending_file=/tmp/swupdate-reboot-pending
+if [ -f "$reboot_pending_file" ]; then
+    now=$(date +"%s")
+    if [ "$(( now - $(stat -c "%Y" "$reboot_pending_file") ))" -lt 3600 ]; then
+        echo "Pending reboot detected, aborting!" >&2
+        exit
+    fi
+fi
 swupdate -f /etc/swupdate.cfg -e stable,bootslot"${bootslot}" --download "-u ${update_url}"
 result=$?
-test $result -eq 0 && touch /tmp/swupdate-reboot-pending || exit $result
+test $result -eq 0 && touch "$reboot_pending_file" || exit $result
