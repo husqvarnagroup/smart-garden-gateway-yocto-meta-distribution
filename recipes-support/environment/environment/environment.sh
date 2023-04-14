@@ -7,7 +7,6 @@
 #
 # Precondition: The directories /etc/ssl/{certs,private} have to exist
 
-# shellcheck disable=SC2039
 set -eu -o pipefail
 
 ssl_dir="/etc/ssl"
