@@ -4,13 +4,11 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 inherit systemd allarch
 
-PV = "2019-10-27"
-PR = "r3"
+PV = "2023-04-14"
+PR = "r0"
 
 SRC_URI += " \
-    file://ca-dev.crt \
     file://ca-prod.crt \
-    file://ca-qa.crt \
     file://keep.d/${BPN} \
     file://${BPN}.sh \
     file://${BPN}.service \
@@ -27,9 +25,7 @@ do_install_append() {
     install -d ${D}${sysconfdir}/ssl/private
 
     install -d ${D}${sysconfdir}/ssl/certs
-    install -m 644 ${WORKDIR}/ca-dev.crt ${D}${sysconfdir}/ssl/certs
     install -m 644 ${WORKDIR}/ca-prod.crt ${D}${sysconfdir}/ssl/certs
-    install -m 644 ${WORKDIR}/ca-qa.crt ${D}${sysconfdir}/ssl/certs
 
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/${PN}.sh ${D}${bindir}/${PN}

@@ -10,53 +10,31 @@
 set -eu -o pipefail
 
 ssl_dir="/etc/ssl"
-seluxit_env="$(fw_printenv -n "seluxit_env" 2>/dev/null || echo prod)"
-
-# Remote logging always needs prod certificates
-if [ "${seluxit_env}" != prod ]; then
-    environments="${seluxit_env} prod"
-else
-    environments="${seluxit_env}"
-fi
     
-for environment in ${environments}; do
-    for ext in crt key; do
-        if [ "${ext}" = crt ]; then
-            file="${ssl_dir}/certs/client-${environment}.${ext}"
-        else
-            file="${ssl_dir}/private/client-${environment}.${ext}"
-        fi
+for ext in crt key; do
+    if [ "${ext}" = crt ]; then
+        file="${ssl_dir}/certs/client-prod.${ext}"
+    else
+        file="${ssl_dir}/private/client-prod.${ext}"
+    fi
 
-        if [ "${environment}" = prod ]; then
-            uboot_var="conf_openvpn_${ext}"
-        else
-            uboot_var="conf_openvpn_${environment}_${ext}"
+    uboot_var="conf_openvpn_${ext}"
+    if [ -s "${file}" ]; then
+        echo "File '${file}' already exists and is not empty"
+        if [ "${ext}" = "key" ] && [ "$(stat -c "%a" "${file}")" != "600" ]; then
+            chmod 600 "${file}"
         fi
-        if [ -s "${file}" ]; then
-            echo "File '${file}' already exists and is not empty"
-            if [ "${ext}" = "key" ] && [ "$(stat -c "%a" "${file}")" != "600" ]; then
-                chmod 600 "${file}"
-            fi
-            continue
+        continue
+    fi
+    if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
+        echo "${content}" | tr '%' '\n' > "${file}".tmp
+        if [ "${ext}" = "key" ]; then
+            chmod 600 "${file}".tmp
         fi
-        if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
-            echo "${content}" | tr '%' '\n' > "${file}".tmp
-            if [ "${ext}" = "key" ]; then
-                chmod 600 "${file}".tmp
-            fi
-            sync
-            mv "${file}".tmp "${file}"
-        else
-            echo "U-Boot variable '${uboot_var}' is missing!" >&2
-            exit 1
-        fi
-    done
+        sync
+        mv "${file}".tmp "${file}"
+    else
+        echo "U-Boot variable '${uboot_var}' is missing!" >&2
+        exit 1
+    fi
 done
-
-seluxit_env_file_name="/etc/seluxit_env"
-seluxit_env_file_content="SELUXIT_ENV=${seluxit_env}"
-
-if [ "$(head -n1 "${seluxit_env_file_name}")" != "${seluxit_env_file_content}" ]; then
-    echo "Updating Seluxit environment file"
-    echo "${seluxit_env_file_content}" > "${seluxit_env_file_name}"
-fi
