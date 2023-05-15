@@ -1,11 +1,12 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".23"
+PR:append = ".24"
 
 DEPENDS += "openssl"
 RDEPENDS:${PN} += "ca-certificates environment"
 
 SRC_URI += "\
+    file://husqvarna-gateway-remote-logging.crt \
     file://rsyslog-gw-init.service \
     file://rsyslog-gw-init.sh \
     file://rsyslog.conf \
@@ -57,6 +58,9 @@ do_install:append() {
 
     # Install the syslog_caller binary
     cp ${B}/${TESTDIR}/syslog_caller ${D}${bindir}/rsyslog-syslog_caller
+
+    # Install self-singed server certificate
+    install -Dm 0644 ${WORKDIR}/husqvarna-gateway-remote-logging.crt ${D}${sysconfdir}/ssl/certs/husqvarna-gateway-remote-logging.crt
 }
 
 SYSTEMD_SERVICE:${PN} += "rsyslog-gw-init.service"
