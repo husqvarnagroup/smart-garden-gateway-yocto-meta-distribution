@@ -35,6 +35,7 @@ IMAGE_INSTALL += " \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \
+    nngforward \
     openocd \
     os-release \
     packagegroup-core-boot \
@@ -64,7 +65,7 @@ IMAGE_INSTALL:append:mt7688 += " \
 
 IMAGE_FEATURES += " \
     empty-root-password \
-    package-management \ 
+    package-management \
     ssh-server-dropbear \
 "
 

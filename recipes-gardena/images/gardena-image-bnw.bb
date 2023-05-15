@@ -9,7 +9,6 @@ IMAGE_INSTALL += " \
     gateway-config-backend \
     lemonbeatd \
     lwm2mserver \
-    nngforward \
     ppp-network \
     ssh-authorized-keys-prod \
     sshtunnel \
