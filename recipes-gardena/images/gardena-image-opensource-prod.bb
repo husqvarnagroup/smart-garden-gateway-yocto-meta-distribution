@@ -28,18 +28,6 @@ IMAGE_INSTALL += " \
     openssl-conf \
 "
 
-# Shadoway dependencies
-IMAGE_INSTALL += " \
-    jsoncpp \
-    libcryptopp \
-    libev \
-    libnl \
-    log4cpp \
-    mbedtls \
-    util-linux \
-    zeromq \
-"
-
 # Manufacturing tools dependencies
 IMAGE_INSTALL += " \
     python3-core \
