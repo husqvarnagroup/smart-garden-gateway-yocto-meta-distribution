@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://0001-core-don-t-consider-SERVICE_SKIP_CONDITION-for-abnor.patch \
@@ -9,16 +9,16 @@ SRC_URI += "\
     file://99-husqvarna-default.conf \
 "
 
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${base_libdir}/upgrade/keep.d \
     ${sysconfdir}/profile.d/systemd-disable-colors.sh \
     ${sysconfdir}/profile.d/systemd-disable-pager.sh \
     ${systemd_unitdir}/system/systemd-random-seed.service.d \
 "
 
-PR_append = ".6"
+PR:append = ".6"
 
-do_install_append() {
+do_install:append() {
     # Disable colorized output of system tools (systemctl, etc.)
     install -d ${D}${sysconfdir}/profile.d
     install -m 0644 ${WORKDIR}/systemd-disable-colors.sh ${D}${sysconfdir}/profile.d
@@ -38,4 +38,4 @@ do_install_append() {
 }
 
 # Removed due to SG-12020
-PACKAGECONFIG_remove = "resolved nss-resolve"
+PACKAGECONFIG:remove = "resolved nss-resolve"

@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=0636e73ff0215e8d672dc4c32c317bb3 \
 inherit autotools pkgconfig update-alternatives
 
 DEPENDS = "zlib e2fsprogs util-linux"
-RDEPENDS_mtd-utils-tests += "bash"
+RDEPENDS:mtd-utils-tests += "bash"
 
 PV = "2.1.1"
 PR = "r1"
@@ -31,7 +31,7 @@ PACKAGECONFIG[jffs] = "--with-jffs,--without-jffs"
 PACKAGECONFIG[ubifs] = "--with-ubifs,--without-ubifs"
 PACKAGECONFIG[zstd] = "--with-zstd,--without-zstd,zstd"
 
-CPPFLAGS_append_riscv64  = " -pthread -D_REENTRANT"
+CPPFLAGS:append:riscv64  = " -pthread -D_REENTRANT"
 
 EXTRA_OEMAKE = "'CC=${CC}' 'RANLIB=${RANLIB}' 'AR=${AR}' 'CFLAGS=${CFLAGS} ${@bb.utils.contains('PACKAGECONFIG', 'xattr', '', '-DWITHOUT_XATTR', d)} -I${S}/include' 'BUILDDIR=${S}'"
 

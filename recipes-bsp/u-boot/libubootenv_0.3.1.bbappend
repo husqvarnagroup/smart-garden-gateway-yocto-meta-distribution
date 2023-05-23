@@ -1,6 +1,6 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:${THISDIR}/files/${MACHINE_ARCH}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}:${THISDIR}/files/${MACHINE_ARCH}:"
 
-PR_append = ".4"
+PR:append = ".4"
 
 SRC_URI += " \
   file://fw_env.config \
@@ -10,9 +10,9 @@ SRC_URI += " \
 "
 
 # Prevent U-Boot from being built
-# RRECOMMENDS_libubootenv-bin_remove = "u-boot-default-env"
+# RRECOMMENDS:libubootenv-bin:remove = "u-boot-default-env"
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}
     install -m 0644 ${WORKDIR}/fw_env.config ${D}${sysconfdir}/fw_env.config
 

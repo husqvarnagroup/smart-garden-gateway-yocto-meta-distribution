@@ -1,9 +1,9 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".21"
+PR:append = ".21"
 
 DEPENDS += "openssl"
-RDEPENDS_${PN} += "ca-certificates environment"
+RDEPENDS:${PN} += "ca-certificates environment"
 
 SRC_URI += "\
     file://rsyslog-gw-init.service \
@@ -20,14 +20,14 @@ SRC_URI += "\
 PACKAGECONFIG[impstats] = "--enable-impstats,--disable-impstats,,"
 PACKAGECONFIG[openssl] = "--enable-openssl,--disable-openssl,,"
 
-PACKAGECONFIG_append = " impstats openssl"
-PACKAGECONFIG_remove = "gnutls"
+PACKAGECONFIG:append = " impstats openssl"
+PACKAGECONFIG:remove = "gnutls"
 
-do_compile_append() {
+do_compile:append() {
     (cd tests && make syslog_caller)
 }
 
-do_install_append() {
+do_install:append() {
     # Install rsyslog configuration
     install -d "${D}${sysconfdir}/rsyslog.d"
     install -m 644 ${WORKDIR}/rsyslog.conf ${D}${sysconfdir}/rsyslog.conf
@@ -59,10 +59,10 @@ do_install_append() {
     cp ${B}/${TESTDIR}/syslog_caller ${D}${bindir}/rsyslog-syslog_caller
 }
 
-SYSTEMD_SERVICE_${PN} += "rsyslog-gw-init.service"
+SYSTEMD_SERVICE:${PN} += "rsyslog-gw-init.service"
 
 PACKAGES =+ "\
     ${PN}-syslog-caller \
 "
-RDEPENDS_${PN}-syslog-caller += "liblogging"
-FILES_${PN}-syslog-caller += "${bindir}/rsyslog-syslog_caller"
+RDEPENDS:${PN}-syslog-caller += "liblogging"
+FILES:${PN}-syslog-caller += "${bindir}/rsyslog-syslog_caller"

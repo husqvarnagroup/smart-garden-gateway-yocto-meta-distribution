@@ -1,25 +1,25 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".4"
+PR:append = ".4"
 
 SRC_URI += " \
     file://0001-jtag-sysfsgpio-clean-up-swd-gpios.patch \
     file://0002-libgpiod.patch \
 "
 
-SRC_URI_append_mt7688 = " \
+SRC_URI:append:mt7688 = " \
     file://gardena_nrf52.cfg \
     file://gardena_radio.cfg \
 "
 
-SRC_URI_append_at91sam9x5 = " \
+SRC_URI:append:at91sam9x5 = " \
     file://0003-atmel-performance-hack.patch \
     file://gardena_nrf52.cfg \
     file://gardena_radio.cfg \
 "
 
 # We are using upstream and most patches in the base .bb are already upstreamed.
-SRC_URI_remove = "file://0001-Add-fallthrough-comments.patch \
+SRC_URI:remove = "file://0001-Add-fallthrough-comments.patch \
                   file://0002-Workaround-new-warnings-generated-by-GCC-7.patch\
                   file://0003-armv7a-Add-missing-break-to-fix-fallthrough-warning.patch \
                   file://0005-command-Move-the-fall-through-comment-to-right-scope.patch"
@@ -73,15 +73,15 @@ PACKAGECONFIG[internal-jimtcl] = "--enable-internal-jimtcl,--disable-internal-ji
 
 PACKAGECONFIG ?= "sysfsgpio internal-jimtcl"
 
-EXTRA_OECONF_remove = "--enable-ftdi"
-RDEPENDS_${PN}_remove  = "libusb1"
-DEPENDS_remove = "libusb-compat libftdi"
+EXTRA_OECONF:remove = "--enable-ftdi"
+RDEPENDS:${PN}:remove  = "libusb1"
+DEPENDS:remove = "libusb-compat libftdi"
 
-EXTRA_OECONF_append = " --enable-gpiod "
-DEPENDS_append = " libgpiod "
-RDEPENDS_${PN}_append  = " libgpiod "
+EXTRA_OECONF:append = " --enable-gpiod "
+DEPENDS:append = " libgpiod "
+RDEPENDS:${PN}:append  = " libgpiod "
 
-do_install_append () {
+do_install:append () {
     install -m 0644 ${WORKDIR}/gardena_radio.cfg ${D}${datadir}/openocd/scripts/board/
     install -m 0644 ${WORKDIR}/gardena_nrf52.cfg ${D}${datadir}/openocd/scripts/board/
 }

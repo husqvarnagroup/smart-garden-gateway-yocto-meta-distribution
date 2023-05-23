@@ -14,14 +14,14 @@ SRC_URI += " \
     file://${BPN}.service \
 "
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${sysconfdir}/ssl/certs \
     ${sysconfdir}/ssl/private \
     ${base_libdir}/upgrade/keep.d \
     ${systemd_unitdir}/system \
 "
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}/ssl/private
 
     install -d ${D}${sysconfdir}/ssl/certs
@@ -38,4 +38,4 @@ do_install_append() {
     install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
 }
 
-SYSTEMD_SERVICE_${PN} = "${PN}.service"
+SYSTEMD_SERVICE:${PN} = "${PN}.service"

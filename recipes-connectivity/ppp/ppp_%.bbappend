@@ -1,15 +1,15 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".10"
+PR:append = ".10"
 
 SRC_URI += " \
     file://ppp-failure.service \
     file://ppp.service \
 "
 
-FILES_${PN} += "${systemd_unitdir}/system/ppp-failure.service"
+FILES:${PN} += "${systemd_unitdir}/system/ppp-failure.service"
 
-do_install_append() {
+do_install:append() {
     install -m 0644 ${WORKDIR}/ppp.service ${D}${systemd_unitdir}/system
     install -m 0644 ${WORKDIR}/ppp-failure.service ${D}${systemd_unitdir}/system
 
@@ -18,8 +18,8 @@ do_install_append() {
         ${D}${systemd_unitdir}/system/ppp.service
 }
 
-SYSTEMD_SERVICE_${PN} = "ppp.service"
+SYSTEMD_SERVICE:${PN} = "ppp.service"
 
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     gateway-firmware \
 "

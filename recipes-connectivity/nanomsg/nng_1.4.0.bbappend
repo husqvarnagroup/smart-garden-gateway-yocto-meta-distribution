@@ -1,5 +1,5 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".1"
+PR:append = ".1"
 
 PACKAGECONFIG = "mbedtls"

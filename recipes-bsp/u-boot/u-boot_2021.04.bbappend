@@ -1,9 +1,9 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/${MACHINE_ARCH}:${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/${MACHINE_ARCH}:${THISDIR}/${PN}:"
 
-PR_append = ".2"
+PR:append = ".2"
 
 UBOOT_LOCALVERSION = "-gardena-6"
-PV_append = "${UBOOT_LOCALVERSION}"
+PV:append = "${UBOOT_LOCALVERSION}"
 
 SRC_URI += " \
     file://uEnv.txt \
@@ -14,7 +14,7 @@ SRC_URI += " \
     file://distro.cfg \
 "
 
-do_deploy_append_at91sam9x5() {
+do_deploy:append:at91sam9x5() {
     # There will be no files with whitespaces
     for f in u-boot*; do
         sha256sum "$f" | awk '{print $1}' > "$f.sha256"

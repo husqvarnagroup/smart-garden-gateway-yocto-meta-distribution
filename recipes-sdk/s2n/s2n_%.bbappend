@@ -1,3 +1,3 @@
-PR_append = ".0"
+PR:append = ".0"
 
 EXTRA_OECMAKE += "-DS2N_NO_PQ=ON"

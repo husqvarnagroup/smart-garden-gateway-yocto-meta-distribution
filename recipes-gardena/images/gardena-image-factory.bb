@@ -7,7 +7,7 @@ IMAGE_INSTALL += " \
     ssh-authorized-keys-prod \
 "
 
-IMAGE_INSTALL_remove = " \
+IMAGE_INSTALL:remove = " \
     healthcheck \
     rsyslog \
     tcpdump-sherlock-ppp0 \

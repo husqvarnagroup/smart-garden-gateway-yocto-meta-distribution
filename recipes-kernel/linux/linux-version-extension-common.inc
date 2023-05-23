@@ -1,1 +1,1 @@
-LINUX_VERSION_EXTENSION_prepend = "-${PR}"
+LINUX_VERSION_EXTENSION:prepend = "-${PR}"

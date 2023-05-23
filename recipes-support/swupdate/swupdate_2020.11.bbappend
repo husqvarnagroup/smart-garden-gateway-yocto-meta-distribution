@@ -1,6 +1,6 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".1"
+PR:append = ".1"
 
 SRC_URI += " \
             file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
@@ -19,25 +19,25 @@ SRC_URI += " \
             "
 
 # The upstream recipe puts too much in the swupdate package.
-do_install_append () {
+do_install:append () {
      # Remove unwanted swupdate package content
      rm -r ${D}${bindir}/swupdate-sysrestart ${D}${libdir}/swupdate ${D}${libdir}/tmpfiles.d ${D}${systemd_unitdir}/system/swupdate.service ${D}${systemd_unitdir}/system/swupdate.socket
 }
-SYSTEMD_SERVICE_${PN}_remove = "swupdate.service swupdate.socket"
+SYSTEMD_SERVICE:${PN}:remove = "swupdate.service swupdate.socket"
 
 # We need/abuse swupdate-progress to issue a reset after updating
-FILES_${PN}-progress_remove = " \
+FILES:${PN}-progress:remove = " \
     ${libdir}/swupdate/conf.d/90-start-progress \
 "
-RDEPENDS_${PN} += "${PN}-progress"
+RDEPENDS:${PN} += "${PN}-progress"
 
 # Move on with actually adapting the package to our needs
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${datadir}/${PN}/sw-update.cert.pem \
     ${sysconfdir}/swupdate.cfg \
 "
 
-do_install_append () {
+do_install:append () {
     install -d ${D}${datadir}/${PN}
     install -m 644 ${WORKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/${PN}/sw-update.cert.pem
 
@@ -45,4 +45,4 @@ do_install_append () {
     install -m 644 ${WORKDIR}/swupdate.cfg ${D}${sysconfdir}
 }
 
-RDEPENDS_${PN} += "components-introspection"
+RDEPENDS:${PN} += "components-introspection"

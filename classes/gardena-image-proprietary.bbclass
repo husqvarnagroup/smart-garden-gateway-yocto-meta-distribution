@@ -7,11 +7,11 @@ IMAGE_INSTALL += " \
     rm-test-firmware \
 "
 
-IMAGE_INSTALL_append_mt7688 += " \
+IMAGE_INSTALL:append:mt7688 += " \
     manufacturing-tools \
 "
 
-IMAGE_INSTALL_append_at91sam9x5 += " \
+IMAGE_INSTALL:append:at91sam9x5 += " \
     manufacturing-tools-migration \
 "
 inherit gardena-image-opensource

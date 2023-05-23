@@ -14,7 +14,7 @@ IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_FLAVOR}"
 # Define U-Boot filename and version. This is only relevant when the "freshly"
 # built U-Boot binary should get used. See comment below this section.
 UBOOT_FILENAME = "u-boot-${MACHINE}.bin"
-UBOOT_FILENAME_at91sam9x5 = "u-boot-with-spl.bin-${MACHINE}"
+UBOOT_FILENAME:at91sam9x5 = "u-boot-with-spl.bin-${MACHINE}"
 UBOOT_VERSION = "${@d.getVar("PREFERRED_VERSION_u-boot", False).replace("-prebuilt", "")}"
 UBOOT_VERSION = "XXX"
 # This is a workaround to allow multiple SWUpdate images having their "own"
@@ -26,11 +26,11 @@ UBOOT_FILENAME_IN_DEPLOYDIR = "${@d.getVar('UBOOT_FILENAME').replace('.bin', '-'
 # The sources for the binaries can be found here:
 # - mt7688 (2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto): https://github.com/husqvarnagroup/smart-garden-u-boot/commit/e6f4ac2a81f76be4e07f200f1aa6e9c2e389859e
 # - at91am (2019.10-gardena-2): https://github.com/husqvarnagroup/smart-garden-gateway-public/tree/release/linux-system-4.3.2
-UBOOT_FILENAME_mt7688 = "prebuilt-u-boot-with-spl-${MACHINE}_${UBOOT_VERSION}.bin"
-UBOOT_FILENAME_at91sam9x5 = "prebuilt-u-boot-with-spl-${MACHINE}_${UBOOT_VERSION}.bin"
-UBOOT_VERSION_mt7688 = "2021.04-gardena-6"
-UBOOT_VERSION_at91sam9x5 = "2021.04-gardena-6"
-SRC_URI_append = "file://${UBOOT_FILENAME}"
+UBOOT_FILENAME:mt7688 = "prebuilt-u-boot-with-spl-${MACHINE}_${UBOOT_VERSION}.bin"
+UBOOT_FILENAME:at91sam9x5 = "prebuilt-u-boot-with-spl-${MACHINE}_${UBOOT_VERSION}.bin"
+UBOOT_VERSION:mt7688 = "2021.04-gardena-6"
+UBOOT_VERSION:at91sam9x5 = "2021.04-gardena-6"
+SRC_URI:append = "file://${UBOOT_FILENAME}"
 do_deploy() {
     install -D -m 644 ${WORKDIR}/${UBOOT_FILENAME} ${DEPLOYDIR}/${UBOOT_FILENAME_IN_DEPLOYDIR}
 }
@@ -52,8 +52,8 @@ SWUPDATE_IMAGES_FSTYPES[uEnv] = ".txt"
 SWUPDATE_HARDWARE_NAME = "smart-gateway-${@d.getVar("MACHINE", False).replace("gardena-sg-", "")}"
 
 # Set the compatible hardware revisions which are different for all architectures
-HARDWARE_COMPATIBILITY_mt7688 = "[ "0.5", "1.0", "1.1.0", "1.2.0", "1.2.1" ]"
-HARDWARE_COMPATIBILITY_at91sam9x5 = "[ "1.1b" ]"
+HARDWARE_COMPATIBILITY:mt7688 = "[ "0.5", "1.0", "1.1.0", "1.2.0", "1.2.1" ]"
+HARDWARE_COMPATIBILITY:at91sam9x5 = "[ "1.1b" ]"
 
 # In order to sign the image, the variables SWUPDATE_SIGNING, SWUPDATE_CMS_KEY,
 # and SWUPDATE_CMS_CERT need to be set. [1]

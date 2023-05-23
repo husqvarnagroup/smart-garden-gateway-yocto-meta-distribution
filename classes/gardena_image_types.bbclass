@@ -1,7 +1,7 @@
 inherit image_types
 inherit kernel-artifact-names
 
-IMAGE_CMD_migrationubi () {
+IMAGE_CMD:migrationubi () {
 cat << EOF > ubinize-migrationubi-${IMAGE_NAME}.cfg
 [rootfs0]
 mode=ubi
@@ -74,7 +74,7 @@ EOF
 	sha256sum ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi.meta | awk '{print $1}' \
 	        > ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.migration.ubi.meta.sha256
 }
-IMAGE_TYPEDEP_migrationubi = "squashfs-xz"
+IMAGE_TYPEDEP:migrationubi = "squashfs-xz"
 
 do_image_migrationubi[depends] = "\
 	migration-mtd-utils-native:do_populate_sysroot \

@@ -1,6 +1,6 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-PR_append = ".4"
+PR:append = ".4"
 
 SRC_URI += " \
     file://40-swupdate-check.sh \
@@ -10,11 +10,11 @@ SRC_URI += " \
     file://keep.d/${BPN} \
 "
 
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${base_libdir}/upgrade/keep.d \
 "
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}
     install -m 0644 ${WORKDIR}/dhcpcd.conf ${D}${sysconfdir}/dhcpcd.conf
 
@@ -32,4 +32,4 @@ do_install_append() {
 
 inherit systemd
 SYSTEMD_PACKAGES = "${PN}"
-SYSTEMD_SERVICE_${PN} = "dhcpcd.service"
+SYSTEMD_SERVICE:${PN} = "dhcpcd.service"

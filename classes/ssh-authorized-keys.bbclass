@@ -9,7 +9,7 @@ inherit allarch
 
 SSH_USER ?= "root"
 
-FILES_${PN} += "/home/${SSH_USER}/.ssh/authorized_keys"
+FILES:${PN} += "/home/${SSH_USER}/.ssh/authorized_keys"
 
 do_install() {
         install -d ${D}/home/${SSH_USER}/.ssh/

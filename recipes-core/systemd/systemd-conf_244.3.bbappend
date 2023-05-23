@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI += "\
     file://journald-ram.conf \
@@ -10,13 +10,13 @@ SRC_URI += "\
     file://system-watchdog.conf \
 "
 
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${base_libdir}/upgrade/keep.d \
 "
 
-PR_append = ".5"
+PR:append = ".5"
 
-do_install_append() {
+do_install:append() {
     install -m 0644 ${WORKDIR}/system-watchdog.conf ${D}${systemd_unitdir}/system.conf.d/50-watchdog.conf
 
     # Disable colorized statup messages

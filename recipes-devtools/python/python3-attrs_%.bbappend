@@ -1,3 +1,3 @@
-PR_append = ".0"
+PR:append = ".0"
 
 BBCLASSEXTEND = "native nativesdk"

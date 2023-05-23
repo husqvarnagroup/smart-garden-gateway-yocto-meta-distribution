@@ -63,7 +63,7 @@ COPY_LIC_DIRS = "1"
 # More information: https://docs.yoctoproject.org/dev-manual/common-tasks.html#using-the-gdbserver-method
 #IMAGE_GEN_DEBUGFS = "1"
 #IMAGE_FSTYPES_DEBUGFS = "tar.bz2"
-#IMAGE_INSTALL_append = " gdbserver"
+#IMAGE_INSTALL:append = " gdbserver"
 
 # Optional: Lower optimization to improve debugability
 #DEBUG_BUILD = "1"

@@ -1,15 +1,15 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".1"
+PR:append = ".1"
 
 SRC_URI += "\
     file://keep.d/${BPN} \
 "
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${base_libdir}/upgrade/keep.d \
 "
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${sysconfdir}/default
     echo 'DROPBEAR_EXTRA_ARGS="-s"' > ${D}${sysconfdir}/default/dropbear
 

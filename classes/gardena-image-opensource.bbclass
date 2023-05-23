@@ -57,7 +57,7 @@ IMAGE_INSTALL += " \
     zram-init \
 "
 
-IMAGE_INSTALL_append_mt7688 += " \
+IMAGE_INSTALL:append:mt7688 += " \
     kernel-module-mt7603e \
     linux-firmware-mt7628 \
 "

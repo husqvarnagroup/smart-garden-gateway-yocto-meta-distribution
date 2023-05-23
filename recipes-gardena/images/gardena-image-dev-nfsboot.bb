@@ -5,10 +5,10 @@ SUMMARY = "Developer image bootable via NFS"
 inherit gardena-image-opensource
 
 # Firewall would block NFS traffic
-IMAGE_INSTALL_remove = "firewall"
+IMAGE_INSTALL:remove = "firewall"
 
 # SWUpdate makes no sense when booting from NFS
-IMAGE_INSTALL_remove = "swupdate"
+IMAGE_INSTALL:remove = "swupdate"
 
 # Stuff to make developers happy
 IMAGE_INSTALL += " \

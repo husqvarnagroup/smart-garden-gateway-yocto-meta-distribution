@@ -1,21 +1,21 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".9"
+PR:append = ".9"
 
 SRC_URI += " \
     file://keep.d/${BPN} \
 "
 
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://wpa_supplicant@.service \
 "
 
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${base_libdir}/upgrade/keep.d \
     ${systemd_unitdir}/system/network-online.target.wants/wpa_supplicant@wlan0.service \
 "
 
-do_install_append() {
+do_install:append() {
     # Keep on updates
     install -d ${D}${base_libdir}/upgrade/keep.d
     install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
@@ -33,5 +33,5 @@ do_install_append() {
     touch ${D}/${sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 }
 
-SYSTEMD_SERVICE_${PN} = "wpa_supplicant@.service wpa_supplicant@wlan0.service"
-SYSTEMD_AUTO_ENABLE_${PN} = "disable"
+SYSTEMD_SERVICE:${PN} = "wpa_supplicant@.service wpa_supplicant@wlan0.service"
+SYSTEMD_AUTO_ENABLE:${PN} = "disable"

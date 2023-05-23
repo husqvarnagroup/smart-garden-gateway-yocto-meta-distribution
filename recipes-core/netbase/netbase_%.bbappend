@@ -1,9 +1,9 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR_append = ".1"
+PR:append = ".1"
 
 # Appending rather than using patches to simplify updating the base package
-do_install_append() {
+do_install:append() {
     cat <<EOF >> ${D}${sysconfdir}/services
 
 # Lemonbeat ports

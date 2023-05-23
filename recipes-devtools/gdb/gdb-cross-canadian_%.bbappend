@@ -1,3 +1,3 @@
-PR_append = ".0"
+PR:append = ".0"
 
-PACKAGECONFIG_append = " tui"
+PACKAGECONFIG:append = " tui"
