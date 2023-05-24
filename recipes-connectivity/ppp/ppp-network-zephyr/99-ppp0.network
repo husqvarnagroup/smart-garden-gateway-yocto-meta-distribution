@@ -1,0 +1,16 @@
+# BNW ppp0 configuration
+[Match]
+Name=ppp0
+Type=ppp
+
+[Network]
+# Default gateway address
+Address=fc00::6:100:0:0/64
+
+# SG-16012: Disable router advertisements on the ppp0 interface.
+# We don't want the ppp0 interface to be able to be configured
+# via RAs.
+IPv6AcceptRA=no
+
+[Link]
+RequiredForOnline=no
