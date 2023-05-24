@@ -30,11 +30,15 @@ IMAGE_INSTALL += " \
     iptables-modules \
     iw \
     jq \
+    kernel-module-nft-compat \
+    kernel-module-nft-counter \
+    kernel-module-nft-ct \
     libubootenv-bin \
     lsof \
     memtester \
     mtd-utils \
     mtd-utils-ubifs \
+    nftables \
     nngforward \
     openocd \
     os-release \
