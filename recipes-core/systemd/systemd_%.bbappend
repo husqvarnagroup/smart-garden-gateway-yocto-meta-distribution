@@ -5,6 +5,7 @@ SRC_URI += "\
     file://keep.d/${BPN} \
     file://systemd-disable-colors.sh \
     file://systemd-disable-pager.sh \
+    file://systemd-networkd-wait-online.service \
     file://99-husqvarna-default.conf \
 "
 
@@ -30,6 +31,10 @@ do_install:append() {
     # Always append our own NTP server names as a default (99- takes a very low precedence)
     install -d ${D}${sysconfdir}/systemd/timesyncd.conf.d
     install -m 0644 ${WORKDIR}/99-husqvarna-default.conf ${D}${sysconfdir}/systemd/timesyncd.conf.d
+
+    # Override systemd-networkd-wait-online.service to only wait for one interface
+    install -d ${D}${sysconfdir}/systemd/system
+    install -m 0644 ${WORKDIR}/systemd-networkd-wait-online.service ${D}${sysconfdir}/systemd/system
 
     # Keep relevant systemd data from being erased on update
     install -d ${D}${base_libdir}/upgrade/keep.d
