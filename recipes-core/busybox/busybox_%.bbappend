@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".5"
+PR:append = ".6"
 
 SRC_URI += "\
     file://display-error-on-nonzero-status.sh \
