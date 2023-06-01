@@ -2,8 +2,6 @@
 
 IMAGE_INSTALL += " \
     gateway-firmware \
-    lemonbeat-firmware-upload \
-    python3-lemonbeat \
     rm-test-firmware \
 "
 

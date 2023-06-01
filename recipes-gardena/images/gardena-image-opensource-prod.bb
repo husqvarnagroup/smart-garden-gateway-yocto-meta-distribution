@@ -61,11 +61,6 @@ IMAGE_INSTALL += " \
     systemd \
 "
 
-# python3-lemonbeat tool dependencies
-IMAGE_INSTALL += " \
-    python3-pycrypto \
-"
-
 # Allow the image to start
 IMAGE_INSTALL += " \
     manufacturing-tools-shim \
