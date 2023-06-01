@@ -42,6 +42,7 @@ RDEPENDS:packagegroup-opkg-feed = "\
     pv \
     python3-aiocoap \
     python3-dbus-next \
+    python3-lemonbeat \
     python3-opentelemetry-exporter-otlp-proto-http \
     python3-opentelemetry-sdk \
     python3-paho-mqtt \
