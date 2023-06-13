@@ -32,7 +32,7 @@ RDEPENDS:packagegroup-opkg-feed = "\
     minicom \
     mtd-utils \
     net-tools \
-    netcat \
+    netcat-openbsd \
     nftables \
     ntpdate \
     openssh \
