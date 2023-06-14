@@ -21,5 +21,5 @@ do_install:append() {
 SYSTEMD_SERVICE:${PN} = "ppp.service"
 
 RDEPENDS:${PN} += " \
-    gateway-firmware \
+    virtual/gardena-gateway-firmware \
 "

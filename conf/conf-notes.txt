@@ -7,5 +7,6 @@ Common targets are:
     gardena-image-dev-nfsboot
     gardena-image-factory
     gardena-image-foss-bnw
-    gardena-image-bnw
+    gardena-image-bnw-zephyr
     gardena-update-image-bnw
+    gardena-update-image-bnw-zephyr
