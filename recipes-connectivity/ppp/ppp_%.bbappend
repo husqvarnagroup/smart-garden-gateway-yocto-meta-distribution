@@ -5,6 +5,7 @@ PR:append = ".10"
 SRC_URI += " \
     file://ppp-failure.service \
     file://ppp.service \
+    file://0001-pppd-Set-local-and-remote-IPv6-addresses-by-one-call.patch \
 "
 
 FILES:${PN} += "${systemd_unitdir}/system/ppp-failure.service"
