@@ -37,4 +37,4 @@ IMAGE_INSTALL += " \
     manufacturing-tools-shim \
 "
 
-inherit gardena-image-opensource
+inherit gardena-image-foss

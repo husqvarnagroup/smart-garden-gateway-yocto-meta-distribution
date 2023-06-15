@@ -12,4 +12,4 @@ IMAGE_INSTALL:append:mt7688 += " \
 IMAGE_INSTALL:append:at91sam9x5 += " \
     manufacturing-tools-migration \
 "
-inherit gardena-image-opensource
+inherit gardena-image-foss
