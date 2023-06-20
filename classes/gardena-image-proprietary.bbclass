@@ -1,7 +1,6 @@
 # Base for all proprietary GARDENA images
 
 IMAGE_INSTALL += " \
-    gateway-firmware \
     rm-test-firmware \
 "
 
