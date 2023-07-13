@@ -19,6 +19,7 @@ TIME_MANAGEMENT += " \
 
 IMAGE_INSTALL += " \
     ${TIME_MANAGEMENT} \
+    devpkginstaller \
     dhcpcd \
     dnsmasq \
     firewall \
