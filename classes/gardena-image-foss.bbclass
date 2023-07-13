@@ -20,69 +20,12 @@ TIME_MANAGEMENT += " \
 IMAGE_INSTALL += " \
     ${TIME_MANAGEMENT} \
     devpkginstaller \
-    dhcpcd \
-    dnsmasq \
-    firewall \
     healthcheck \
-    hostapd \
-    i2c-tools \
-    initscripts-readonly-rootfs-overlay \
-    iptables \
-    iptables-modules \
-    iw \
-    jq \
-    kernel-module-nft-compat \
-    kernel-module-nft-counter \
-    kernel-module-nft-ct \
-    libubootenv-bin \
-    lsof \
     memtester \
-    mtd-utils \
-    mtd-utils-ubifs \
-    nftables \
     nngforward \
-    openocd \
-    os-release \
-    packagegroup-core-boot \
-    ppp \
-    reset-rm \
-    rfkill \
     rsyslog \
     snapshot \
-    squashfs-tools \
-    swupdate \
-    systemd-conf \
-    systemd-container \
-    systemd-extra-utils \
-    sysupgrade \
     tcpdump-sherlock-ppp0 \
-    unique-hostname \
-    wireless-regdb-static \
-    wpa-supplicant \
-    wpa-supplicant-cli \
-    zram-init \
 "
 
-IMAGE_INSTALL:append:mt7688 += " \
-    kernel-module-mt7603e \
-    linux-firmware-mt7628 \
-"
-
-IMAGE_FEATURES += " \
-    empty-root-password \
-    package-management \
-    ssh-server-dropbear \
-"
-
-# We do not need any additional locales
-IMAGE_LINGUAS = " "
-
-# The rootfs is (will be) a read only squashfs in an UBI container
-IMAGE_FSTYPES = "tar.bz2 squashfs-xz"
-
-LICENSE = "MIT"
-
-# Default rootfs size: 40 MB
-IMAGE_ROOTFS_SIZE ?= "40960"
-
-inherit core-image
+inherit gardena-image-base
