@@ -14,6 +14,7 @@ IMAGE_INSTALL += " \
     ppp-network-zephyr \
     ssh-authorized-keys-prod \
     sshtunnel \
+    sshtunnel-check \
     swupdate-check \
 "
 

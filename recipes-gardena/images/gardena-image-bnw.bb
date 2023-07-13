@@ -14,6 +14,7 @@ IMAGE_INSTALL += " \
     ppp-network \
     ssh-authorized-keys-prod \
     sshtunnel \
+    sshtunnel-check \
     swupdate-check \
 "
 

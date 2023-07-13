@@ -2,16 +2,19 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 SUMMARY = "The GARDENA manufacturing image"
 
+COMPATIBLE_MACHINE = "gardena-sg-mt7688"
+
 IMAGE_INSTALL += " \
-    ppp-network \
+    accessory-server-factory \
+    gateway-config-backend \
+    gateway-firmware-zephyr \
+    manufacturing-tools \
+    ppp-network-zephyr \
+    rm-test-firmware \
     ssh-authorized-keys-prod \
+    sshtunnel \
+    sshtunnel-timer \
+    swupdate-check \
 "
 
-IMAGE_INSTALL:remove = " \
-    healthcheck \
-    rsyslog \
-    tcpdump-sherlock-ppp0 \
-    tcpdump-sherlock-vpn0 \
-"
-
-inherit gardena-image-proprietary
+inherit gardena-image-base
