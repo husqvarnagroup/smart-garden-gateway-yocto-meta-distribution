@@ -1,4 +1,4 @@
-PACKAGECONFIG_append = " libnftnl"
+PACKAGECONFIG:append = " libnftnl"
 
 do_install:append() {
     # the iptables package uses xtables-legacy-multi as default, change that
