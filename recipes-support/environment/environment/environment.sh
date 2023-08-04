@@ -25,7 +25,6 @@ for var in fct_finalized eol_test_passed; do
 done
 
 ssl_dir="/etc/ssl"
-    
 for ext in crt key; do
     if [ "${ext}" = crt ]; then
         file="${ssl_dir}/certs/client-prod.${ext}"
@@ -33,7 +32,6 @@ for ext in crt key; do
         file="${ssl_dir}/private/client-prod.${ext}"
     fi
 
-    uboot_var="conf_openvpn_${ext}"
     if [ -s "${file}" ]; then
         echo "File '${file}' already exists and is not empty"
         if [ "${ext}" = "key" ] && [ "$(stat -c "%a" "${file}")" != "600" ]; then
@@ -41,7 +39,10 @@ for ext in crt key; do
         fi
         continue
     fi
-    if content="$(fw_printenv -n "${uboot_var}" 2>/dev/null)"; then
+
+    if content="$(fw_printenv -n "x509_${ext}" 2>/dev/null)" ||
+        content="$(fw_printenv -n "conf_openvpn_${ext}" 2>/dev/null)"
+    then
         echo "${content}" | tr '%' '\n' > "${file}".tmp
         if [ "${ext}" = "key" ]; then
             chmod 600 "${file}".tmp
@@ -49,7 +50,7 @@ for ext in crt key; do
         sync
         mv "${file}".tmp "${file}"
     else
-        echo "U-Boot variable '${uboot_var}' is missing!" >&2
+        echo "U-Boot variable 'x509_${ext}' is missing!" >&2
         exit 1
     fi
 done
