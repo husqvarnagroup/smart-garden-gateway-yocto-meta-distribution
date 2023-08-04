@@ -17,4 +17,4 @@ IMAGE_INSTALL += " \
     swupdate-check \
 "
 
-inherit gardena-image-proprietary
+inherit gardena-image-foss
