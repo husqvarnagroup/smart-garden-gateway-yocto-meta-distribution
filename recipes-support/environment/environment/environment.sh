@@ -51,6 +51,10 @@ for ext in crt key; do
         mv "${file}".tmp "${file}"
     else
         echo "U-Boot variable 'x509_${ext}' is missing!" >&2
-        exit 1
+        # The x509_* variables are not set until IPR setup is done. Therefore,
+        # only fail later in the manufacturing process.
+        if fw_printenv ipr_setup_done >/dev/null 2>&1; then
+            exit 1
+        fi
     fi
 done
