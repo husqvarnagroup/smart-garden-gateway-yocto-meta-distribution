@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".10"
+PR:append = ".11"
 
 SRC_URI += " \
     file://ppp-failure.service \

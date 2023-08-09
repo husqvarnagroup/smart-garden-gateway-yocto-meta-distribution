@@ -1,8 +1,8 @@
 [Unit]
 Description=PPP link to radio module
 Before=network.target
-After=manufacturing-statusfiles.service rm-flashing.service
-Requires=manufacturing-statusfiles.service rm-flashing.service
+After=environment.service rm-flashing.service
+Requires=environment.service rm-flashing.service
 ConditionPathExists=/etc/fct_finalized
 # Prevent futile restart attempts
 StartLimitIntervalSec=300
