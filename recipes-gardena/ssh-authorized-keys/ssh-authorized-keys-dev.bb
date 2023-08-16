@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-PV = "0.11"
+PV = "0.12"
 
 SRC_URI = " \
     file://adrian-friedli.pub \
@@ -24,6 +24,7 @@ SRC_URI = " \
     file://gerald-reisinger.pub \
     file://jessica-eichberg.pub \
     file://maintenance-access.pub \
+    file://maintenance-access-factory.pub \
     file://manuel-knobel.pub \
     file://marc-lasch.pub \
     file://marcel-mueller.pub \
@@ -38,7 +39,6 @@ SRC_URI = " \
     file://reto-schneider_office.pub \
     file://sandro-klarer.pub \
     file://sebastian-schoch.pub \
-    file://sshportal-dev.pub \
     file://timon-braendli.pub \
     file://tobias-greuter.pub \
 "
