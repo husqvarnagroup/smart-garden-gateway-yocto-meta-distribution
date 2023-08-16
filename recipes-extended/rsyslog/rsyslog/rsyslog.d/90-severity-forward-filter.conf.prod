@@ -1,5 +1,11 @@
-# do not forward notice, info and debug logs in prod (with some exceptions)
-if ($syslogseverity >= 5) then {
+if ($msg contains 'remote="true"') then {
+    # allow explicit forwarding of logs using structured data
+    continue
+} else if ($msg contains 'remote="false"') then {
+    # allow explicit dropping of logs using structured data
+    stop
+} else if ($syslogseverity >= 5) then {
+    # do not forward notice, info and debug logs in prod (with some exceptions)
     if ($programname == "rsyslogd" and $msg contains "-- MARK --") then {
         # allow mark message to reach remote logging in order to know if remote logging is working
         continue
