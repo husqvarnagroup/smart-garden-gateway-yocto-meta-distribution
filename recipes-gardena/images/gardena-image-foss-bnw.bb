@@ -32,9 +32,4 @@ IMAGE_INSTALL += " \
     systemd \
 "
 
-# Allow the image to start
-IMAGE_INSTALL += " \
-    manufacturing-tools-shim \
-"
-
 inherit gardena-image-foss

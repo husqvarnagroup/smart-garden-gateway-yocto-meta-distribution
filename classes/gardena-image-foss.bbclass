@@ -21,6 +21,7 @@ IMAGE_INSTALL += " \
     ${TIME_MANAGEMENT} \
     devpkginstaller \
     healthcheck \
+    manufacturing-tools-shim \
     memtester \
     nngforward \
     rsyslog \
