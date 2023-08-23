@@ -31,6 +31,19 @@ IMAGE_INSTALL += " \
     systemd-conf \
     systemd-extra-utils \
     sysupgrade \
+    tzdata \
+    tzdata-africa \
+    tzdata-americas \
+    tzdata-antarctica \
+    tzdata-arctic \
+    tzdata-asia \
+    tzdata-atlantic \
+    tzdata-australia \
+    tzdata-europe \
+    tzdata-misc \
+    tzdata-pacific \
+    tzdata-posix \
+    tzdata-right \
     unique-hostname \
     wireless-regdb-static \
     wpa-supplicant \
