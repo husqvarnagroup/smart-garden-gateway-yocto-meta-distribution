@@ -15,6 +15,7 @@ IMAGE_INSTALL += " \
     kernel-module-nft-compat \
     kernel-module-nft-counter \
     kernel-module-nft-ct \
+    kernel-module-xt-dscp \
     libubootenv-bin \
     lsof \
     mtd-utils \
