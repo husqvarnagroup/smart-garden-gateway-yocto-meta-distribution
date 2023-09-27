@@ -5,6 +5,7 @@ SUMMARY = "The GARDENA for gateways using the BNW platform"
 IMAGE_INSTALL += " \
     accessory-server \
     cloudadapter \
+    coap-transport-proxy \
     fwrolloutd \
     gateway-config-backend \
     gateway-firmware \
