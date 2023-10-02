@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".1"
+PR:append = ".2"
 
 # Appending rather than using patches to simplify updating the base package
 do_install:append() {
@@ -41,6 +41,12 @@ lemonbeat-status              20015/tcp
 lemonbeat-status              20015/udp
 lemonbeat-configuration       20016/tcp
 lemonbeat-configuration       20016/udp
+
+# Brave New World LwM2M protocol
+lwm2mserver                   20017/udp
+
+# P14 robotics protocol proxy
+coap-transport-proxy          20024/udp
 
 # HomeKit Accessory Protocol
 # Note: this port was chosen by us and is not a HomeKit default
