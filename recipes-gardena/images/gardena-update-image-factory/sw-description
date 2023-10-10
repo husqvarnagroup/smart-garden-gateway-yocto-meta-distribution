@@ -107,42 +107,6 @@ end";
                     {
                         name = "swupdate_done";
                         value = "1";
-                    },
-                    {
-                        name = "bootdelay"; /* Introduced as part of SG-10770. We can still get into U-Boot with a key press. */
-                        value = "0";
-                    },
-                    {
-                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
-                        value = "1";
-                    },
-                    {
-                        name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
-                        value = "";
-                    },
-                    {
-                        name = "mtdids"; /* Delete potentially no longer valid mapping (SG-10970) */
-                        value = "";
-                    },
-                    {
-                        name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
-                        value = "";
-                    },
-                    {
-                        name = "linux_system_version"; /* No longer needed since SG-10583 */
-                        value = "";
-                    },
-                    {
-                        name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
-                        value = "";
-                    },
-                    {
-                        name = "do_print_ids"; /* Introduced as part of SG-16934 */
-                        value = "echo linuxmoduleid=${linuxmoduleid:-unset} && echo gatewayid=${gatewayid:-unset} && echo radiomoduleid=${radiomoduleid:-unset}";
-                    },
-                    {
-                        name = "bootcmd"; /* Introduced as part of SG-16934 */
-                        value = "run do_print_ids && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset";
                     }
                 )
             }
@@ -186,42 +150,6 @@ end";
                     {
                         name = "swupdate_done";
                         value = "1";
-                    },
-                    {
-                        name = "bootdelay"; /* Introduced as part of SG-10770. We can still get into U-Boot with a key press. */
-                        value = "0";
-                    },
-                    {
-                        name = "eol_test_passed"; /* Introduced as part of SG-12284 (EOL test); must be "1". This is done because gateways manufactured before the introduction of the EOL test do not have this variable. */
-                        value = "1";
-                    },
-                    {
-                        name = "do_if_post_linux_system_upgrade"; /* Deleted as part of SG-10590 */
-                        value = "";
-                    },
-                    {
-                        name = "mtdids"; /* Delete potentially no longer valid mapping (SG-10970) */
-                        value = "";
-                    },
-                    {
-                        name = "mtdparts"; /* Delete potentially no longer valid partition layout (SG-10970) */
-                        value = "";
-                    },
-                    {
-                        name = "linux_system_version"; /* No longer needed since SG-10583 */
-                        value = "";
-                    },
-                    {
-                        name = "do_flashing_inplace"; /* Removed/Renamed with SG-11143 */
-                        value = "";
-                    },
-                    {
-                        name = "do_print_ids"; /* Introduced as part of SG-16934 */
-                        value = "echo linuxmoduleid=${linuxmoduleid:-unset} && echo gatewayid=${gatewayid:-unset} && echo radiomoduleid=${radiomoduleid:-unset}";
-                    },
-                    {
-                        name = "bootcmd"; /* Introduced as part of SG-16934 */
-                        value = "run do_print_ids && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset";
                     }
                 )
             }
