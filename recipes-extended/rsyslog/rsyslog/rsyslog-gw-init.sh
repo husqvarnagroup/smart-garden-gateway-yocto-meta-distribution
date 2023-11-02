@@ -89,6 +89,7 @@ cp /etc/rsyslog.conf.prod /tmp/rsyslog.conf
 # Configure unencrypted logging to local server
 if DEV_RSYSLOG_SERVER="$(fw_printenv -n "dev_rsyslog_server" 2>/dev/null)"; then
     sed -i "s/Target=.*$/Target=\"${DEV_RSYSLOG_SERVER}\"/" /tmp/rsyslog.conf
+    sed -i 's/Port=.*$/Port="514"/' /tmp/rsyslog.conf
     sed -i 's/StreamDriverMode="1"$/StreamDriverMode=\"0\"/' /tmp/rsyslog.conf
 fi
 
