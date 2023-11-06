@@ -10,12 +10,13 @@ Conflicts=hostapd@%i.service
 Before=hostapd%i.service
 
 [Service]
-Type=simple
+Type=dbus
+BusName=fi.w1.wpa_supplicant1
 
 # attach dhcpcd in case hostapd detached it
 ExecStartPre=dhcpcd --rebind %i
 
-ExecStart=/usr/sbin/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
+ExecStart=/usr/sbin/wpa_supplicant -u -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
 
 # Restart on errors (i.e. because the the driver failed to create the wlan
 # interface in time)

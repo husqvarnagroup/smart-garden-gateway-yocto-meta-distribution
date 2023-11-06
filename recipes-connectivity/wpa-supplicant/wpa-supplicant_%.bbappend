@@ -15,6 +15,11 @@ FILES:${PN} += "\
     ${systemd_unitdir}/system/network-online.target.wants/wpa_supplicant@wlan0.service \
 "
 
+do_configure:append() {
+    # Enable DBus Introspection
+    echo "CONFIG_CTRL_IFACE_DBUS_INTRO=y" >> ${B}/wpa_supplicant/.config
+}
+
 do_install:append() {
     # Keep on updates
     install -d ${D}${base_libdir}/upgrade/keep.d

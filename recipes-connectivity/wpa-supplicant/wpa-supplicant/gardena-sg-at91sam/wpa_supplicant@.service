@@ -15,7 +15,8 @@ Before=hostapd%i.service
 # SG-18437 Ignore errors in (long running) ExecStartPre= lines to prevent the
 # unit from failing when being stopped before reaching ExecStart=.
 [Service]
-Type=simple
+Type=dbus
+BusName=fi.w1.wpa_supplicant1
 
 # SG-14607 - only rtl8xxxu is able to scan for APs reliably
 ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
@@ -30,7 +31,7 @@ ExecStartPre=-iw wlan0 set txpower limit 1500
 # attach dhcpcd in case hostapd detached it
 ExecStartPre=dhcpcd --rebind %i
 
-ExecStart=/usr/sbin/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
+ExecStart=/usr/sbin/wpa_supplicant -u -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
 
 # Restart on errors (i.e. because the the driver failed to create the wlan
 # interface in time)
