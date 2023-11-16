@@ -5,6 +5,8 @@ Subject: [PATCH] Do url-encoding of file names using the curl backend
 
 Warning: This hack requires the usage of the curl backend.
 
+Upstream-Status: Inappropriate [hack]
+
 ---
  libopkg/opkg_download.c | 19 ++++++++++++++++++-
  1 file changed, 18 insertions(+), 1 deletion(-)
