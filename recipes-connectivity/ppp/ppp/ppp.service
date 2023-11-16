@@ -10,6 +10,7 @@ StartLimitBurst=3
 OnFailure=ppp-failure.service
 
 [Service]
+ExecStartPre=/usr/bin/mkdir -p /var/run/pppd/lock
 # Ensure the red RM LED works as configured in the device tree (keep in sync!).
 # Needed (only) in case ppp-failure.service ran before, reconfigured the LED.
 # See ppp-failure.service for why this does not affect at91sam based gateways.
