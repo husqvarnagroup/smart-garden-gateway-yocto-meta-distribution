@@ -1,0 +1,7 @@
+[Match]
+OriginalName=*
+
+[Link]
+NamePolicy=keep
+AlternativeNamesPolicy=database onboard slot path
+MACAddressPolicy=persistent

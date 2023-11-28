@@ -6,6 +6,7 @@ SRC_URI += "\
     file://systemd-disable-colors.sh \
     file://systemd-disable-pager.sh \
     file://systemd-networkd-wait-online.service \
+    file://99-default.link \
     file://99-eth0.network \
     file://99-husqvarna-default.conf \
     file://99-wlan0.network \
@@ -46,6 +47,10 @@ do_install:append() {
     # Keep relevant systemd data from being erased on update
     install -d ${D}${base_libdir}/upgrade/keep.d
     install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
+
+    # Override to prevent network interfaces from being renamed
+    install -d ${D}${sysconfdir}/systemd/network
+    install -m 0644 ${WORKDIR}/99-default.link ${D}${sysconfdir}/systemd/network
 }
 
 PACKAGECONFIG:remove = " \
