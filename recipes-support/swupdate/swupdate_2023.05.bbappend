@@ -21,7 +21,7 @@ SRC_URI += " \
 # The upstream recipe puts too much in the swupdate package.
 do_install:append () {
      # Remove unwanted swupdate package content
-     rm -r ${D}${bindir}/swupdate-sysrestart ${D}${libdir}/swupdate ${D}${libdir}/tmpfiles.d ${D}${systemd_unitdir}/system/swupdate.service ${D}${systemd_unitdir}/system/swupdate.socket
+     rm -r ${D}${libdir}/swupdate ${D}${libdir}/tmpfiles.d ${D}${systemd_unitdir}/system/swupdate.service ${D}${systemd_unitdir}/system/swupdate.socket
 }
 SYSTEMD_SERVICE:${PN}:remove = "swupdate.service swupdate.socket"
 
