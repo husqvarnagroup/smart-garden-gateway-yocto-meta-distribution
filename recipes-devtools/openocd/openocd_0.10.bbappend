@@ -1,9 +1,10 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".4"
+PR:append = ".5"
 
 SRC_URI += " \
     file://0001-add-libgpiod-jtag-driver.patch \
+    file://0001-bitbang-Fix-FTBFS-with-GCC-10.patch \
 "
 
 SRC_URI:append:mt7688 = " \
