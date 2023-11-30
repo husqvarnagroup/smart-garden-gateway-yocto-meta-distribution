@@ -64,3 +64,11 @@ HARDWARE_COMPATIBILITY:at91sam9x5 = "[ "1.1b" ]"
 #SWUPDATE_SIGNING = "CMS"
 #SWUPDATE_CMS_KEY = "/path/to/key.pem"
 #SWUPDATE_CMS_CERT = "/path/to/cert.pem"
+
+compress_lic_files() {
+    lic_dir_rootfs=${IMAGE_ROOTFS}/usr/share/common-licenses/
+    XZ_OPT="-9e" tar -C ${lic_dir_rootfs} -cJf ${WORKDIR}/licenses.tar.xz .
+    rm -rf ${lic_dir_rootfs}/*
+    install -m 0644 ${WORKDIR}/licenses.tar.xz ${lic_dir_rootfs}/
+}
+ROOTFS_POSTPROCESS_COMMAND:append = "compress_lic_files; "
