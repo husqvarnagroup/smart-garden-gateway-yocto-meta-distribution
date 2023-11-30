@@ -7,11 +7,14 @@ SRC_URI += " \
 "
 
 SRC_URI:append = " \
+    file://dbus/fi.w1.wpa_supplicant1.service \
     file://wpa_supplicant@.service \
 "
 
 FILES:${PN} += "\
     ${base_libdir}/upgrade/keep.d \
+    ${datadir}/dbus-1/system-services/fi.w1.wpa_supplicant1.service \
+    ${systemd_unitdir}/system/dbus-fi.w1.wpa_supplicant1@.service \
     ${systemd_unitdir}/system/network-online.target.wants/wpa_supplicant@wlan0.service \
 "
 
@@ -32,6 +35,11 @@ do_install:append() {
 
     # Install customized unit
     install -m 644 ${WORKDIR}/wpa_supplicant@.service ${D}/${systemd_unitdir}/system/
+
+    # Install D-Bus service 
+    install -m 644 ${WORKDIR}/dbus/fi.w1.wpa_supplicant1.service ${D}/${datadir}/dbus-1/system-services
+    # Hack for D-Bus alias
+    ln -s wpa_supplicant@.service ${D}/${systemd_unitdir}/system/dbus-fi.w1.wpa_supplicant1@.service
 
     # SG-17288 Avoid warning by HomeKit Accessory Server
     mkdir ${D}/${sysconfdir}/wpa_supplicant

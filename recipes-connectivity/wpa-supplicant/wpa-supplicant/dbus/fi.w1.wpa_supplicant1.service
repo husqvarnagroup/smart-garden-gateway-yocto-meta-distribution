@@ -1,0 +1,6 @@
+[D-BUS Service]
+Name=fi.w1.wpa_supplicant1
+# Exec has no effect when systemd service is provided, using /bin/false to prevent false assumptions
+Exec=/bin/false
+User=root
+SystemdService=dbus-fi.w1.wpa_supplicant1@wlan0.service

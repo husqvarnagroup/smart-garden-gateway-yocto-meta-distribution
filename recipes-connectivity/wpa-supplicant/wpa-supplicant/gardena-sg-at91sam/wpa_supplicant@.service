@@ -9,14 +9,20 @@ Wants=network.target
 ConditionPathExists=/etc/wpa_supplicant/wpa_supplicant-%I.conf
 ConditionPathIsDirectory=/sys/bus/usb/devices/1-2:1.0
 
-Conflicts=hostapd@%i.service
-Before=hostapd%i.service
+Before=hostapd@%i.service
 
 # SG-18437 Ignore errors in (long running) ExecStartPre= lines to prevent the
 # unit from failing when being stopped before reaching ExecStart=.
 [Service]
 Type=dbus
 BusName=fi.w1.wpa_supplicant1
+
+# wpa_supplicant conflicts with hostapd, implementation according to
+# https://unix.stackexchange.com/questions/503719/how-to-set-a-conflict-in-systemd-in-one-direction-only/503896#503896
+ExecStartPre=/bin/sh -c 'if systemctl -q is-active hostapd@%i.service; then \
+                             echo "hostapd@%i.service already running, will not start wpa_supplicant@%i.service"; \
+                             exit 75; \
+                         fi'
 
 # SG-14607 - only rtl8xxxu is able to scan for APs reliably
 ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
@@ -38,5 +44,11 @@ ExecStart=/usr/sbin/wpa_supplicant -u -c/etc/wpa_supplicant/wpa_supplicant-%I.co
 Restart=on-failure
 RestartSec=5s
 
+# Limit number of starts to prevent infinite retry, mainly because ExecStartPre check that can let unit fail
+# when hostapd is running
+StartLimitInterval=30
+StartLimitBurst=3
+
 [Install]
 WantedBy=multi-user.target
+Alias=dbus-fi.w1.wpa_supplicant1@.service
