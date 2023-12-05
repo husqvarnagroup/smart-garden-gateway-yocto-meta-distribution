@@ -6,8 +6,10 @@
 /usr/bin/update-hw-revision
 /usr/bin/update-sw-versions
 
+update_url_query="?gwVersion=@DISTRO_VERSION_ID@"
+
 # Get update_url stored in U-Boot to allow using customized update servers
-update_url=$(fw_printenv -n update_url 2>/dev/null || echo @DISTRO_UPDATE_URL@?gwVersion=@DISTRO_VERSION_ID@)
+update_url=$(fw_printenv -n update_url 2>/dev/null || echo @DISTRO_UPDATE_URL@)
 
 # Get active bootslot
 #
@@ -43,6 +45,7 @@ if [ -f "$reboot_pending_file" ]; then
         exit
     fi
 fi
-swupdate -f /etc/swupdate.cfg -e stable,bootslot"${bootslot}" --download "-u ${update_url}"
+swupdate -f /etc/swupdate.cfg -e stable,bootslot"${bootslot}" \
+    --download "-u ${update_url}${update_url_query}"
 result=$?
 test $result -eq 0 && touch "$reboot_pending_file" || exit $result
