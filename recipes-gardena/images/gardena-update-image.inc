@@ -1,14 +1,14 @@
-IMAGE_FLAVOR = "${@'${PN}'[len('gardena-update-image-'):]}"
+IMAGE_ID = "${@'${PN}'[len('gardena-update-image-'):]}"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
-DESCRIPTION = "SWUpdate compound image for gardena-image-${IMAGE_FLAVOR}"
+DESCRIPTION = "SWUpdate compound image for gardena-image-${IMAGE_ID}"
 
 inherit swupdate deploy
 
 INC_PR = "r15"
 
 # Images to build before building swupdate image
-IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_FLAVOR}"
+IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_ID}"
 
 # Define U-Boot filename and version. This is only relevant when the "freshly"
 # built U-Boot binary should get used. See comment below this section.
@@ -18,7 +18,7 @@ UBOOT_VERSION = "${@d.getVar("PREFERRED_VERSION_u-boot", False).replace("-prebui
 UBOOT_VERSION = "XXX"
 # This is a workaround to allow multiple SWUpdate images having their "own"
 # copy of U-Boot.
-UBOOT_FILENAME_IN_DEPLOYDIR = "${@d.getVar('UBOOT_FILENAME').replace('.bin', '-' + d.getVar('IMAGE_FLAVOR') + '.bin')}"
+UBOOT_FILENAME_IN_DEPLOYDIR = "${@d.getVar('UBOOT_FILENAME').replace('.bin', '-' + d.getVar('IMAGE_ID') + '.bin')}"
 
 # Since we want the bootloaders binaries to be buit (just) once and only
 # updated when absolutely needed, keep them stable by using prebuilt binaries.
@@ -36,7 +36,7 @@ do_deploy() {
 addtask deploy before do_swuimage after do_unpack
 
 # Images and files that will be included in the .swu image
-SWUPDATE_IMAGES = "fitImage uEnv gardena-image-${IMAGE_FLAVOR} ${UBOOT_FILENAME_IN_DEPLOYDIR}"
+SWUPDATE_IMAGES = "fitImage uEnv gardena-image-${IMAGE_ID} ${UBOOT_FILENAME_IN_DEPLOYDIR}"
 
 # Configure file extensions of the images (potentially) used in SWUPDATE_IMAGES
 SWUPDATE_IMAGES_FSTYPES[fitImage] = ".bin"
