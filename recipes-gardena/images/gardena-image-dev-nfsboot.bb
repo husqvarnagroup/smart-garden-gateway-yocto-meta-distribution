@@ -20,6 +20,7 @@ IMAGE_INSTALL += " \
     mdns \
     openocd \
     openssl-bin \
+    os-release-dev-nfsboot \
     systemd \
 "
 

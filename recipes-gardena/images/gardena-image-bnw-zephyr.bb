@@ -12,6 +12,7 @@ IMAGE_INSTALL += " \
     lemonbeatd-zephyr \
     lwm2mserver \
     nngforward \
+    os-release-bnw-zephyr \
     ppp-network-zephyr \
     ssh-authorized-keys-prod \
     sshtunnel \

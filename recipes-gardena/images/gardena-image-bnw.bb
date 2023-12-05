@@ -12,6 +12,7 @@ IMAGE_INSTALL += " \
     lemonbeatd \
     lwm2mserver \
     nngforward \
+    os-release-bnw \
     ppp-network \
     ssh-authorized-keys-prod \
     sshtunnel \

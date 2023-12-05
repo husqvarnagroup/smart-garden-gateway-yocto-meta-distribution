@@ -22,7 +22,6 @@ IMAGE_INSTALL += " \
     mtd-utils-ubifs \
     nftables \
     openocd \
-    os-release \
     packagegroup-core-boot \
     ppp \
     reset-rm \
@@ -50,6 +49,7 @@ IMAGE_INSTALL += " \
     wpa-supplicant \
     wpa-supplicant-cli \
     zram-init \
+    virtual/os-release \
 "
 
 IMAGE_INSTALL:append:mt7688 += " \
