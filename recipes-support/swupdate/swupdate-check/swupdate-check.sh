@@ -8,6 +8,12 @@
 
 update_url_query="?gwVersion=@DISTRO_VERSION_ID@"
 
+# shellcheck source=/dev/null
+image_id=$( (. /etc/os-release; echo "$IMAGE_ID") || echo "")
+if [ "$image_id" ]; then
+    update_url_query="${update_url_query}&gwImageId=${image_id}"
+fi
+
 # Get update_url stored in U-Boot to allow using customized update servers
 update_url=$(fw_printenv -n update_url 2>/dev/null || echo @DISTRO_UPDATE_URL@)
 
