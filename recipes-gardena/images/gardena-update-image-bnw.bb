@@ -1,5 +1,4 @@
 require gardena-update-image.inc
-IMAGE_FLAVOR = "bnw"
 
 SRC_URI += "\
     file://sw-description \
