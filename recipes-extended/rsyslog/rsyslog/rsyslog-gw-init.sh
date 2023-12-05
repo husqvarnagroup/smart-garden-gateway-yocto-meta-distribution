@@ -17,7 +17,8 @@ VERSION=$( (. /etc/os-release; echo "$VERSION") || echo "")
 BOARD_NAME="$(fw_printenv -n board_name)"
 HW_REVISION="$(fw_printenv -n gateway_hardware_revision)"
 FEED="$( (fw_printenv -n update_url 2>/dev/null || true) | sed -nE 's/.*feeds\/(.*)\/images\/.*/\1/p')"
-UPDATE_IMAGE_TYPE="$( (fw_printenv -n update_url 2>/dev/null || true) | sed -nE 's/.*gardena-update-image-(.*)-gardena-sg-.*/\1/p')"
+# shellcheck source=/dev/null
+IMAGE_ID=$( (. /etc/os-release; echo "$IMAGE_ID") || echo "")
 case "${TENANT}" in
     sg-live|sg-staging)
         ENV="prod"
@@ -45,7 +46,7 @@ RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION="set \$!gw.swVersion = '${VERSIO
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME="set \$!gw.boardName = '${BOARD_NAME}';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION="set \$!gw.hwRevision = '${HW_REVISION}';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_FEED="set \$!gw.feed = '${FEED}';"
-RSYSLOG_METADATA_CONFIG_FILE_CONTENT_UPDATE_IMAGE_TYPE="set \$!gw.updateImageType = '${UPDATE_IMAGE_TYPE}';"
+RSYSLOG_METADATA_CONFIG_FILE_CONTENT_IMAGE_ID="set \$!gw.imageId = '${IMAGE_ID}';"
 
 if ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_TENANT}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
@@ -53,7 +54,7 @@ if ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"$ "${RSYSLOG_METADATA
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
    ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_FEED}"$ "${RSYSLOG_METADATA_CONFIG_FILE}" || \
-   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_UPDATE_IMAGE_TYPE}"$ "${RSYSLOG_METADATA_CONFIG_FILE}"; then
+   ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_IMAGE_ID}"$ "${RSYSLOG_METADATA_CONFIG_FILE}"; then
     {
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_TENANT}"
@@ -61,7 +62,7 @@ if ! grep -q ^"${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV}"$ "${RSYSLOG_METADATA
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME}"
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION}"
       echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_FEED}"
-      echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_UPDATE_IMAGE_TYPE}"
+      echo "${RSYSLOG_METADATA_CONFIG_FILE_CONTENT_IMAGE_ID}"
     } > "${RSYSLOG_METADATA_CONFIG_FILE}"
 fi
 

@@ -1,9 +1,13 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".25"
+PR:append = ".26"
 
 DEPENDS += "openssl"
-RDEPENDS:${PN} += "ca-certificates environment"
+RDEPENDS:${PN} += " \
+    ca-certificates \
+    environment \
+    virtual/os-release \
+"
 
 SRC_URI += "\
     file://husqvarna-gateway-remote-logging.crt \
