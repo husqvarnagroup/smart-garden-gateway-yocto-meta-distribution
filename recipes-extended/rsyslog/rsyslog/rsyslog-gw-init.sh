@@ -6,6 +6,7 @@
 # Running on reach start up ensures that environment changes are reflected
 # properly.
 
+# shellcheck shell=dash
 set -eu -o pipefail
 
 RSYSLOG_CONFIG_DIR='/etc/rsyslog.d'
