@@ -12,6 +12,8 @@ set -eu -o pipefail
 RSYSLOG_CONFIG_DIR='/etc/rsyslog.d'
 TENANT="$(fw_printenv -n "bnw_cloud_tenant" 2>/dev/null || echo sg-live)"
 GATEWAY_ID="$(fw_printenv -n gatewayid)"
+# shellcheck source=/dev/null
+VERSION=$( (. /etc/os-release; echo "$VERSION") || echo "")
 BOARD_NAME="$(fw_printenv -n board_name)"
 HW_REVISION="$(fw_printenv -n gateway_hardware_revision)"
 FEED="$( (fw_printenv -n update_url 2>/dev/null || true) | sed -nE 's/.*feeds\/(.*)\/images\/.*/\1/p')"
@@ -39,8 +41,7 @@ RSYSLOG_METADATA_CONFIG_FILE="${RSYSLOG_CONFIG_DIR}/02-gateway-metadata.conf"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_ENV="set \$!gw.env = '${ENV}';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_TENANT="set \$!gw.tenant = '${TENANT}';"
 
-# shellcheck disable=SC1091
-RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION="set \$!gw.swVersion = '$(. /etc/os-release; echo "$VERSION")';"
+RSYSLOG_METADATA_CONFIG_FILE_CONTENT_SW_VERSION="set \$!gw.swVersion = '${VERSION}';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_BOARD_NAME="set \$!gw.boardName = '${BOARD_NAME}';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_HW_REVISION="set \$!gw.hwRevision = '${HW_REVISION}';"
 RSYSLOG_METADATA_CONFIG_FILE_CONTENT_FEED="set \$!gw.feed = '${FEED}';"
