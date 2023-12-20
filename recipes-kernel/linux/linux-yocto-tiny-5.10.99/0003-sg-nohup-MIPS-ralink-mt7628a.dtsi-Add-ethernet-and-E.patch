@@ -1,0 +1,53 @@
+From d05c91e9ae905df78b5035feb76d3f220de7439c Mon Sep 17 00:00:00 2001
+From: Stefan Roese <sr@denx.de>
+Date: Thu, 23 May 2019 13:28:46 +0200
+Subject: [PATCH] [sg nohup] MIPS: ralink: mt7628a.dtsi: Add ethernet and ESW
+ nodes
+
+We can not upstream this because there is no DSA switch driver yet in
+mainline.
+
+Signed-off-by: Stefan Roese <sr@denx.de>
+---
+ arch/mips/boot/dts/ralink/mt7628a.dtsi | 27 ++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/arch/mips/boot/dts/ralink/mt7628a.dtsi b/arch/mips/boot/dts/ralink/mt7628a.dtsi
+index 892e8ab863c5..affba1859fb7 100644
+--- a/arch/mips/boot/dts/ralink/mt7628a.dtsi
++++ b/arch/mips/boot/dts/ralink/mt7628a.dtsi
+@@ -295,4 +295,31 @@ wmac: wmac@10300000 {
+ 
+ 		status = "disabled";
+ 	};
++
++	ethernet: ethernet@10100000 {
++		compatible = "ralink,rt5350-eth";
++		reg = <0x10100000 0x10000>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		interrupt-parent = <&cpuintc>;
++		interrupts = <5>;
++
++		resets = <&resetc 21>;
++		reset-names = "fe";
++
++		status = "disabled";
++	};
++
++	esw: esw@10110000 {
++		compatible = "ralink,rt3050-esw";
++		reg = <0x10110000 0x8000>;
++
++		resets = <&resetc 23>;
++		reset-names = "esw";
++
++		interrupt-parent = <&intc>;
++		interrupts = <17>;
++	};
+ };
+-- 
+2.30.2
+

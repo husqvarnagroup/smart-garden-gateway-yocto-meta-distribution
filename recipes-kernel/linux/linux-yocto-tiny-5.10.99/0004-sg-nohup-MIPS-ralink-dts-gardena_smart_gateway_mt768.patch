@@ -1,0 +1,58 @@
+From 1cb286aad3a2fb823fd76d3ffc951609891c821e Mon Sep 17 00:00:00 2001
+From: Stefan Roese <sr@denx.de>
+Date: Thu, 23 May 2019 13:39:16 +0200
+Subject: [PATCH] [sg nohup] MIPS: ralink: dts: gardena_smart_gateway_mt7688:
+ Add ethernet and ESW DT nodes
+
+We can not upstream this because there is no DSA switch driver yet in
+mainline.
+
+Signed-off-by: Stefan Roese <sr@denx.de>
+---
+ .../boot/dts/ralink/gardena_smart_gateway_mt7688.dts     | 9 +++++++++
+ arch/mips/boot/dts/ralink/mt7628a.dtsi                   | 2 ++
+ 2 files changed, 11 insertions(+)
+
+diff --git a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
+index 6069b33cf09f..8569d89e4e5a 100644
+--- a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
++++ b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
+@@ -116,6 +116,7 @@ ethernet_activity {
+ 
+ 	aliases {
+ 		serial0 = &uart0;
++		ethernet0 = &ethernet;
+ 	};
+ };
+ 
+@@ -171,6 +172,14 @@ nand_flash@1 {
+ 	};
+ };
+ 
++&ethernet {
++	status = "okay";
++};
++
++&esw {
++	status = "okay";
++};
++
+ &uart1 {
+ 	status = "okay";
+ 
+diff --git a/arch/mips/boot/dts/ralink/mt7628a.dtsi b/arch/mips/boot/dts/ralink/mt7628a.dtsi
+index affba1859fb7..2b9efb1f9adf 100644
+--- a/arch/mips/boot/dts/ralink/mt7628a.dtsi
++++ b/arch/mips/boot/dts/ralink/mt7628a.dtsi
+@@ -310,6 +310,8 @@ ethernet: ethernet@10100000 {
+ 		reset-names = "fe";
+ 
+ 		status = "disabled";
++
++		mediatek,switch = <&esw>;
+ 	};
+ 
+ 	esw: esw@10110000 {
+-- 
+2.30.2
+

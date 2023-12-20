@@ -1,0 +1,42 @@
+From 51bb253b315bef3fca2c38078ebf6ff658f0e178 Mon Sep 17 00:00:00 2001
+From: Stefan Roese <sr@denx.de>
+Date: Sat, 22 Dec 2018 11:26:46 +0100
+Subject: [PATCH] [sg temphack] tty/serial/8250: Call serial8250_enable_ms()
+ from serial8250_config_port()
+
+This hack can be used to verify the HW handshake on the Gardena smart
+gateway. First testing has shown than linux-serial-test now runs fine
+with 115200 baud:
+
+mt7688:~# ./flow-test-115200.sh
+Linux serial test app
+Error setting RS-232 mode: Inappropriate ioctl for device
+/dev/ttyS1: count for this session: rx=23168, tx=27151, rx err=0
+/dev/ttyS1: TIOCGICOUNT: ret=0, rx=2306112, tx=2306128, frame = 0, overrun = 0, parity = 0, brk = 0, buf_overrun = 0
+...
+dev/ttyS1: count for this session: rx=2785344, tx=2791967, rx err=0
+/dev/ttyS1: TIOCGICOUNT: ret=0, rx=5069312, tx=5069328, frame = 0, overrun = 0, parity = 0, brk = 0, buf_overrun = 0
+/dev/ttyS1: count for this session: rx=2809440, tx=2815007, rx err=0
+/dev/ttyS1: TIOCGICOUNT: ret=0, rx=5093840, tx=5093872, frame = 0, overrun = 0, parity = 0, brk = 0, buf_overrun = 0
+^C
+
+Signed-off-by: Stefan Roese <sr@denx.de>
+---
+ drivers/tty/serial/8250/8250_port.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 6e141429c980..fb3fb8fc0cd5 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -3159,6 +3159,7 @@ static void serial8250_config_port(struct uart_port *port, int flags)
+ 
+ 	register_dev_spec_attr_grp(up);
+ 	up->fcr = uart_config[up->port.type].fcr;
++	serial8250_enable_ms(port); // test-only
+ }
+ 
+ static int
+-- 
+2.30.2
+

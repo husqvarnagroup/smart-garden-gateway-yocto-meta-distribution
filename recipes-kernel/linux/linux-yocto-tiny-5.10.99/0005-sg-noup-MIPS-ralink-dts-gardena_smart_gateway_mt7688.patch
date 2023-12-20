@@ -1,0 +1,46 @@
+From 03ea85d6e6b88e0a829dfcd60fee4c3c87d8467b Mon Sep 17 00:00:00 2001
+From: Stefan Roese <sr@denx.de>
+Date: Tue, 18 Dec 2018 09:26:32 +0100
+Subject: [PATCH] [sg noup] MIPS: ralink: dts: gardena_smart_gateway_mt7688:
+ Add bootcounter DT node
+
+Add the U-Boot bootcounter DT node, so that the driver can register on
+it.
+
+Signed-off-by: Stefan Roese <sr@denx.de>
+---
+ arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts | 7 +++++++
+ arch/mips/boot/dts/ralink/mt7628a.dtsi                     | 2 +-
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
+index 8569d89e4e5a..9e1587f1e991 100644
+--- a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
++++ b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
+@@ -212,3 +212,10 @@ &wmac {
+ 	status = "okay";
+ 	mediatek,mtd-eeprom = <&factory 0x0000>;
+ };
++
++&palmbus {
++	bootcount@0x6c {
++		compatible = "uboot,bootcount";
++		reg = <0x0000006c 0x4>;
++	};
++};
+diff --git a/arch/mips/boot/dts/ralink/mt7628a.dtsi b/arch/mips/boot/dts/ralink/mt7628a.dtsi
+index 2b9efb1f9adf..e5a1ba8a6a0a 100644
+--- a/arch/mips/boot/dts/ralink/mt7628a.dtsi
++++ b/arch/mips/boot/dts/ralink/mt7628a.dtsi
+@@ -28,7 +28,7 @@ cpuintc: interrupt-controller {
+ 		compatible = "mti,cpu-interrupt-controller";
+ 	};
+ 
+-	palmbus@10000000 {
++	palmbus: palmbus@10000000 {
+ 		compatible = "palmbus";
+ 		reg = <0x10000000 0x200000>;
+ 		ranges = <0x0 0x10000000 0x1FFFFF>;
+-- 
+2.30.2
+

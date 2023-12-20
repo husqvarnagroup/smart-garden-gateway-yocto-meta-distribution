@@ -1,0 +1,158 @@
+From 4994363016994f3360b6c5fefa53294f7350d34b Mon Sep 17 00:00:00 2001
+From: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Date: Mon, 17 Dec 2018 11:12:49 +0100
+Subject: [PATCH] [sg noup] net: ethernet: ralink: rt3050: fix carrier
+
+Change by Stefan Roese:
+DEFER in mtk_eth_soc.c removed as it does not seem to be necessary.
+---
+ drivers/net/ethernet/ralink/esw_rt3050.c | 58 +++++++++++++++++++-----
+ drivers/net/ethernet/ralink/esw_rt3050.h |  4 ++
+ drivers/net/ethernet/ralink/soc_rt3050.c |  2 +
+ 3 files changed, 52 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/ralink/esw_rt3050.c b/drivers/net/ethernet/ralink/esw_rt3050.c
+index 292f11a1700e..9f50f1d2f6b0 100644
+--- a/drivers/net/ethernet/ralink/esw_rt3050.c
++++ b/drivers/net/ethernet/ralink/esw_rt3050.c
+@@ -18,6 +18,7 @@
+ #include <linux/platform_device.h>
+ #include <asm/mach-ralink/ralink_regs.h>
+ #include <linux/of_irq.h>
++#include <linux/of_device.h>
+ 
+ #include <linux/switch.h>
+ 
+@@ -711,9 +712,10 @@ static void esw_hw_init(struct rt305x_esw *esw)
+ 	esw_w32(esw, ~RT305X_ESW_PORT_ST_CHG, RT305X_ESW_REG_IMR);
+ }
+ 
+-static irqreturn_t esw_interrupt(int irq, void *_esw)
++static irqreturn_t esw_interrupt(int irq, void *_priv)
+ {
+-	struct rt305x_esw *esw = (struct rt305x_esw *)_esw;
++	struct fe_priv *priv = (struct fe_priv *)_priv;
++	struct rt305x_esw *esw = (struct rt305x_esw *)priv->soc->swpriv;
+ 	u32 status;
+ 
+ 	status = esw_r32(esw, RT305X_ESW_REG_ISR);
+@@ -723,6 +725,11 @@ static irqreturn_t esw_interrupt(int irq, void *_esw)
+ 		link >>= RT305X_ESW_POA_LINK_SHIFT;
+ 		link &= RT305X_ESW_POA_LINK_MASK;
+ 		dev_info(esw->dev, "link changed 0x%02X\n", link);
++
++		if (link)
++			netif_carrier_on(priv->netdev);
++		else
++			netif_carrier_off(priv->netdev);
+ 	}
+ 	esw_w32(esw, status, RT305X_ESW_REG_ISR);
+ 
+@@ -1404,10 +1411,9 @@ static int esw_probe(struct platform_device *pdev)
+ 
+ 	spin_lock_init(&esw->reg_rw_lock);
+ 
+-	esw_hw_init(esw);
+-
+ 	reg_init = of_get_property(np, "ralink,rgmii", NULL);
+ 	if (reg_init && be32_to_cpu(*reg_init) == 1) {
++		esw_hw_init(esw);
+ 		/* 
+ 		 * External switch connected to RGMII interface. 
+ 		 * Unregister the switch device after initialization. 
+@@ -1418,14 +1424,6 @@ static int esw_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 	}
+ 
+-	ret = devm_request_irq(&pdev->dev, esw->irq, esw_interrupt, 0, "esw",
+-			       esw);
+-
+-	if (!ret) {
+-		esw_w32(esw, RT305X_ESW_PORT_ST_CHG, RT305X_ESW_REG_ISR);
+-		esw_w32(esw, ~RT305X_ESW_PORT_ST_CHG, RT305X_ESW_REG_IMR);
+-	}
+-
+ 	return ret;
+ }
+ 
+@@ -1457,6 +1455,42 @@ static struct platform_driver esw_driver = {
+ 	},
+ };
+ 
++int rt5350_switch_init(struct fe_priv *priv)
++{
++	struct device_node *np = priv->switch_np;
++	struct platform_device *pdev = of_find_device_by_node(np);
++	struct rt305x_esw *esw;
++
++	if (!pdev)
++		return -ENODEV;
++
++	if (!of_device_is_compatible(np, ralink_esw_match->compatible))
++		return -EINVAL;
++
++	esw = platform_get_drvdata(pdev);
++	if (!esw)
++		return -EINVAL;
++
++	priv->soc->swpriv = esw;
++
++	esw_hw_init(esw);
++
++	if (esw->irq) {
++		int ret;
++
++		ret = request_irq(esw->irq, esw_interrupt, 0, "esw", priv);
++		if (ret) {
++			dev_err(esw->dev, "Error requesting IRQ\n");
++			return -ENODEV;
++		}
++
++		esw_w32(esw, RT305X_ESW_PORT_ST_CHG, RT305X_ESW_REG_ISR);
++		esw_w32(esw, ~RT305X_ESW_PORT_ST_CHG, RT305X_ESW_REG_IMR);
++	}
++
++	return 0;
++}
++
+ module_platform_driver(esw_driver);
+ 
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/net/ethernet/ralink/esw_rt3050.h b/drivers/net/ethernet/ralink/esw_rt3050.h
+index bbc8fbd52a40..3ec37eeef9c0 100644
+--- a/drivers/net/ethernet/ralink/esw_rt3050.h
++++ b/drivers/net/ethernet/ralink/esw_rt3050.h
+@@ -15,6 +15,10 @@
+ #ifndef _RALINK_ESW_RT3052_H__
+ #define _RALINK_ESW_RT3052_H__
+ 
++#include "mtk_eth_soc.h"
++
++int rt5350_switch_init(struct fe_priv *priv);
++
+ #ifdef CONFIG_NET_RALINK_ESW_RT3052
+ 
+ int __init mtk_switch_init(void);
+diff --git a/drivers/net/ethernet/ralink/soc_rt3050.c b/drivers/net/ethernet/ralink/soc_rt3050.c
+index 914b81410e5c..54238065135d 100644
+--- a/drivers/net/ethernet/ralink/soc_rt3050.c
++++ b/drivers/net/ethernet/ralink/soc_rt3050.c
+@@ -16,6 +16,7 @@
+ 
+ #include <asm/mach-ralink/ralink_regs.h>
+ 
++#include "esw_rt3050.h"
+ #include "mtk_eth_soc.h"
+ #include "mdio_rt2880.h"
+ 
+@@ -143,6 +144,7 @@ static struct fe_soc_data rt5350_data = {
+ 	.set_mac = rt5350_set_mac,
+ 	.fwd_config = rt5350_fwd_config,
+ 	.tx_dma = rt5350_tx_dma,
++	.switch_init = rt5350_switch_init,
+ 	.pdma_glo_cfg = FE_PDMA_SIZE_8DWORDS,
+ 	.checksum_bit = RX_DMA_L4VALID,
+ 	.rx_int = RT5350_RX_DONE_INT,
+-- 
+2.30.2
+

@@ -1,0 +1,46 @@
+From 8360aa2589c15420574b2453f8d137352a9539fd Mon Sep 17 00:00:00 2001
+From: Felix Fietkau <nbd@nbd.name>
+Date: Fri, 7 Jul 2017 17:24:23 +0200
+Subject: [PATCH] [sg noup] net: swconfig: adds openwrt switch layer
+
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+ drivers/net/phy/Kconfig  | 8 ++++++++
+ drivers/net/phy/Makefile | 2 ++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 698bea312adc..b2b68c874c39 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -61,6 +61,14 @@ config SFP
+ 	depends on HWMON || HWMON=n
+ 	select MDIO_I2C
+ 
++comment "Switch configuration API + drivers"
++
++config SWCONFIG
++	tristate "Switch configuration API"
++	help
++	  Switch configuration API using netlink. This allows
++	  you to configure the VLAN features of certain switches.
++
+ comment "MII PHY device drivers"
+ 
+ config AMD_PHY
+diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+index a13e402074cf..0d3ef0dd0ce4 100644
+--- a/drivers/net/phy/Makefile
++++ b/drivers/net/phy/Makefile
+@@ -24,6 +24,8 @@ libphy-$(CONFIG_LED_TRIGGER_PHY)	+= phy_led_triggers.o
+ obj-$(CONFIG_PHYLINK)		+= phylink.o
+ obj-$(CONFIG_PHYLIB)		+= libphy.o
+ 
++obj-$(CONFIG_SWCONFIG)		+= swconfig.o
++
+ obj-$(CONFIG_NETWORK_PHY_TIMESTAMPING) += mii_timestamper.o
+ 
+ obj-$(CONFIG_SFP)		+= sfp.o
+-- 
+2.30.2
+

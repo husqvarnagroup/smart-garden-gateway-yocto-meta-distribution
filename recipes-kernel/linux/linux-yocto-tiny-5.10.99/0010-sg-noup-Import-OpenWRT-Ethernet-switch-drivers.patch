@@ -1,0 +1,7032 @@
+From 3c41114be987e6f89c1f2ac833f844383eb3a4a1 Mon Sep 17 00:00:00 2001
+From: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Date: Wed, 16 Jun 2021 10:10:45 +0200
+Subject: [PATCH] [sg noup] Import OpenWRT Ethernet switch drivers
+
+Repo: git://git.openwrt.org/openwrt/openwrt.git
+Commit: b118aba8cbac58a45d4882cd79e18e56c3fbdc70
+Subdirectories:
+ - target/linux/generic/files
+ - target/linux/ramips/files
+---
+ drivers/net/ethernet/Kconfig              |    1 +
+ drivers/net/ethernet/Makefile             |    1 +
+ drivers/net/ethernet/ralink/Kconfig       |   58 +
+ drivers/net/ethernet/ralink/Makefile      |   18 +
+ drivers/net/ethernet/ralink/esw_rt3050.c  | 1465 ++++++++++++++++++
+ drivers/net/ethernet/ralink/esw_rt3050.h  |   29 +
+ drivers/net/ethernet/ralink/ethtool.c     |  230 +++
+ drivers/net/ethernet/ralink/ethtool.h     |   22 +
+ drivers/net/ethernet/ralink/mdio.c        |  279 ++++
+ drivers/net/ethernet/ralink/mdio.h        |   28 +
+ drivers/net/ethernet/ralink/mdio_rt2880.c |  230 +++
+ drivers/net/ethernet/ralink/mdio_rt2880.h |   23 +
+ drivers/net/ethernet/ralink/mtk_eth_soc.c | 1696 +++++++++++++++++++++
+ drivers/net/ethernet/ralink/mtk_eth_soc.h |  523 +++++++
+ drivers/net/ethernet/ralink/soc_rt3050.c  |  158 ++
+ drivers/net/phy/swconfig.c                | 1242 +++++++++++++++
+ drivers/net/phy/swconfig_leds.c           |  555 +++++++
+ include/linux/switch.h                    |  179 +++
+ include/uapi/linux/switch.h               |  119 ++
+ 19 files changed, 6856 insertions(+)
+ create mode 100644 drivers/net/ethernet/ralink/Kconfig
+ create mode 100644 drivers/net/ethernet/ralink/Makefile
+ create mode 100644 drivers/net/ethernet/ralink/esw_rt3050.c
+ create mode 100644 drivers/net/ethernet/ralink/esw_rt3050.h
+ create mode 100644 drivers/net/ethernet/ralink/ethtool.c
+ create mode 100644 drivers/net/ethernet/ralink/ethtool.h
+ create mode 100644 drivers/net/ethernet/ralink/mdio.c
+ create mode 100644 drivers/net/ethernet/ralink/mdio.h
+ create mode 100644 drivers/net/ethernet/ralink/mdio_rt2880.c
+ create mode 100644 drivers/net/ethernet/ralink/mdio_rt2880.h
+ create mode 100644 drivers/net/ethernet/ralink/mtk_eth_soc.c
+ create mode 100644 drivers/net/ethernet/ralink/mtk_eth_soc.h
+ create mode 100644 drivers/net/ethernet/ralink/soc_rt3050.c
+ create mode 100644 drivers/net/phy/swconfig.c
+ create mode 100644 drivers/net/phy/swconfig_leds.c
+ create mode 100644 include/linux/switch.h
+ create mode 100644 include/uapi/linux/switch.h
+
+diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
+index de50e8b9e656..69677bb3bc2e 100644
+--- a/drivers/net/ethernet/Kconfig
++++ b/drivers/net/ethernet/Kconfig
+@@ -159,6 +159,7 @@ source "drivers/net/ethernet/pensando/Kconfig"
+ source "drivers/net/ethernet/qlogic/Kconfig"
+ source "drivers/net/ethernet/qualcomm/Kconfig"
+ source "drivers/net/ethernet/rdc/Kconfig"
++source "drivers/net/ethernet/ralink/Kconfig"
+ source "drivers/net/ethernet/realtek/Kconfig"
+ source "drivers/net/ethernet/renesas/Kconfig"
+ source "drivers/net/ethernet/rocker/Kconfig"
+diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
+index f8f38dcb5f8a..4899e1e2df40 100644
+--- a/drivers/net/ethernet/Makefile
++++ b/drivers/net/ethernet/Makefile
+@@ -71,6 +71,7 @@ obj-$(CONFIG_NET_VENDOR_PACKET_ENGINES) += packetengines/
+ obj-$(CONFIG_NET_VENDOR_PASEMI) += pasemi/
+ obj-$(CONFIG_NET_VENDOR_QLOGIC) += qlogic/
+ obj-$(CONFIG_NET_VENDOR_QUALCOMM) += qualcomm/
++obj-$(CONFIG_NET_VENDOR_RALINK) += ralink/
+ obj-$(CONFIG_NET_VENDOR_REALTEK) += realtek/
+ obj-$(CONFIG_NET_VENDOR_RENESAS) += renesas/
+ obj-$(CONFIG_NET_VENDOR_RDC) += rdc/
+diff --git a/drivers/net/ethernet/ralink/Kconfig b/drivers/net/ethernet/ralink/Kconfig
+new file mode 100644
+index 000000000000..26e5e6d73ed9
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/Kconfig
+@@ -0,0 +1,58 @@
++config NET_VENDOR_RALINK
++	tristate "Ralink ethernet driver"
++	depends on RALINK
++	help
++	  This driver supports the ethernet mac inside Ralink WiSoCs
++
++config NET_RALINK_SOC
++	def_tristate NET_VENDOR_RALINK
++
++if NET_RALINK_SOC
++choice
++	prompt "MAC type"
++
++config NET_RALINK_RT2880
++	bool "RT2882"
++	depends on MIPS && SOC_RT288X
++
++config NET_RALINK_RT3050
++	bool "RT3050/MT7628"
++	depends on MIPS && (SOC_RT305X || SOC_MT7620)
++
++config NET_RALINK_RT3883
++	bool "RT3883"
++	depends on MIPS && SOC_RT3883
++
++config NET_RALINK_MT7620
++	bool "MT7620"
++	depends on MIPS && SOC_MT7620
++
++endchoice
++
++config NET_RALINK_HW_QOS
++	def_bool NET_RALINK_SOC
++	depends on NET_RALINK_MT7623
++
++config NET_RALINK_MDIO
++	def_bool NET_RALINK_SOC
++	depends on (NET_RALINK_RT2880 || NET_RALINK_RT3883 || NET_RALINK_MT7620)
++	select PHYLIB
++
++config NET_RALINK_MDIO_RT2880
++	def_bool NET_RALINK_SOC
++	depends on (NET_RALINK_RT2880 || NET_RALINK_RT3883)
++	select NET_RALINK_MDIO
++
++config NET_RALINK_MDIO_MT7620
++	def_bool NET_RALINK_SOC
++	depends on NET_RALINK_MT7620
++	select NET_RALINK_MDIO
++
++config NET_RALINK_ESW_RT3050
++	def_tristate NET_RALINK_SOC
++	depends on NET_RALINK_RT3050
++
++config NET_RALINK_GSW_MT7620
++	def_tristate NET_RALINK_SOC
++	depends on NET_RALINK_MT7620
++endif
+diff --git a/drivers/net/ethernet/ralink/Makefile b/drivers/net/ethernet/ralink/Makefile
+new file mode 100644
+index 000000000000..79d2dbfef95d
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/Makefile
+@@ -0,0 +1,18 @@
++#
++# Makefile for the Ralink SoCs built-in ethernet macs
++#
++
++ralink-eth-y					+= mtk_eth_soc.o ethtool.o
++
++ralink-eth-$(CONFIG_NET_RALINK_MDIO)		+= mdio.o
++ralink-eth-$(CONFIG_NET_RALINK_MDIO_RT2880)	+= mdio_rt2880.o
++ralink-eth-$(CONFIG_NET_RALINK_MDIO_MT7620)	+= mdio_mt7620.o
++
++ralink-eth-$(CONFIG_NET_RALINK_RT2880)	+= soc_rt2880.o
++ralink-eth-$(CONFIG_NET_RALINK_RT3050)	+= soc_rt3050.o
++ralink-eth-$(CONFIG_NET_RALINK_RT3883)	+= soc_rt3883.o
++ralink-eth-$(CONFIG_NET_RALINK_MT7620)	+= soc_mt7620.o
++
++obj-$(CONFIG_NET_RALINK_ESW_RT3050)		+= esw_rt3050.o
++obj-$(CONFIG_NET_RALINK_GSW_MT7620)		+= gsw_mt7620.o mt7530.o
++obj-$(CONFIG_NET_RALINK_SOC)			+= ralink-eth.o
+diff --git a/drivers/net/ethernet/ralink/esw_rt3050.c b/drivers/net/ethernet/ralink/esw_rt3050.c
+new file mode 100644
+index 000000000000..292f11a1700e
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/esw_rt3050.c
+@@ -0,0 +1,1465 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ *   Copyright (C) 2016 Vittorio Gambaletta <openwrt@vittgam.net>
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/platform_device.h>
++#include <asm/mach-ralink/ralink_regs.h>
++#include <linux/of_irq.h>
++
++#include <linux/switch.h>
++
++#include "mtk_eth_soc.h"
++
++/* HW limitations for this switch:
++ * - No large frame support (PKT_MAX_LEN at most 1536)
++ * - Can't have untagged vlan and tagged vlan on one port at the same time,
++ *   though this might be possible using the undocumented PPE.
++ */
++
++#define RT305X_ESW_REG_ISR		0x00
++#define RT305X_ESW_REG_IMR		0x04
++#define RT305X_ESW_REG_FCT0		0x08
++#define RT305X_ESW_REG_PFC1		0x14
++#define RT305X_ESW_REG_ATS		0x24
++#define RT305X_ESW_REG_ATS0		0x28
++#define RT305X_ESW_REG_ATS1		0x2c
++#define RT305X_ESW_REG_ATS2		0x30
++#define RT305X_ESW_REG_PVIDC(_n)	(0x40 + 4 * (_n))
++#define RT305X_ESW_REG_VLANI(_n)	(0x50 + 4 * (_n))
++#define RT305X_ESW_REG_VMSC(_n)		(0x70 + 4 * (_n))
++#define RT305X_ESW_REG_POA		0x80
++#define RT305X_ESW_REG_FPA		0x84
++#define RT305X_ESW_REG_SOCPC		0x8c
++#define RT305X_ESW_REG_POC0		0x90
++#define RT305X_ESW_REG_POC1		0x94
++#define RT305X_ESW_REG_POC2		0x98
++#define RT305X_ESW_REG_SGC		0x9c
++#define RT305X_ESW_REG_STRT		0xa0
++#define RT305X_ESW_REG_PCR0		0xc0
++#define RT305X_ESW_REG_PCR1		0xc4
++#define RT305X_ESW_REG_FPA2		0xc8
++#define RT305X_ESW_REG_FCT2		0xcc
++#define RT305X_ESW_REG_SGC2		0xe4
++#define RT305X_ESW_REG_P0LED		0xa4
++#define RT305X_ESW_REG_P1LED		0xa8
++#define RT305X_ESW_REG_P2LED		0xac
++#define RT305X_ESW_REG_P3LED		0xb0
++#define RT305X_ESW_REG_P4LED		0xb4
++#define RT305X_ESW_REG_PXPC(_x)		(0xe8 + (4 * _x))
++#define RT305X_ESW_REG_P1PC		0xec
++#define RT305X_ESW_REG_P2PC		0xf0
++#define RT305X_ESW_REG_P3PC		0xf4
++#define RT305X_ESW_REG_P4PC		0xf8
++#define RT305X_ESW_REG_P5PC		0xfc
++
++#define RT305X_ESW_LED_LINK		0
++#define RT305X_ESW_LED_100M		1
++#define RT305X_ESW_LED_DUPLEX		2
++#define RT305X_ESW_LED_ACTIVITY		3
++#define RT305X_ESW_LED_COLLISION	4
++#define RT305X_ESW_LED_LINKACT		5
++#define RT305X_ESW_LED_DUPLCOLL		6
++#define RT305X_ESW_LED_10MACT		7
++#define RT305X_ESW_LED_100MACT		8
++/* Additional led states not in datasheet: */
++#define RT305X_ESW_LED_BLINK		10
++#define RT305X_ESW_LED_ON		12
++
++#define RT305X_ESW_LINK_S		25
++#define RT305X_ESW_DUPLEX_S		9
++#define RT305X_ESW_SPD_S		0
++
++#define RT305X_ESW_PCR0_WT_NWAY_DATA_S	16
++#define RT305X_ESW_PCR0_WT_PHY_CMD	BIT(13)
++#define RT305X_ESW_PCR0_CPU_PHY_REG_S	8
++
++#define RT305X_ESW_PCR1_WT_DONE		BIT(0)
++
++#define RT305X_ESW_ATS_TIMEOUT		(5 * HZ)
++#define RT305X_ESW_PHY_TIMEOUT		(5 * HZ)
++
++#define RT305X_ESW_PVIDC_PVID_M		0xfff
++#define RT305X_ESW_PVIDC_PVID_S		12
++
++#define RT305X_ESW_VLANI_VID_M		0xfff
++#define RT305X_ESW_VLANI_VID_S		12
++
++#define RT305X_ESW_VMSC_MSC_M		0xff
++#define RT305X_ESW_VMSC_MSC_S		8
++
++#define RT305X_ESW_SOCPC_DISUN2CPU_S	0
++#define RT305X_ESW_SOCPC_DISMC2CPU_S	8
++#define RT305X_ESW_SOCPC_DISBC2CPU_S	16
++#define RT305X_ESW_SOCPC_CRC_PADDING	BIT(25)
++
++#define RT305X_ESW_POC0_EN_BP_S		0
++#define RT305X_ESW_POC0_EN_FC_S		8
++#define RT305X_ESW_POC0_DIS_RMC2CPU_S	16
++#define RT305X_ESW_POC0_DIS_PORT_M	0x7f
++#define RT305X_ESW_POC0_DIS_PORT_S	23
++
++#define RT305X_ESW_POC2_UNTAG_EN_M	0xff
++#define RT305X_ESW_POC2_UNTAG_EN_S	0
++#define RT305X_ESW_POC2_ENAGING_S	8
++#define RT305X_ESW_POC2_DIS_UC_PAUSE_S	16
++
++#define RT305X_ESW_SGC2_DOUBLE_TAG_M	0x7f
++#define RT305X_ESW_SGC2_DOUBLE_TAG_S	0
++#define RT305X_ESW_SGC2_LAN_PMAP_M	0x3f
++#define RT305X_ESW_SGC2_LAN_PMAP_S	24
++
++#define RT305X_ESW_PFC1_EN_VLAN_M	0xff
++#define RT305X_ESW_PFC1_EN_VLAN_S	16
++#define RT305X_ESW_PFC1_EN_TOS_S	24
++
++#define RT305X_ESW_VLAN_NONE		0xfff
++
++#define RT305X_ESW_GSC_BC_STROM_MASK	0x3
++#define RT305X_ESW_GSC_BC_STROM_SHIFT	4
++
++#define RT305X_ESW_GSC_LED_FREQ_MASK	0x3
++#define RT305X_ESW_GSC_LED_FREQ_SHIFT	23
++
++#define RT305X_ESW_POA_LINK_MASK	0x1f
++#define RT305X_ESW_POA_LINK_SHIFT	25
++
++#define RT305X_ESW_PORT_ST_CHG		BIT(26)
++#define RT305X_ESW_PORT0		0
++#define RT305X_ESW_PORT1		1
++#define RT305X_ESW_PORT2		2
++#define RT305X_ESW_PORT3		3
++#define RT305X_ESW_PORT4		4
++#define RT305X_ESW_PORT5		5
++#define RT305X_ESW_PORT6		6
++
++#define RT305X_ESW_PORTS_NONE		0
++
++#define RT305X_ESW_PMAP_LLLLLL		0x3f
++#define RT305X_ESW_PMAP_LLLLWL		0x2f
++#define RT305X_ESW_PMAP_WLLLLL		0x3e
++
++#define RT305X_ESW_PORTS_INTERNAL					\
++		(BIT(RT305X_ESW_PORT0) | BIT(RT305X_ESW_PORT1) |	\
++		 BIT(RT305X_ESW_PORT2) | BIT(RT305X_ESW_PORT3) |	\
++		 BIT(RT305X_ESW_PORT4))
++
++#define RT305X_ESW_PORTS_NOCPU						\
++		(RT305X_ESW_PORTS_INTERNAL | BIT(RT305X_ESW_PORT5))
++
++#define RT305X_ESW_PORTS_CPU	BIT(RT305X_ESW_PORT6)
++
++#define RT305X_ESW_PORTS_ALL						\
++		(RT305X_ESW_PORTS_NOCPU | RT305X_ESW_PORTS_CPU)
++
++#define RT305X_ESW_NUM_VLANS		16
++#define RT305X_ESW_NUM_VIDS		4096
++#define RT305X_ESW_NUM_PORTS		7
++#define RT305X_ESW_NUM_LANWAN		6
++#define RT305X_ESW_NUM_LEDS		5
++
++#define RT5350_ESW_REG_PXTPC(_x)	(0x150 + (4 * _x))
++#define RT5350_EWS_REG_LED_POLARITY	0x168
++#define RT5350_RESET_EPHY		BIT(24)
++
++enum {
++	/* Global attributes. */
++	RT305X_ESW_ATTR_ENABLE_VLAN,
++	RT305X_ESW_ATTR_ALT_VLAN_DISABLE,
++	RT305X_ESW_ATTR_BC_STATUS,
++	RT305X_ESW_ATTR_LED_FREQ,
++	/* Port attributes. */
++	RT305X_ESW_ATTR_PORT_DISABLE,
++	RT305X_ESW_ATTR_PORT_DOUBLETAG,
++	RT305X_ESW_ATTR_PORT_UNTAG,
++	RT305X_ESW_ATTR_PORT_LED,
++	RT305X_ESW_ATTR_PORT_LAN,
++	RT305X_ESW_ATTR_PORT_RECV_BAD,
++	RT305X_ESW_ATTR_PORT_RECV_GOOD,
++	RT5350_ESW_ATTR_PORT_TR_BAD,
++	RT5350_ESW_ATTR_PORT_TR_GOOD,
++};
++
++struct esw_port {
++	bool	disable;
++	bool	doubletag;
++	bool	untag;
++	u8	led;
++	u16	pvid;
++};
++
++struct esw_vlan {
++	u8	ports;
++	u16	vid;
++};
++
++enum {
++	RT305X_ESW_VLAN_CONFIG_NONE = 0,
++	RT305X_ESW_VLAN_CONFIG_LLLLW,
++	RT305X_ESW_VLAN_CONFIG_WLLLL,
++};
++
++struct rt305x_esw {
++	struct device		*dev;
++	void __iomem		*base;
++	int			irq;
++
++	/* Protects against concurrent register r/w operations. */
++	spinlock_t		reg_rw_lock;
++
++	unsigned char		port_map;
++	unsigned char		port_disable;
++	unsigned int		reg_initval_fct2;
++	unsigned int		reg_initval_fpa2;
++	unsigned int		reg_led_polarity;
++
++	struct switch_dev	swdev;
++	bool			global_vlan_enable;
++	bool			alt_vlan_disable;
++	int			bc_storm_protect;
++	int			led_frequency;
++	struct esw_vlan vlans[RT305X_ESW_NUM_VLANS];
++	struct esw_port ports[RT305X_ESW_NUM_PORTS];
++
++};
++
++static inline void esw_w32(struct rt305x_esw *esw, u32 val, unsigned reg)
++{
++	__raw_writel(val, esw->base + reg);
++}
++
++static inline u32 esw_r32(struct rt305x_esw *esw, unsigned reg)
++{
++	return __raw_readl(esw->base + reg);
++}
++
++static inline void esw_rmw_raw(struct rt305x_esw *esw, unsigned reg,
++			       unsigned long mask, unsigned long val)
++{
++	unsigned long t;
++
++	t = __raw_readl(esw->base + reg) & ~mask;
++	__raw_writel(t | val, esw->base + reg);
++}
++
++static void esw_rmw(struct rt305x_esw *esw, unsigned reg,
++		    unsigned long mask, unsigned long val)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&esw->reg_rw_lock, flags);
++	esw_rmw_raw(esw, reg, mask, val);
++	spin_unlock_irqrestore(&esw->reg_rw_lock, flags);
++}
++
++static u32 rt305x_mii_write(struct rt305x_esw *esw, u32 phy_addr,
++			    u32 phy_register, u32 write_data)
++{
++	unsigned long t_start = jiffies;
++	int ret = 0;
++
++	while (1) {
++		if (!(esw_r32(esw, RT305X_ESW_REG_PCR1) &
++		      RT305X_ESW_PCR1_WT_DONE))
++			break;
++		if (time_after(jiffies, t_start + RT305X_ESW_PHY_TIMEOUT)) {
++			ret = 1;
++			goto out;
++		}
++	}
++
++	write_data &= 0xffff;
++	esw_w32(esw, (write_data << RT305X_ESW_PCR0_WT_NWAY_DATA_S) |
++		      (phy_register << RT305X_ESW_PCR0_CPU_PHY_REG_S) |
++		      (phy_addr) | RT305X_ESW_PCR0_WT_PHY_CMD,
++		RT305X_ESW_REG_PCR0);
++
++	t_start = jiffies;
++	while (1) {
++		if (esw_r32(esw, RT305X_ESW_REG_PCR1) &
++			    RT305X_ESW_PCR1_WT_DONE)
++			break;
++
++		if (time_after(jiffies, t_start + RT305X_ESW_PHY_TIMEOUT)) {
++			ret = 1;
++			break;
++		}
++	}
++out:
++	if (ret)
++		dev_err(esw->dev, "ramips_eth: MDIO timeout\n");
++	return ret;
++}
++
++static unsigned esw_get_vlan_id(struct rt305x_esw *esw, unsigned vlan)
++{
++	unsigned s;
++	unsigned val;
++
++	s = RT305X_ESW_VLANI_VID_S * (vlan % 2);
++	val = esw_r32(esw, RT305X_ESW_REG_VLANI(vlan / 2));
++	val = (val >> s) & RT305X_ESW_VLANI_VID_M;
++
++	return val;
++}
++
++static void esw_set_vlan_id(struct rt305x_esw *esw, unsigned vlan, unsigned vid)
++{
++	unsigned s;
++
++	s = RT305X_ESW_VLANI_VID_S * (vlan % 2);
++	esw_rmw(esw,
++		       RT305X_ESW_REG_VLANI(vlan / 2),
++		       RT305X_ESW_VLANI_VID_M << s,
++		       (vid & RT305X_ESW_VLANI_VID_M) << s);
++}
++
++static unsigned esw_get_pvid(struct rt305x_esw *esw, unsigned port)
++{
++	unsigned s, val;
++
++	s = RT305X_ESW_PVIDC_PVID_S * (port % 2);
++	val = esw_r32(esw, RT305X_ESW_REG_PVIDC(port / 2));
++	return (val >> s) & RT305X_ESW_PVIDC_PVID_M;
++}
++
++static void esw_set_pvid(struct rt305x_esw *esw, unsigned port, unsigned pvid)
++{
++	unsigned s;
++
++	s = RT305X_ESW_PVIDC_PVID_S * (port % 2);
++	esw_rmw(esw,
++		       RT305X_ESW_REG_PVIDC(port / 2),
++		       RT305X_ESW_PVIDC_PVID_M << s,
++		       (pvid & RT305X_ESW_PVIDC_PVID_M) << s);
++}
++
++static unsigned esw_get_vmsc(struct rt305x_esw *esw, unsigned vlan)
++{
++	unsigned s, val;
++
++	s = RT305X_ESW_VMSC_MSC_S * (vlan % 4);
++	val = esw_r32(esw, RT305X_ESW_REG_VMSC(vlan / 4));
++	val = (val >> s) & RT305X_ESW_VMSC_MSC_M;
++
++	return val;
++}
++
++static void esw_set_vmsc(struct rt305x_esw *esw, unsigned vlan, unsigned msc)
++{
++	unsigned s;
++
++	s = RT305X_ESW_VMSC_MSC_S * (vlan % 4);
++	esw_rmw(esw,
++		       RT305X_ESW_REG_VMSC(vlan / 4),
++		       RT305X_ESW_VMSC_MSC_M << s,
++		       (msc & RT305X_ESW_VMSC_MSC_M) << s);
++}
++
++static unsigned esw_get_port_disable(struct rt305x_esw *esw)
++{
++	unsigned reg;
++
++	reg = esw_r32(esw, RT305X_ESW_REG_POC0);
++	return (reg >> RT305X_ESW_POC0_DIS_PORT_S) &
++	       RT305X_ESW_POC0_DIS_PORT_M;
++}
++
++static void esw_set_port_disable(struct rt305x_esw *esw, unsigned disable_mask)
++{
++	unsigned old_mask;
++	unsigned enable_mask;
++	unsigned changed;
++	int i;
++
++	old_mask = esw_get_port_disable(esw);
++	changed = old_mask ^ disable_mask;
++	enable_mask = old_mask & disable_mask;
++
++	/* enable before writing to MII */
++	esw_rmw(esw, RT305X_ESW_REG_POC0,
++		       (RT305X_ESW_POC0_DIS_PORT_M <<
++			RT305X_ESW_POC0_DIS_PORT_S),
++		       enable_mask << RT305X_ESW_POC0_DIS_PORT_S);
++
++	for (i = 0; i < RT305X_ESW_NUM_LEDS; i++) {
++		if (!(changed & (1 << i)))
++			continue;
++		if (disable_mask & (1 << i)) {
++			/* disable */
++			rt305x_mii_write(esw, i, MII_BMCR,
++					 BMCR_PDOWN);
++		} else {
++			/* enable */
++			rt305x_mii_write(esw, i, MII_BMCR,
++					 BMCR_FULLDPLX |
++					 BMCR_ANENABLE |
++					 BMCR_ANRESTART |
++					 BMCR_SPEED100);
++		}
++	}
++
++	/* disable after writing to MII */
++	esw_rmw(esw, RT305X_ESW_REG_POC0,
++		       (RT305X_ESW_POC0_DIS_PORT_M <<
++			RT305X_ESW_POC0_DIS_PORT_S),
++		       disable_mask << RT305X_ESW_POC0_DIS_PORT_S);
++}
++
++static void esw_set_gsc(struct rt305x_esw *esw)
++{
++	esw_rmw(esw, RT305X_ESW_REG_SGC,
++		RT305X_ESW_GSC_BC_STROM_MASK << RT305X_ESW_GSC_BC_STROM_SHIFT,
++		esw->bc_storm_protect << RT305X_ESW_GSC_BC_STROM_SHIFT);
++	esw_rmw(esw, RT305X_ESW_REG_SGC,
++		RT305X_ESW_GSC_LED_FREQ_MASK << RT305X_ESW_GSC_LED_FREQ_SHIFT,
++		esw->led_frequency << RT305X_ESW_GSC_LED_FREQ_SHIFT);
++}
++
++static int esw_apply_config(struct switch_dev *dev);
++
++static void esw_hw_init(struct rt305x_esw *esw)
++{
++	int i;
++	u8 port_disable = 0;
++	u8 port_map = RT305X_ESW_PMAP_LLLLLL;
++
++	/* vodoo from original driver */
++	esw_w32(esw, 0xC8A07850, RT305X_ESW_REG_FCT0);
++	esw_w32(esw, 0x00000000, RT305X_ESW_REG_SGC2);
++	/* Port priority 1 for all ports, vlan enabled. */
++	esw_w32(esw, 0x00005555 |
++		     (RT305X_ESW_PORTS_ALL << RT305X_ESW_PFC1_EN_VLAN_S),
++		RT305X_ESW_REG_PFC1);
++
++	/* Enable all ports, Back Pressure and Flow Control */
++	esw_w32(esw, ((RT305X_ESW_PORTS_ALL << RT305X_ESW_POC0_EN_BP_S) |
++		      (RT305X_ESW_PORTS_ALL << RT305X_ESW_POC0_EN_FC_S)),
++		RT305X_ESW_REG_POC0);
++
++	/* Enable Aging, and VLAN TAG removal */
++	esw_w32(esw, ((RT305X_ESW_PORTS_ALL << RT305X_ESW_POC2_ENAGING_S) |
++		      (RT305X_ESW_PORTS_NOCPU << RT305X_ESW_POC2_UNTAG_EN_S)),
++		RT305X_ESW_REG_POC2);
++
++	if (esw->reg_initval_fct2)
++		esw_w32(esw, esw->reg_initval_fct2, RT305X_ESW_REG_FCT2);
++	else
++		esw_w32(esw, 0x0002500c, RT305X_ESW_REG_FCT2);
++
++	/* 300s aging timer, max packet len 1536, broadcast storm prevention
++	 * disabled, disable collision abort, mac xor48 hash, 10 packet back
++	 * pressure jam, GMII disable was_transmit, back pressure disabled,
++	 * 30ms led flash, unmatched IGMP as broadcast, rmc tb fault to all
++	 * ports.
++	 */
++	esw_w32(esw, 0x0008a301, RT305X_ESW_REG_SGC);
++
++	/* Setup SoC Port control register */
++	esw_w32(esw,
++		(RT305X_ESW_SOCPC_CRC_PADDING |
++		(RT305X_ESW_PORTS_CPU << RT305X_ESW_SOCPC_DISUN2CPU_S) |
++		(RT305X_ESW_PORTS_CPU << RT305X_ESW_SOCPC_DISMC2CPU_S) |
++		(RT305X_ESW_PORTS_CPU << RT305X_ESW_SOCPC_DISBC2CPU_S)),
++		RT305X_ESW_REG_SOCPC);
++
++	/* ext phy base addr 31, enable port 5 polling, rx/tx clock skew 1,
++	 * turbo mii off, rgmi 3.3v off
++	 * port5: disabled
++	 * port6: enabled, gige, full-duplex, rx/tx-flow-control
++	 */
++	if (esw->reg_initval_fpa2)
++		esw_w32(esw, esw->reg_initval_fpa2, RT305X_ESW_REG_FPA2);
++	else
++		esw_w32(esw, 0x3f502b28, RT305X_ESW_REG_FPA2);
++	esw_w32(esw, 0x00000000, RT305X_ESW_REG_FPA);
++
++	/* Force Link/Activity on ports */
++	esw_w32(esw, 0x00000005, RT305X_ESW_REG_P0LED);
++	esw_w32(esw, 0x00000005, RT305X_ESW_REG_P1LED);
++	esw_w32(esw, 0x00000005, RT305X_ESW_REG_P2LED);
++	esw_w32(esw, 0x00000005, RT305X_ESW_REG_P3LED);
++	esw_w32(esw, 0x00000005, RT305X_ESW_REG_P4LED);
++
++	/* Copy disabled port configuration from device tree setup */
++	port_disable = esw->port_disable;
++
++	/* Disable nonexistent ports by reading the switch config
++	 * after having enabled all possible ports above
++	 */
++	port_disable |= esw_get_port_disable(esw);
++
++	for (i = 0; i < 6; i++)
++		esw->ports[i].disable = (port_disable & (1 << i)) != 0;
++
++	if (ralink_soc == RT305X_SOC_RT3352) {
++		/* reset EPHY */
++		fe_reset(RT5350_RESET_EPHY);
++
++		rt305x_mii_write(esw, 0, 31, 0x8000);
++		for (i = 0; i < 5; i++) {
++			if (esw->ports[i].disable) {
++				rt305x_mii_write(esw, i, MII_BMCR, BMCR_PDOWN);
++			} else {
++				rt305x_mii_write(esw, i, MII_BMCR,
++						 BMCR_FULLDPLX |
++						 BMCR_ANENABLE |
++						 BMCR_SPEED100);
++			}
++			/* TX10 waveform coefficient LSB=0 disable PHY */
++			rt305x_mii_write(esw, i, 26, 0x1601);
++			/* TX100/TX10 AD/DA current bias */
++			rt305x_mii_write(esw, i, 29, 0x7016);
++			/* TX100 slew rate control */
++			rt305x_mii_write(esw, i, 30, 0x0038);
++		}
++
++		/* select global register */
++		rt305x_mii_write(esw, 0, 31, 0x0);
++		/* enlarge agcsel threshold 3 and threshold 2 */
++		rt305x_mii_write(esw, 0, 1, 0x4a40);
++		/* enlarge agcsel threshold 5 and threshold 4 */
++		rt305x_mii_write(esw, 0, 2, 0x6254);
++		/* enlarge agcsel threshold  */
++		rt305x_mii_write(esw, 0, 3, 0xa17f);
++		rt305x_mii_write(esw, 0, 12, 0x7eaa);
++		/* longer TP_IDL tail length */
++		rt305x_mii_write(esw, 0, 14, 0x65);
++		/* increased squelch pulse count threshold. */
++		rt305x_mii_write(esw, 0, 16, 0x0684);
++		/* set TX10 signal amplitude threshold to minimum */
++		rt305x_mii_write(esw, 0, 17, 0x0fe0);
++		/* set squelch amplitude to higher threshold */
++		rt305x_mii_write(esw, 0, 18, 0x40ba);
++		/* tune TP_IDL tail and head waveform, enable power
++		 * down slew rate control
++		 */
++		rt305x_mii_write(esw, 0, 22, 0x253f);
++		/* set PLL/Receive bias current are calibrated */
++		rt305x_mii_write(esw, 0, 27, 0x2fda);
++		/* change PLL/Receive bias current to internal(RT3350) */
++		rt305x_mii_write(esw, 0, 28, 0xc410);
++		/* change PLL bias current to internal(RT3052_MP3) */
++		rt305x_mii_write(esw, 0, 29, 0x598b);
++		/* select local register */
++		rt305x_mii_write(esw, 0, 31, 0x8000);
++	} else if (ralink_soc == RT305X_SOC_RT5350) {
++		/* reset EPHY */
++		fe_reset(RT5350_RESET_EPHY);
++
++		/* set the led polarity */
++		esw_w32(esw, esw->reg_led_polarity & 0x1F,
++			RT5350_EWS_REG_LED_POLARITY);
++
++		/* local registers */
++		rt305x_mii_write(esw, 0, 31, 0x8000);
++		for (i = 0; i < 5; i++) {
++			if (esw->ports[i].disable) {
++				rt305x_mii_write(esw, i, MII_BMCR, BMCR_PDOWN);
++			} else {
++				rt305x_mii_write(esw, i, MII_BMCR,
++						 BMCR_FULLDPLX |
++						 BMCR_ANENABLE |
++						 BMCR_SPEED100);
++			}
++			/* TX10 waveform coefficient LSB=0 disable PHY */
++			rt305x_mii_write(esw, i, 26, 0x1601);
++			/* TX100/TX10 AD/DA current bias */
++			rt305x_mii_write(esw, i, 29, 0x7015);
++			/* TX100 slew rate control */
++			rt305x_mii_write(esw, i, 30, 0x0038);
++		}
++
++		/* global registers */
++		rt305x_mii_write(esw, 0, 31, 0x0);
++		/* enlarge agcsel threshold 3 and threshold 2 */
++		rt305x_mii_write(esw, 0, 1, 0x4a40);
++		/* enlarge agcsel threshold 5 and threshold 4 */
++		rt305x_mii_write(esw, 0, 2, 0x6254);
++		/* enlarge agcsel threshold 6 */
++		rt305x_mii_write(esw, 0, 3, 0xa17f);
++		rt305x_mii_write(esw, 0, 12, 0x7eaa);
++		/* longer TP_IDL tail length */
++		rt305x_mii_write(esw, 0, 14, 0x65);
++		/* increased squelch pulse count threshold. */
++		rt305x_mii_write(esw, 0, 16, 0x0684);
++		/* set TX10 signal amplitude threshold to minimum */
++		rt305x_mii_write(esw, 0, 17, 0x0fe0);
++		/* set squelch amplitude to higher threshold */
++		rt305x_mii_write(esw, 0, 18, 0x40ba);
++		/* tune TP_IDL tail and head waveform, enable power
++		 * down slew rate control
++		 */
++		rt305x_mii_write(esw, 0, 22, 0x253f);
++		/* set PLL/Receive bias current are calibrated */
++		rt305x_mii_write(esw, 0, 27, 0x2fda);
++		/* change PLL/Receive bias current to internal(RT3350) */
++		rt305x_mii_write(esw, 0, 28, 0xc410);
++		/* change PLL bias current to internal(RT3052_MP3) */
++		rt305x_mii_write(esw, 0, 29, 0x598b);
++		/* select local register */
++		rt305x_mii_write(esw, 0, 31, 0x8000);
++	} else if (ralink_soc == MT762X_SOC_MT7628AN || ralink_soc == MT762X_SOC_MT7688) {
++		int i;
++
++		/* reset EPHY */
++		fe_reset(RT5350_RESET_EPHY);
++
++		/* set the led polarity */
++		esw_w32(esw, esw->reg_led_polarity & 0x1F,
++			RT5350_EWS_REG_LED_POLARITY);
++
++		rt305x_mii_write(esw, 0, 31, 0x2000); /* change G2 page */
++		rt305x_mii_write(esw, 0, 26, 0x0020);
++
++		for (i = 0; i < 5; i++) {
++			rt305x_mii_write(esw, i, 31, 0x8000);
++			rt305x_mii_write(esw, i,  0, 0x3100);
++			rt305x_mii_write(esw, i, 30, 0xa000);
++			rt305x_mii_write(esw, i, 31, 0xa000);
++			rt305x_mii_write(esw, i, 16, 0x0606);
++			rt305x_mii_write(esw, i, 23, 0x0f0e);
++			rt305x_mii_write(esw, i, 24, 0x1610);
++			rt305x_mii_write(esw, i, 30, 0x1f15);
++			rt305x_mii_write(esw, i, 28, 0x6111);
++			rt305x_mii_write(esw, i, 31, 0x2000);
++			rt305x_mii_write(esw, i, 26, 0x0000);
++		}
++
++		/* 100Base AOI setting */
++		rt305x_mii_write(esw, 0, 31, 0x5000);
++		rt305x_mii_write(esw, 0, 19, 0x004a);
++		rt305x_mii_write(esw, 0, 20, 0x015a);
++		rt305x_mii_write(esw, 0, 21, 0x00ee);
++		rt305x_mii_write(esw, 0, 22, 0x0033);
++		rt305x_mii_write(esw, 0, 23, 0x020a);
++		rt305x_mii_write(esw, 0, 24, 0x0000);
++		rt305x_mii_write(esw, 0, 25, 0x024a);
++		rt305x_mii_write(esw, 0, 26, 0x035a);
++		rt305x_mii_write(esw, 0, 27, 0x02ee);
++		rt305x_mii_write(esw, 0, 28, 0x0233);
++		rt305x_mii_write(esw, 0, 29, 0x000a);
++		rt305x_mii_write(esw, 0, 30, 0x0000);
++	} else {
++		rt305x_mii_write(esw, 0, 31, 0x8000);
++		for (i = 0; i < 5; i++) {
++			if (esw->ports[i].disable) {
++				rt305x_mii_write(esw, i, MII_BMCR, BMCR_PDOWN);
++			} else {
++				rt305x_mii_write(esw, i, MII_BMCR,
++						 BMCR_FULLDPLX |
++						 BMCR_ANENABLE |
++						 BMCR_SPEED100);
++			}
++			/* TX10 waveform coefficient */
++			rt305x_mii_write(esw, i, 26, 0x1601);
++			/* TX100/TX10 AD/DA current bias */
++			rt305x_mii_write(esw, i, 29, 0x7058);
++			/* TX100 slew rate control */
++			rt305x_mii_write(esw, i, 30, 0x0018);
++		}
++
++		/* PHY IOT */
++		/* select global register */
++		rt305x_mii_write(esw, 0, 31, 0x0);
++		/* tune TP_IDL tail and head waveform */
++		rt305x_mii_write(esw, 0, 22, 0x052f);
++		/* set TX10 signal amplitude threshold to minimum */
++		rt305x_mii_write(esw, 0, 17, 0x0fe0);
++		/* set squelch amplitude to higher threshold */
++		rt305x_mii_write(esw, 0, 18, 0x40ba);
++		/* longer TP_IDL tail length */
++		rt305x_mii_write(esw, 0, 14, 0x65);
++		/* select local register */
++		rt305x_mii_write(esw, 0, 31, 0x8000);
++	}
++
++	if (esw->port_map)
++		port_map = esw->port_map;
++	else
++		port_map = RT305X_ESW_PMAP_LLLLLL;
++
++	/* Unused HW feature, but still nice to be consistent here...
++	 * This is also exported to userspace ('lan' attribute) so it's
++	 * conveniently usable to decide which ports go into the wan vlan by
++	 * default.
++	 */
++	esw_rmw(esw, RT305X_ESW_REG_SGC2,
++		RT305X_ESW_SGC2_LAN_PMAP_M << RT305X_ESW_SGC2_LAN_PMAP_S,
++		port_map << RT305X_ESW_SGC2_LAN_PMAP_S);
++
++	/* make the switch leds blink */
++	for (i = 0; i < RT305X_ESW_NUM_LEDS; i++)
++		esw->ports[i].led = 0x05;
++
++	/* Apply the empty config. */
++	esw_apply_config(&esw->swdev);
++
++	/* Only unmask the port change interrupt */
++	esw_w32(esw, ~RT305X_ESW_PORT_ST_CHG, RT305X_ESW_REG_IMR);
++}
++
++static irqreturn_t esw_interrupt(int irq, void *_esw)
++{
++	struct rt305x_esw *esw = (struct rt305x_esw *)_esw;
++	u32 status;
++
++	status = esw_r32(esw, RT305X_ESW_REG_ISR);
++	if (status & RT305X_ESW_PORT_ST_CHG) {
++		u32 link = esw_r32(esw, RT305X_ESW_REG_POA);
++
++		link >>= RT305X_ESW_POA_LINK_SHIFT;
++		link &= RT305X_ESW_POA_LINK_MASK;
++		dev_info(esw->dev, "link changed 0x%02X\n", link);
++	}
++	esw_w32(esw, status, RT305X_ESW_REG_ISR);
++
++	return IRQ_HANDLED;
++}
++
++static int esw_apply_config(struct switch_dev *dev)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++	int i;
++	u8 disable = 0;
++	u8 doubletag = 0;
++	u8 en_vlan = 0;
++	u8 untag = 0;
++
++	for (i = 0; i < RT305X_ESW_NUM_VLANS; i++) {
++		u32 vid, vmsc;
++		if (esw->global_vlan_enable) {
++			vid = esw->vlans[i].vid;
++			vmsc = esw->vlans[i].ports;
++		} else {
++			vid = RT305X_ESW_VLAN_NONE;
++			vmsc = RT305X_ESW_PORTS_NONE;
++		}
++		esw_set_vlan_id(esw, i, vid);
++		esw_set_vmsc(esw, i, vmsc);
++	}
++
++	for (i = 0; i < RT305X_ESW_NUM_PORTS; i++) {
++		u32 pvid;
++		disable |= esw->ports[i].disable << i;
++		if (esw->global_vlan_enable) {
++			doubletag |= esw->ports[i].doubletag << i;
++			en_vlan   |= 1                       << i;
++			untag     |= esw->ports[i].untag     << i;
++			pvid       = esw->ports[i].pvid;
++		} else {
++			int x = esw->alt_vlan_disable ? 0 : 1;
++			doubletag |= x << i;
++			en_vlan   |= x << i;
++			untag     |= x << i;
++			pvid       = 0;
++		}
++		esw_set_pvid(esw, i, pvid);
++		if (i < RT305X_ESW_NUM_LEDS)
++			esw_w32(esw, esw->ports[i].led,
++				      RT305X_ESW_REG_P0LED + 4*i);
++	}
++
++	esw_set_gsc(esw);
++	esw_set_port_disable(esw, disable);
++	esw_rmw(esw, RT305X_ESW_REG_SGC2,
++		       (RT305X_ESW_SGC2_DOUBLE_TAG_M <<
++			RT305X_ESW_SGC2_DOUBLE_TAG_S),
++		       doubletag << RT305X_ESW_SGC2_DOUBLE_TAG_S);
++	esw_rmw(esw, RT305X_ESW_REG_PFC1,
++		       RT305X_ESW_PFC1_EN_VLAN_M << RT305X_ESW_PFC1_EN_VLAN_S,
++		       en_vlan << RT305X_ESW_PFC1_EN_VLAN_S);
++	esw_rmw(esw, RT305X_ESW_REG_POC2,
++		       RT305X_ESW_POC2_UNTAG_EN_M << RT305X_ESW_POC2_UNTAG_EN_S,
++		       untag << RT305X_ESW_POC2_UNTAG_EN_S);
++
++	if (!esw->global_vlan_enable) {
++		/*
++		 * Still need to put all ports into vlan 0 or they'll be
++		 * isolated.
++		 * NOTE: vlan 0 is special, no vlan tag is prepended
++		 */
++		esw_set_vlan_id(esw, 0, 0);
++		esw_set_vmsc(esw, 0, RT305X_ESW_PORTS_ALL);
++	}
++
++	return 0;
++}
++
++static int esw_reset_switch(struct switch_dev *dev)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	esw->global_vlan_enable = 0;
++	memset(esw->ports, 0, sizeof(esw->ports));
++	memset(esw->vlans, 0, sizeof(esw->vlans));
++	esw_hw_init(esw);
++
++	return 0;
++}
++
++static int esw_get_vlan_enable(struct switch_dev *dev,
++			   const struct switch_attr *attr,
++			   struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	val->value.i = esw->global_vlan_enable;
++
++	return 0;
++}
++
++static int esw_set_vlan_enable(struct switch_dev *dev,
++			   const struct switch_attr *attr,
++			   struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	esw->global_vlan_enable = val->value.i != 0;
++
++	return 0;
++}
++
++static int esw_get_alt_vlan_disable(struct switch_dev *dev,
++				const struct switch_attr *attr,
++				struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	val->value.i = esw->alt_vlan_disable;
++
++	return 0;
++}
++
++static int esw_set_alt_vlan_disable(struct switch_dev *dev,
++				const struct switch_attr *attr,
++				struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	esw->alt_vlan_disable = val->value.i != 0;
++
++	return 0;
++}
++
++static int
++rt305x_esw_set_bc_status(struct switch_dev *dev,
++			const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	esw->bc_storm_protect = val->value.i & RT305X_ESW_GSC_BC_STROM_MASK;
++
++	return 0;
++}
++
++static int
++rt305x_esw_get_bc_status(struct switch_dev *dev,
++			const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	val->value.i = esw->bc_storm_protect;
++
++	return 0;
++}
++
++static int
++rt305x_esw_set_led_freq(struct switch_dev *dev,
++			const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	esw->led_frequency = val->value.i & RT305X_ESW_GSC_LED_FREQ_MASK;
++
++	return 0;
++}
++
++static int
++rt305x_esw_get_led_freq(struct switch_dev *dev,
++			const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	val->value.i = esw->led_frequency;
++
++	return 0;
++}
++
++static int esw_get_port_link(struct switch_dev *dev,
++			 int port,
++			 struct switch_port_link *link)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++	u32 speed, poa;
++
++	if (port < 0 || port >= RT305X_ESW_NUM_PORTS)
++		return -EINVAL;
++
++	poa = esw_r32(esw, RT305X_ESW_REG_POA) >> port;
++
++	link->link = (poa >> RT305X_ESW_LINK_S) & 1;
++	link->duplex = (poa >> RT305X_ESW_DUPLEX_S) & 1;
++	if (port < RT305X_ESW_NUM_LEDS) {
++		speed = (poa >> RT305X_ESW_SPD_S) & 1;
++	} else {
++		if (port == RT305X_ESW_NUM_PORTS - 1)
++			poa >>= 1;
++		speed = (poa >> RT305X_ESW_SPD_S) & 3;
++	}
++	switch (speed) {
++	case 0:
++		link->speed = SWITCH_PORT_SPEED_10;
++		break;
++	case 1:
++		link->speed = SWITCH_PORT_SPEED_100;
++		break;
++	case 2:
++	case 3: /* forced gige speed can be 2 or 3 */
++		link->speed = SWITCH_PORT_SPEED_1000;
++		break;
++	default:
++		link->speed = SWITCH_PORT_SPEED_UNKNOWN;
++		break;
++	}
++
++	return 0;
++}
++
++static int esw_get_port_bool(struct switch_dev *dev,
++			 const struct switch_attr *attr,
++			 struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++	int idx = val->port_vlan;
++	u32 x, reg, shift;
++
++	if (idx < 0 || idx >= RT305X_ESW_NUM_PORTS)
++		return -EINVAL;
++
++	switch (attr->id) {
++	case RT305X_ESW_ATTR_PORT_DISABLE:
++		reg = RT305X_ESW_REG_POC0;
++		shift = RT305X_ESW_POC0_DIS_PORT_S;
++		break;
++	case RT305X_ESW_ATTR_PORT_DOUBLETAG:
++		reg = RT305X_ESW_REG_SGC2;
++		shift = RT305X_ESW_SGC2_DOUBLE_TAG_S;
++		break;
++	case RT305X_ESW_ATTR_PORT_UNTAG:
++		reg = RT305X_ESW_REG_POC2;
++		shift = RT305X_ESW_POC2_UNTAG_EN_S;
++		break;
++	case RT305X_ESW_ATTR_PORT_LAN:
++		reg = RT305X_ESW_REG_SGC2;
++		shift = RT305X_ESW_SGC2_LAN_PMAP_S;
++		if (idx >= RT305X_ESW_NUM_LANWAN)
++			return -EINVAL;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	x = esw_r32(esw, reg);
++	val->value.i = (x >> (idx + shift)) & 1;
++
++	return 0;
++}
++
++static int esw_set_port_bool(struct switch_dev *dev,
++			 const struct switch_attr *attr,
++			 struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++	int idx = val->port_vlan;
++
++	if (idx < 0 || idx >= RT305X_ESW_NUM_PORTS ||
++	    val->value.i < 0 || val->value.i > 1)
++		return -EINVAL;
++
++	switch (attr->id) {
++	case RT305X_ESW_ATTR_PORT_DISABLE:
++		esw->ports[idx].disable = val->value.i;
++		break;
++	case RT305X_ESW_ATTR_PORT_DOUBLETAG:
++		esw->ports[idx].doubletag = val->value.i;
++		break;
++	case RT305X_ESW_ATTR_PORT_UNTAG:
++		esw->ports[idx].untag = val->value.i;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int esw_get_port_recv_badgood(struct switch_dev *dev,
++				 const struct switch_attr *attr,
++				 struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++	int idx = val->port_vlan;
++	int shift = attr->id == RT305X_ESW_ATTR_PORT_RECV_GOOD ? 0 : 16;
++	u32 reg;
++
++	if (idx < 0 || idx >= RT305X_ESW_NUM_LANWAN)
++		return -EINVAL;
++	reg = esw_r32(esw, RT305X_ESW_REG_PXPC(idx));
++	val->value.i = (reg >> shift) & 0xffff;
++
++	return 0;
++}
++
++static int
++esw_get_port_tr_badgood(struct switch_dev *dev,
++				 const struct switch_attr *attr,
++				 struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	int idx = val->port_vlan;
++	int shift = attr->id == RT5350_ESW_ATTR_PORT_TR_GOOD ? 0 : 16;
++	u32 reg;
++
++	if ((ralink_soc != RT305X_SOC_RT5350) && (ralink_soc != MT762X_SOC_MT7628AN) && (ralink_soc != MT762X_SOC_MT7688))
++		return -EINVAL;
++
++	if (idx < 0 || idx >= RT305X_ESW_NUM_LANWAN)
++		return -EINVAL;
++
++	reg = esw_r32(esw, RT5350_ESW_REG_PXTPC(idx));
++	val->value.i = (reg >> shift) & 0xffff;
++
++	return 0;
++}
++
++static int esw_get_port_led(struct switch_dev *dev,
++			const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++	int idx = val->port_vlan;
++
++	if (idx < 0 || idx >= RT305X_ESW_NUM_PORTS ||
++	    idx >= RT305X_ESW_NUM_LEDS)
++		return -EINVAL;
++
++	val->value.i = esw_r32(esw, RT305X_ESW_REG_P0LED + 4*idx);
++
++	return 0;
++}
++
++static int esw_set_port_led(struct switch_dev *dev,
++			const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++	int idx = val->port_vlan;
++
++	if (idx < 0 || idx >= RT305X_ESW_NUM_LEDS)
++		return -EINVAL;
++
++	esw->ports[idx].led = val->value.i;
++
++	return 0;
++}
++
++static int esw_get_port_pvid(struct switch_dev *dev, int port, int *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	if (port >= RT305X_ESW_NUM_PORTS)
++		return -EINVAL;
++
++	*val = esw_get_pvid(esw, port);
++
++	return 0;
++}
++
++static int esw_set_port_pvid(struct switch_dev *dev, int port, int val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++
++	if (port >= RT305X_ESW_NUM_PORTS)
++		return -EINVAL;
++
++	esw->ports[port].pvid = val;
++
++	return 0;
++}
++
++static int esw_get_vlan_ports(struct switch_dev *dev, struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++	u32 vmsc, poc2;
++	int vlan_idx = -1;
++	int i;
++
++	val->len = 0;
++
++	if (val->port_vlan < 0 || val->port_vlan >= RT305X_ESW_NUM_VIDS)
++		return -EINVAL;
++
++	/* valid vlan? */
++	for (i = 0; i < RT305X_ESW_NUM_VLANS; i++) {
++		if (esw_get_vlan_id(esw, i) == val->port_vlan &&
++		    esw_get_vmsc(esw, i) != RT305X_ESW_PORTS_NONE) {
++			vlan_idx = i;
++			break;
++		}
++	}
++
++	if (vlan_idx == -1)
++		return -EINVAL;
++
++	vmsc = esw_get_vmsc(esw, vlan_idx);
++	poc2 = esw_r32(esw, RT305X_ESW_REG_POC2);
++
++	for (i = 0; i < RT305X_ESW_NUM_PORTS; i++) {
++		struct switch_port *p;
++		int port_mask = 1 << i;
++
++		if (!(vmsc & port_mask))
++			continue;
++
++		p = &val->value.ports[val->len++];
++		p->id = i;
++		if (poc2 & (port_mask << RT305X_ESW_POC2_UNTAG_EN_S))
++			p->flags = 0;
++		else
++			p->flags = 1 << SWITCH_PORT_FLAG_TAGGED;
++	}
++
++	return 0;
++}
++
++static int esw_set_vlan_ports(struct switch_dev *dev, struct switch_val *val)
++{
++	struct rt305x_esw *esw = container_of(dev, struct rt305x_esw, swdev);
++	int ports;
++	int vlan_idx = -1;
++	int i;
++
++	if (val->port_vlan < 0 || val->port_vlan >= RT305X_ESW_NUM_VIDS ||
++	    val->len > RT305X_ESW_NUM_PORTS)
++		return -EINVAL;
++
++	/* one of the already defined vlans? */
++	for (i = 0; i < RT305X_ESW_NUM_VLANS; i++) {
++		if (esw->vlans[i].vid == val->port_vlan &&
++		    esw->vlans[i].ports != RT305X_ESW_PORTS_NONE) {
++			vlan_idx = i;
++			break;
++		}
++	}
++
++	/* select a free slot */
++	for (i = 0; vlan_idx == -1 && i < RT305X_ESW_NUM_VLANS; i++) {
++		if (esw->vlans[i].ports == RT305X_ESW_PORTS_NONE)
++			vlan_idx = i;
++	}
++
++	/* bail if all slots are in use */
++	if (vlan_idx == -1)
++		return -EINVAL;
++
++	ports = RT305X_ESW_PORTS_NONE;
++	for (i = 0; i < val->len; i++) {
++		struct switch_port *p = &val->value.ports[i];
++		int port_mask = 1 << p->id;
++		bool untagged = !(p->flags & (1 << SWITCH_PORT_FLAG_TAGGED));
++
++		if (p->id >= RT305X_ESW_NUM_PORTS)
++			return -EINVAL;
++
++		ports |= port_mask;
++		esw->ports[p->id].untag = untagged;
++	}
++	esw->vlans[vlan_idx].ports = ports;
++	if (ports == RT305X_ESW_PORTS_NONE)
++		esw->vlans[vlan_idx].vid = RT305X_ESW_VLAN_NONE;
++	else
++		esw->vlans[vlan_idx].vid = val->port_vlan;
++
++	return 0;
++}
++
++static const struct switch_attr esw_global[] = {
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "enable_vlan",
++		.description = "VLAN mode (1:enabled)",
++		.max = 1,
++		.id = RT305X_ESW_ATTR_ENABLE_VLAN,
++		.get = esw_get_vlan_enable,
++		.set = esw_set_vlan_enable,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "alternate_vlan_disable",
++		.description = "Use en_vlan instead of doubletag to disable"
++				" VLAN mode",
++		.max = 1,
++		.id = RT305X_ESW_ATTR_ALT_VLAN_DISABLE,
++		.get = esw_get_alt_vlan_disable,
++		.set = esw_set_alt_vlan_disable,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "bc_storm_protect",
++		.description = "Global broadcast storm protection (0:Disable, 1:64 blocks, 2:96 blocks, 3:128 blocks)",
++		.max = 3,
++		.id = RT305X_ESW_ATTR_BC_STATUS,
++		.get = rt305x_esw_get_bc_status,
++		.set = rt305x_esw_set_bc_status,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "led_frequency",
++		.description = "LED Flash frequency (0:30mS, 1:60mS, 2:240mS, 3:480mS)",
++		.max = 3,
++		.id = RT305X_ESW_ATTR_LED_FREQ,
++		.get = rt305x_esw_get_led_freq,
++		.set = rt305x_esw_set_led_freq,
++	}
++};
++
++static const struct switch_attr esw_port[] = {
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "disable",
++		.description = "Port state (1:disabled)",
++		.max = 1,
++		.id = RT305X_ESW_ATTR_PORT_DISABLE,
++		.get = esw_get_port_bool,
++		.set = esw_set_port_bool,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "doubletag",
++		.description = "Double tagging for incoming vlan packets "
++				"(1:enabled)",
++		.max = 1,
++		.id = RT305X_ESW_ATTR_PORT_DOUBLETAG,
++		.get = esw_get_port_bool,
++		.set = esw_set_port_bool,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "untag",
++		.description = "Untag (1:strip outgoing vlan tag)",
++		.max = 1,
++		.id = RT305X_ESW_ATTR_PORT_UNTAG,
++		.get = esw_get_port_bool,
++		.set = esw_set_port_bool,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "led",
++		.description = "LED mode (0:link, 1:100m, 2:duplex, 3:activity,"
++				" 4:collision, 5:linkact, 6:duplcoll, 7:10mact,"
++				" 8:100mact, 10:blink, 11:off, 12:on)",
++		.max = 15,
++		.id = RT305X_ESW_ATTR_PORT_LED,
++		.get = esw_get_port_led,
++		.set = esw_set_port_led,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "lan",
++		.description = "HW port group (0:wan, 1:lan)",
++		.max = 1,
++		.id = RT305X_ESW_ATTR_PORT_LAN,
++		.get = esw_get_port_bool,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "recv_bad",
++		.description = "Receive bad packet counter",
++		.id = RT305X_ESW_ATTR_PORT_RECV_BAD,
++		.get = esw_get_port_recv_badgood,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "recv_good",
++		.description = "Receive good packet counter",
++		.id = RT305X_ESW_ATTR_PORT_RECV_GOOD,
++		.get = esw_get_port_recv_badgood,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "tr_bad",
++
++		.description = "Transmit bad packet counter. rt5350 only",
++		.id = RT5350_ESW_ATTR_PORT_TR_BAD,
++		.get = esw_get_port_tr_badgood,
++	},
++	{
++		.type = SWITCH_TYPE_INT,
++		.name = "tr_good",
++
++		.description = "Transmit good packet counter. rt5350 only",
++		.id = RT5350_ESW_ATTR_PORT_TR_GOOD,
++		.get = esw_get_port_tr_badgood,
++	},
++};
++
++static const struct switch_attr esw_vlan[] = {
++};
++
++static const struct switch_dev_ops esw_ops = {
++	.attr_global = {
++		.attr = esw_global,
++		.n_attr = ARRAY_SIZE(esw_global),
++	},
++	.attr_port = {
++		.attr = esw_port,
++		.n_attr = ARRAY_SIZE(esw_port),
++	},
++	.attr_vlan = {
++		.attr = esw_vlan,
++		.n_attr = ARRAY_SIZE(esw_vlan),
++	},
++	.get_vlan_ports = esw_get_vlan_ports,
++	.set_vlan_ports = esw_set_vlan_ports,
++	.get_port_pvid = esw_get_port_pvid,
++	.set_port_pvid = esw_set_port_pvid,
++	.get_port_link = esw_get_port_link,
++	.apply_config = esw_apply_config,
++	.reset_switch = esw_reset_switch,
++};
++
++static int esw_probe(struct platform_device *pdev)
++{
++	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	struct device_node *np = pdev->dev.of_node;
++	const __be32 *port_map, *port_disable, *reg_init;
++	struct switch_dev *swdev;
++	struct rt305x_esw *esw;
++	int ret;
++
++	esw = devm_kzalloc(&pdev->dev, sizeof(*esw), GFP_KERNEL);
++	if (!esw)
++		return -ENOMEM;
++
++	esw->dev = &pdev->dev;
++	esw->irq = irq_of_parse_and_map(np, 0);
++	esw->base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(esw->base))
++		return PTR_ERR(esw->base);
++
++	port_map = of_get_property(np, "mediatek,portmap", NULL);
++	if (port_map)
++		esw->port_map = be32_to_cpu(*port_map);
++
++	port_disable = of_get_property(np, "mediatek,portdisable", NULL);
++	if (port_disable)
++		esw->port_disable = be32_to_cpu(*port_disable);
++
++	reg_init = of_get_property(np, "ralink,fct2", NULL);
++	if (reg_init)
++		esw->reg_initval_fct2 = be32_to_cpu(*reg_init);
++
++	reg_init = of_get_property(np, "ralink,fpa2", NULL);
++	if (reg_init)
++		esw->reg_initval_fpa2 = be32_to_cpu(*reg_init);
++
++	reg_init = of_get_property(np, "mediatek,led_polarity", NULL);
++	if (reg_init)
++		esw->reg_led_polarity = be32_to_cpu(*reg_init);
++
++	swdev = &esw->swdev;
++	swdev->of_node = pdev->dev.of_node;
++	swdev->name = "rt305x-esw";
++	swdev->alias = "rt305x";
++	swdev->cpu_port = RT305X_ESW_PORT6;
++	swdev->ports = RT305X_ESW_NUM_PORTS;
++	swdev->vlans = RT305X_ESW_NUM_VIDS;
++	swdev->ops = &esw_ops;
++
++	ret = register_switch(swdev, NULL);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "register_switch failed\n");
++		return ret;
++	}
++
++	platform_set_drvdata(pdev, esw);
++
++	spin_lock_init(&esw->reg_rw_lock);
++
++	esw_hw_init(esw);
++
++	reg_init = of_get_property(np, "ralink,rgmii", NULL);
++	if (reg_init && be32_to_cpu(*reg_init) == 1) {
++		/* 
++		 * External switch connected to RGMII interface. 
++		 * Unregister the switch device after initialization. 
++		 */
++		dev_err(&pdev->dev, "RGMII mode, not exporting switch device.\n");
++		unregister_switch(&esw->swdev);
++		platform_set_drvdata(pdev, NULL);
++		return -ENODEV;
++	}
++
++	ret = devm_request_irq(&pdev->dev, esw->irq, esw_interrupt, 0, "esw",
++			       esw);
++
++	if (!ret) {
++		esw_w32(esw, RT305X_ESW_PORT_ST_CHG, RT305X_ESW_REG_ISR);
++		esw_w32(esw, ~RT305X_ESW_PORT_ST_CHG, RT305X_ESW_REG_IMR);
++	}
++
++	return ret;
++}
++
++static int esw_remove(struct platform_device *pdev)
++{
++	struct rt305x_esw *esw = platform_get_drvdata(pdev);
++
++	if (esw) {
++		esw_w32(esw, ~0, RT305X_ESW_REG_IMR);
++		platform_set_drvdata(pdev, NULL);
++	}
++
++	return 0;
++}
++
++static const struct of_device_id ralink_esw_match[] = {
++	{ .compatible = "ralink,rt3050-esw" },
++	{},
++};
++MODULE_DEVICE_TABLE(of, ralink_esw_match);
++
++static struct platform_driver esw_driver = {
++	.probe = esw_probe,
++	.remove = esw_remove,
++	.driver = {
++		.name = "rt3050-esw",
++		.owner = THIS_MODULE,
++		.of_match_table = ralink_esw_match,
++	},
++};
++
++module_platform_driver(esw_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("John Crispin <blogic@openwrt.org>");
++MODULE_DESCRIPTION("Switch driver for RT305X SoC");
++MODULE_VERSION(MTK_FE_DRV_VERSION);
+diff --git a/drivers/net/ethernet/ralink/esw_rt3050.h b/drivers/net/ethernet/ralink/esw_rt3050.h
+new file mode 100644
+index 000000000000..bbc8fbd52a40
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/esw_rt3050.h
+@@ -0,0 +1,29 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#ifndef _RALINK_ESW_RT3052_H__
++#define _RALINK_ESW_RT3052_H__
++
++#ifdef CONFIG_NET_RALINK_ESW_RT3052
++
++int __init mtk_switch_init(void);
++void mtk_switch_exit(void);
++
++#else
++
++static inline int __init mtk_switch_init(void) { return 0; }
++static inline void mtk_switch_exit(void) { }
++
++#endif
++#endif
+diff --git a/drivers/net/ethernet/ralink/ethtool.c b/drivers/net/ethernet/ralink/ethtool.c
+new file mode 100644
+index 000000000000..5732c28536c2
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/ethtool.c
+@@ -0,0 +1,230 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#include "mtk_eth_soc.h"
++
++static const char fe_gdma_str[][ETH_GSTRING_LEN] = {
++#define _FE(x...)	# x,
++FE_STAT_REG_DECLARE
++#undef _FE
++};
++
++static int fe_get_link_ksettings(struct net_device *ndev,
++			   struct ethtool_link_ksettings *cmd)
++{
++	struct fe_priv *priv = netdev_priv(ndev);
++
++	if (!priv->phy_dev)
++		return -ENODEV;
++
++	if (priv->phy_flags == FE_PHY_FLAG_ATTACH) {
++		if (phy_read_status(priv->phy_dev))
++			return -ENODEV;
++	}
++
++	phy_ethtool_ksettings_get(ndev->phydev, cmd);
++
++	return 0;
++}
++
++static int fe_set_link_ksettings(struct net_device *ndev,
++			   const struct ethtool_link_ksettings *cmd)
++{
++	struct fe_priv *priv = netdev_priv(ndev);
++
++	if (!priv->phy_dev)
++		goto out_sset;
++
++	if (cmd->base.phy_address != priv->phy_dev->mdio.addr) {
++		if (priv->phy->phy_node[cmd->base.phy_address]) {
++			priv->phy_dev = priv->phy->phy[cmd->base.phy_address];
++			priv->phy_flags = FE_PHY_FLAG_PORT;
++		} else if (priv->mii_bus && mdiobus_get_phy(priv->mii_bus, cmd->base.phy_address)) {
++			priv->phy_dev = mdiobus_get_phy(priv->mii_bus, cmd->base.phy_address);
++			priv->phy_flags = FE_PHY_FLAG_ATTACH;
++		} else {
++			goto out_sset;
++		}
++	}
++
++	return phy_ethtool_ksettings_set(ndev->phydev, cmd);
++
++out_sset:
++	return -ENODEV;
++}
++
++static void fe_get_drvinfo(struct net_device *dev,
++			   struct ethtool_drvinfo *info)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	struct fe_soc_data *soc = priv->soc;
++
++	strlcpy(info->driver, priv->dev->driver->name, sizeof(info->driver));
++	strlcpy(info->version, MTK_FE_DRV_VERSION, sizeof(info->version));
++	strlcpy(info->bus_info, dev_name(priv->dev), sizeof(info->bus_info));
++
++	if (soc->reg_table[FE_REG_FE_COUNTER_BASE])
++		info->n_stats = ARRAY_SIZE(fe_gdma_str);
++}
++
++static u32 fe_get_msglevel(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++
++	return priv->msg_enable;
++}
++
++static void fe_set_msglevel(struct net_device *dev, u32 value)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++
++	priv->msg_enable = value;
++}
++
++static int fe_nway_reset(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++
++	if (!priv->phy_dev)
++		goto out_nway_reset;
++
++	return genphy_restart_aneg(priv->phy_dev);
++
++out_nway_reset:
++	return -EOPNOTSUPP;
++}
++
++static u32 fe_get_link(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	int err;
++
++	if (!priv->phy_dev)
++		goto out_get_link;
++
++	if (priv->phy_flags == FE_PHY_FLAG_ATTACH) {
++		err = genphy_update_link(priv->phy_dev);
++		if (err)
++			goto out_get_link;
++	}
++
++	return priv->phy_dev->link;
++
++out_get_link:
++	return ethtool_op_get_link(dev);
++}
++
++static int fe_set_ringparam(struct net_device *dev,
++			    struct ethtool_ringparam *ring)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++
++	if ((ring->tx_pending < 2) ||
++	    (ring->rx_pending < 2) ||
++	    (ring->rx_pending > MAX_DMA_DESC) ||
++	    (ring->tx_pending > MAX_DMA_DESC))
++		return -EINVAL;
++
++	dev->netdev_ops->ndo_stop(dev);
++
++	priv->tx_ring.tx_ring_size = BIT(fls(ring->tx_pending) - 1);
++	priv->rx_ring.rx_ring_size = BIT(fls(ring->rx_pending) - 1);
++
++	dev->netdev_ops->ndo_open(dev);
++
++	return 0;
++}
++
++static void fe_get_ringparam(struct net_device *dev,
++			     struct ethtool_ringparam *ring)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++
++	ring->rx_max_pending = MAX_DMA_DESC;
++	ring->tx_max_pending = MAX_DMA_DESC;
++	ring->rx_pending = priv->rx_ring.rx_ring_size;
++	ring->tx_pending = priv->tx_ring.tx_ring_size;
++}
++
++static void fe_get_strings(struct net_device *dev, u32 stringset, u8 *data)
++{
++	switch (stringset) {
++	case ETH_SS_STATS:
++		memcpy(data, *fe_gdma_str, sizeof(fe_gdma_str));
++		break;
++	}
++}
++
++static int fe_get_sset_count(struct net_device *dev, int sset)
++{
++	switch (sset) {
++	case ETH_SS_STATS:
++		return ARRAY_SIZE(fe_gdma_str);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static void fe_get_ethtool_stats(struct net_device *dev,
++				 struct ethtool_stats *stats, u64 *data)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	struct fe_hw_stats *hwstats = priv->hw_stats;
++	u64 *data_src, *data_dst;
++	unsigned int start;
++	int i;
++
++	if (netif_running(dev) && netif_device_present(dev)) {
++		if (spin_trylock(&hwstats->stats_lock)) {
++			fe_stats_update(priv);
++			spin_unlock(&hwstats->stats_lock);
++		}
++	}
++
++	do {
++		data_src = &hwstats->tx_bytes;
++		data_dst = data;
++		start = u64_stats_fetch_begin_irq(&hwstats->syncp);
++
++		for (i = 0; i < ARRAY_SIZE(fe_gdma_str); i++)
++			*data_dst++ = *data_src++;
++
++	} while (u64_stats_fetch_retry_irq(&hwstats->syncp, start));
++}
++
++static struct ethtool_ops fe_ethtool_ops = {
++	.get_link_ksettings	= fe_get_link_ksettings,
++	.set_link_ksettings	= fe_set_link_ksettings,
++	.get_drvinfo		= fe_get_drvinfo,
++	.get_msglevel		= fe_get_msglevel,
++	.set_msglevel		= fe_set_msglevel,
++	.nway_reset		= fe_nway_reset,
++	.get_link		= fe_get_link,
++	.set_ringparam		= fe_set_ringparam,
++	.get_ringparam		= fe_get_ringparam,
++};
++
++void fe_set_ethtool_ops(struct net_device *netdev)
++{
++	struct fe_priv *priv = netdev_priv(netdev);
++	struct fe_soc_data *soc = priv->soc;
++
++	if (soc->reg_table[FE_REG_FE_COUNTER_BASE]) {
++		fe_ethtool_ops.get_strings = fe_get_strings;
++		fe_ethtool_ops.get_sset_count = fe_get_sset_count;
++		fe_ethtool_ops.get_ethtool_stats = fe_get_ethtool_stats;
++	}
++
++	netdev->ethtool_ops = &fe_ethtool_ops;
++}
+diff --git a/drivers/net/ethernet/ralink/ethtool.h b/drivers/net/ethernet/ralink/ethtool.h
+new file mode 100644
+index 000000000000..6fd16f0b663f
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/ethtool.h
+@@ -0,0 +1,22 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#ifndef FE_ETHTOOL_H
++#define FE_ETHTOOL_H
++
++#include <linux/ethtool.h>
++
++void fe_set_ethtool_ops(struct net_device *netdev);
++
++#endif /* FE_ETHTOOL_H */
+diff --git a/drivers/net/ethernet/ralink/mdio.c b/drivers/net/ethernet/ralink/mdio.c
+new file mode 100644
+index 000000000000..dceb08b83527
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/mdio.c
+@@ -0,0 +1,279 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/phy.h>
++#include <linux/of_net.h>
++#include <linux/of_mdio.h>
++
++#include "mtk_eth_soc.h"
++#include "mdio.h"
++
++static int fe_mdio_reset(struct mii_bus *bus)
++{
++	/* TODO */
++	return 0;
++}
++
++static void fe_phy_link_adjust(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	unsigned long flags;
++	int i;
++
++	spin_lock_irqsave(&priv->phy->lock, flags);
++	for (i = 0; i < 8; i++) {
++		if (priv->phy->phy_node[i]) {
++			struct phy_device *phydev = priv->phy->phy[i];
++			int status_change = 0;
++
++			if (phydev->link)
++				if (priv->phy->duplex[i] != phydev->duplex ||
++				    priv->phy->speed[i] != phydev->speed)
++					status_change = 1;
++
++			if (phydev->link != priv->link[i])
++				status_change = 1;
++
++			switch (phydev->speed) {
++			case SPEED_1000:
++			case SPEED_100:
++			case SPEED_10:
++				priv->link[i] = phydev->link;
++				priv->phy->duplex[i] = phydev->duplex;
++				priv->phy->speed[i] = phydev->speed;
++
++				if (status_change &&
++				    priv->soc->mdio_adjust_link)
++					priv->soc->mdio_adjust_link(priv, i);
++				break;
++			}
++		}
++	}
++	spin_unlock_irqrestore(&priv->phy->lock, flags);
++}
++
++int fe_connect_phy_node(struct fe_priv *priv, struct device_node *phy_node, int port)
++{
++	const __be32 *_phy_addr = NULL;
++	struct phy_device *phydev;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
++	int phy_mode;
++#else
++	phy_interface_t phy_mode = PHY_INTERFACE_MODE_NA;
++#endif
++
++	_phy_addr = of_get_property(phy_node, "reg", NULL);
++
++	if (!_phy_addr || (be32_to_cpu(*_phy_addr) >= 0x20)) {
++		pr_err("%s: invalid phy id\n", phy_node->name);
++		return -EINVAL;
++	}
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
++	phy_mode = of_get_phy_mode(phy_node);
++	if (phy_mode < 0) {
++#else
++	of_get_phy_mode(phy_node, &phy_mode);
++	if (phy_mode == PHY_INTERFACE_MODE_NA) {
++#endif
++		dev_err(priv->dev, "incorrect phy-mode %d\n", phy_mode);
++		priv->phy->phy_node[port] = NULL;
++		return -EINVAL;
++	}
++
++	phydev = of_phy_connect(priv->netdev, phy_node, fe_phy_link_adjust,
++				0, phy_mode);
++	if (!phydev) {
++		dev_err(priv->dev, "could not connect to PHY\n");
++		priv->phy->phy_node[port] = NULL;
++		return -ENODEV;
++	}
++
++	phy_set_max_speed(phydev, SPEED_1000);
++	linkmode_copy(phydev->advertising, phydev->supported);
++	phydev->no_auto_carrier_off = 1;
++
++	dev_info(priv->dev,
++		 "connected port %d to PHY at %s [uid=%08x, driver=%s]\n",
++		 port, dev_name(&phydev->mdio.dev), phydev->phy_id,
++		 phydev->drv->name);
++
++	priv->phy->phy[port] = phydev;
++	priv->link[port] = 0;
++
++	return 0;
++}
++
++static void phy_init(struct fe_priv *priv, struct phy_device *phy)
++{
++	phy_attach(priv->netdev, dev_name(&phy->mdio.dev), PHY_INTERFACE_MODE_MII);
++
++	phy->autoneg = AUTONEG_ENABLE;
++	phy->speed = 0;
++	phy->duplex = 0;
++
++	phy_set_max_speed(phy, IS_ENABLED(CONFIG_NET_RALINK_MDIO_MT7620) ?
++				       SPEED_1000 :
++				       SPEED_100);
++	linkmode_copy(phy->advertising, phy->supported);
++	linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phy->advertising);
++
++	phy_start_aneg(phy);
++}
++
++static int fe_phy_connect(struct fe_priv *priv)
++{
++	int i;
++
++	for (i = 0; i < 8; i++) {
++		if (priv->phy->phy_node[i]) {
++			if (!priv->phy_dev) {
++				priv->phy_dev = priv->phy->phy[i];
++				priv->phy_flags = FE_PHY_FLAG_PORT;
++			}
++		} else if (priv->mii_bus) {
++			struct phy_device *phydev;
++
++			phydev = mdiobus_get_phy(priv->mii_bus, i);
++			if (!phydev || phydev->attached_dev)
++				continue;
++
++			phy_init(priv, phydev);
++			if (!priv->phy_dev) {
++				priv->phy_dev = mdiobus_get_phy(priv->mii_bus, i);
++				priv->phy_flags = FE_PHY_FLAG_ATTACH;
++			}
++		}
++	}
++
++	return 0;
++}
++
++static void fe_phy_disconnect(struct fe_priv *priv)
++{
++	unsigned long flags;
++	int i;
++
++	for (i = 0; i < 8; i++)
++		if (priv->phy->phy_fixed[i]) {
++			spin_lock_irqsave(&priv->phy->lock, flags);
++			priv->link[i] = 0;
++			if (priv->soc->mdio_adjust_link)
++				priv->soc->mdio_adjust_link(priv, i);
++			spin_unlock_irqrestore(&priv->phy->lock, flags);
++		} else if (priv->phy->phy[i]) {
++			phy_disconnect(priv->phy->phy[i]);
++		} else if (priv->mii_bus && mdiobus_get_phy(priv->mii_bus, i)) {
++			phy_detach(mdiobus_get_phy(priv->mii_bus, i));
++		}
++}
++
++static void fe_phy_start(struct fe_priv *priv)
++{
++	unsigned long flags;
++	int i;
++
++	for (i = 0; i < 8; i++) {
++		if (priv->phy->phy_fixed[i]) {
++			spin_lock_irqsave(&priv->phy->lock, flags);
++			priv->link[i] = 1;
++			if (priv->soc->mdio_adjust_link)
++				priv->soc->mdio_adjust_link(priv, i);
++			spin_unlock_irqrestore(&priv->phy->lock, flags);
++		} else if (priv->phy->phy[i]) {
++			phy_start(priv->phy->phy[i]);
++		}
++	}
++}
++
++static void fe_phy_stop(struct fe_priv *priv)
++{
++	unsigned long flags;
++	int i;
++
++	for (i = 0; i < 8; i++)
++		if (priv->phy->phy_fixed[i]) {
++			spin_lock_irqsave(&priv->phy->lock, flags);
++			priv->link[i] = 0;
++			if (priv->soc->mdio_adjust_link)
++				priv->soc->mdio_adjust_link(priv, i);
++			spin_unlock_irqrestore(&priv->phy->lock, flags);
++		} else if (priv->phy->phy[i]) {
++			phy_stop(priv->phy->phy[i]);
++		}
++}
++
++static struct fe_phy phy_ralink = {
++	.connect = fe_phy_connect,
++	.disconnect = fe_phy_disconnect,
++	.start = fe_phy_start,
++	.stop = fe_phy_stop,
++};
++
++int fe_mdio_init(struct fe_priv *priv)
++{
++	struct device_node *mii_np;
++	int err;
++
++	if (!priv->soc->mdio_read || !priv->soc->mdio_write)
++		return 0;
++
++	spin_lock_init(&phy_ralink.lock);
++	priv->phy = &phy_ralink;
++
++	mii_np = of_get_child_by_name(priv->dev->of_node, "mdio-bus");
++	if (!mii_np) {
++		dev_err(priv->dev, "no %s child node found", "mdio-bus");
++		return -ENODEV;
++	}
++
++	if (!of_device_is_available(mii_np)) {
++		err = 0;
++		goto err_put_node;
++	}
++
++	priv->mii_bus = mdiobus_alloc();
++	if (!priv->mii_bus) {
++		err = -ENOMEM;
++		goto err_put_node;
++	}
++
++	priv->mii_bus->name = "mdio";
++	priv->mii_bus->read = priv->soc->mdio_read;
++	priv->mii_bus->write = priv->soc->mdio_write;
++	priv->mii_bus->reset = fe_mdio_reset;
++	priv->mii_bus->priv = priv;
++	priv->mii_bus->parent = priv->dev;
++
++	snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s", mii_np->name);
++	err = of_mdiobus_register(priv->mii_bus, mii_np);
++	if (err)
++		goto err_free_bus;
++
++	return 0;
++
++err_free_bus:
++	kfree(priv->mii_bus);
++err_put_node:
++	of_node_put(mii_np);
++	priv->mii_bus = NULL;
++	return err;
++}
++
++void fe_mdio_cleanup(struct fe_priv *priv)
++{
++	if (!priv->mii_bus)
++		return;
++
++	mdiobus_unregister(priv->mii_bus);
++	of_node_put(priv->mii_bus->dev.of_node);
++	kfree(priv->mii_bus);
++}
+diff --git a/drivers/net/ethernet/ralink/mdio.h b/drivers/net/ethernet/ralink/mdio.h
+new file mode 100644
+index 000000000000..d4a2a40473e0
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/mdio.h
+@@ -0,0 +1,28 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#ifndef _RALINK_MDIO_H__
++#define _RALINK_MDIO_H__
++
++#ifdef CONFIG_NET_RALINK_MDIO
++int fe_mdio_init(struct fe_priv *priv);
++void fe_mdio_cleanup(struct fe_priv *priv);
++int fe_connect_phy_node(struct fe_priv *priv,
++			struct device_node *phy_node,
++			int port);
++#else
++static inline int fe_mdio_init(struct fe_priv *priv) { return 0; }
++static inline void fe_mdio_cleanup(struct fe_priv *priv) {}
++#endif
++#endif
+diff --git a/drivers/net/ethernet/ralink/mdio_rt2880.c b/drivers/net/ethernet/ralink/mdio_rt2880.c
+new file mode 100644
+index 000000000000..6242cf9b4234
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/mdio_rt2880.c
+@@ -0,0 +1,230 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/types.h>
++#include <linux/of_net.h>
++#include <linux/of_mdio.h>
++
++#include "mtk_eth_soc.h"
++#include "mdio_rt2880.h"
++#include "mdio.h"
++
++#define FE_MDIO_RETRY	1000
++
++static unsigned char *rt2880_speed_str(struct fe_priv *priv)
++{
++	switch (priv->phy->speed[0]) {
++	case SPEED_1000:
++		return "1000";
++	case SPEED_100:
++		return "100";
++	case SPEED_10:
++		return "10";
++	}
++
++	return "?";
++}
++
++void rt2880_mdio_link_adjust(struct fe_priv *priv, int port)
++{
++	u32 mdio_cfg;
++
++	if (!priv->link[0]) {
++		netif_carrier_off(priv->netdev);
++		netdev_info(priv->netdev, "link down\n");
++		return;
++	}
++
++	mdio_cfg = FE_MDIO_CFG_TX_CLK_SKEW_200 |
++		   FE_MDIO_CFG_RX_CLK_SKEW_200 |
++		   FE_MDIO_CFG_GP1_FRC_EN;
++
++	if (priv->phy->duplex[0] == DUPLEX_FULL)
++		mdio_cfg |= FE_MDIO_CFG_GP1_DUPLEX;
++
++	if (priv->phy->tx_fc[0])
++		mdio_cfg |= FE_MDIO_CFG_GP1_FC_TX;
++
++	if (priv->phy->rx_fc[0])
++		mdio_cfg |= FE_MDIO_CFG_GP1_FC_RX;
++
++	switch (priv->phy->speed[0]) {
++	case SPEED_10:
++		mdio_cfg |= FE_MDIO_CFG_GP1_SPEED_10;
++		break;
++	case SPEED_100:
++		mdio_cfg |= FE_MDIO_CFG_GP1_SPEED_100;
++		break;
++	case SPEED_1000:
++		mdio_cfg |= FE_MDIO_CFG_GP1_SPEED_1000;
++		break;
++	default:
++		BUG();
++	}
++
++	fe_w32(mdio_cfg, FE_MDIO_CFG);
++
++	netif_carrier_on(priv->netdev);
++	netdev_info(priv->netdev, "link up (%sMbps/%s duplex)\n",
++		    rt2880_speed_str(priv),
++		    (priv->phy->duplex[0] == DUPLEX_FULL) ? "Full" : "Half");
++}
++
++static int rt2880_mdio_wait_ready(struct fe_priv *priv)
++{
++	int retries;
++
++	retries = FE_MDIO_RETRY;
++	while (1) {
++		u32 t;
++
++		t = fe_r32(FE_MDIO_ACCESS);
++		if ((t & BIT(31)) == 0)
++			return 0;
++
++		if (retries-- == 0)
++			break;
++
++		udelay(1);
++	}
++
++	dev_err(priv->dev, "MDIO operation timed out\n");
++	return -ETIMEDOUT;
++}
++
++int rt2880_mdio_read(struct mii_bus *bus, int phy_addr, int phy_reg)
++{
++	struct fe_priv *priv = bus->priv;
++	int err;
++	u32 t;
++
++	err = rt2880_mdio_wait_ready(priv);
++	if (err)
++		return 0xffff;
++
++	t = (phy_addr << 24) | (phy_reg << 16);
++	fe_w32(t, FE_MDIO_ACCESS);
++	t |= BIT(31);
++	fe_w32(t, FE_MDIO_ACCESS);
++
++	err = rt2880_mdio_wait_ready(priv);
++	if (err)
++		return 0xffff;
++
++	pr_debug("%s: addr=%04x, reg=%04x, value=%04x\n", __func__,
++		 phy_addr, phy_reg, fe_r32(FE_MDIO_ACCESS) & 0xffff);
++
++	return fe_r32(FE_MDIO_ACCESS) & 0xffff;
++}
++
++int rt2880_mdio_write(struct mii_bus *bus, int phy_addr, int phy_reg, u16 val)
++{
++	struct fe_priv *priv = bus->priv;
++	int err;
++	u32 t;
++
++	pr_debug("%s: addr=%04x, reg=%04x, value=%04x\n", __func__,
++		 phy_addr, phy_reg, fe_r32(FE_MDIO_ACCESS) & 0xffff);
++
++	err = rt2880_mdio_wait_ready(priv);
++	if (err)
++		return err;
++
++	t = (1 << 30) | (phy_addr << 24) | (phy_reg << 16) | val;
++	fe_w32(t, FE_MDIO_ACCESS);
++	t |= BIT(31);
++	fe_w32(t, FE_MDIO_ACCESS);
++
++	return rt2880_mdio_wait_ready(priv);
++}
++
++void rt2880_port_init(struct fe_priv *priv, struct device_node *np)
++{
++	const __be32 *id = of_get_property(np, "reg", NULL);
++	const __be32 *link;
++	int size;
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
++	int phy_mode;
++#else
++	phy_interface_t phy_mode = PHY_INTERFACE_MODE_NA;
++#endif
++
++	if (!id || (be32_to_cpu(*id) != 0)) {
++		pr_err("%s: invalid port id\n", np->name);
++		return;
++	}
++
++	priv->phy->phy_fixed[0] = of_get_property(np,
++						  "mediatek,fixed-link", &size);
++	if (priv->phy->phy_fixed[0] &&
++	    (size != (4 * sizeof(*priv->phy->phy_fixed[0])))) {
++		pr_err("%s: invalid fixed link property\n", np->name);
++		priv->phy->phy_fixed[0] = NULL;
++		return;
++	}
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
++	phy_mode = of_get_phy_mode(np);
++#else
++	of_get_phy_mode(np, &phy_mode);
++#endif
++	switch (phy_mode) {
++	case PHY_INTERFACE_MODE_RGMII:
++		break;
++	case PHY_INTERFACE_MODE_MII:
++		break;
++	case PHY_INTERFACE_MODE_RMII:
++		break;
++	default:
++		if (!priv->phy->phy_fixed[0])
++			dev_err(priv->dev, "port %d - invalid phy mode\n",
++				priv->phy->speed[0]);
++		break;
++	}
++
++	priv->phy->phy_node[0] = of_parse_phandle(np, "phy-handle", 0);
++	if (!priv->phy->phy_node[0] && !priv->phy->phy_fixed[0])
++		return;
++
++	if (priv->phy->phy_fixed[0]) {
++		link = priv->phy->phy_fixed[0];
++		priv->phy->speed[0] = be32_to_cpup(link++);
++		priv->phy->duplex[0] = be32_to_cpup(link++);
++		priv->phy->tx_fc[0] = be32_to_cpup(link++);
++		priv->phy->rx_fc[0] = be32_to_cpup(link++);
++
++		priv->link[0] = 1;
++		switch (priv->phy->speed[0]) {
++		case SPEED_10:
++			break;
++		case SPEED_100:
++			break;
++		case SPEED_1000:
++			break;
++		default:
++			dev_err(priv->dev, "invalid link speed: %d\n",
++				priv->phy->speed[0]);
++			priv->phy->phy_fixed[0] = 0;
++			return;
++		}
++		dev_info(priv->dev, "using fixed link parameters\n");
++		rt2880_mdio_link_adjust(priv, 0);
++		return;
++	}
++
++	if (priv->phy->phy_node[0] && mdiobus_get_phy(priv->mii_bus, 0))
++		fe_connect_phy_node(priv, priv->phy->phy_node[0], 0);
++}
+diff --git a/drivers/net/ethernet/ralink/mdio_rt2880.h b/drivers/net/ethernet/ralink/mdio_rt2880.h
+new file mode 100644
+index 000000000000..70e344283e59
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/mdio_rt2880.h
+@@ -0,0 +1,23 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#ifndef _RALINK_MDIO_RT2880_H__
++#define _RALINK_MDIO_RT2880_H__
++
++void rt2880_mdio_link_adjust(struct fe_priv *priv, int port);
++int rt2880_mdio_read(struct mii_bus *bus, int phy_addr, int phy_reg);
++int rt2880_mdio_write(struct mii_bus *bus, int phy_addr, int phy_reg, u16 val);
++void rt2880_port_init(struct fe_priv *priv, struct device_node *np);
++
++#endif
+diff --git a/drivers/net/ethernet/ralink/mtk_eth_soc.c b/drivers/net/ethernet/ralink/mtk_eth_soc.c
+new file mode 100644
+index 000000000000..b6e321b78c0c
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/mtk_eth_soc.c
+@@ -0,0 +1,1696 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#include <linux/module.h>
++#include <linux/kernel.h>
++#include <linux/types.h>
++#include <linux/dma-mapping.h>
++#include <linux/init.h>
++#include <linux/skbuff.h>
++#include <linux/etherdevice.h>
++#include <linux/ethtool.h>
++#include <linux/platform_device.h>
++#include <linux/of_device.h>
++#include <linux/clk.h>
++#include <linux/of_net.h>
++#include <linux/of_mdio.h>
++#include <linux/if_vlan.h>
++#include <linux/reset.h>
++#include <linux/tcp.h>
++#include <linux/io.h>
++#include <linux/bug.h>
++#include <linux/netfilter.h>
++#include <net/netfilter/nf_flow_table.h>
++#include <linux/of_gpio.h>
++#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
++
++#include <asm/mach-ralink/ralink_regs.h>
++
++#include "mtk_eth_soc.h"
++#include "mdio.h"
++#include "ethtool.h"
++
++#define	MAX_RX_LENGTH		1536
++#define FE_RX_ETH_HLEN		(VLAN_ETH_HLEN + VLAN_HLEN + ETH_FCS_LEN)
++#define FE_RX_HLEN		(NET_SKB_PAD + FE_RX_ETH_HLEN + NET_IP_ALIGN)
++#define DMA_DUMMY_DESC		0xffffffff
++#define FE_DEFAULT_MSG_ENABLE \
++		(NETIF_MSG_DRV | \
++		NETIF_MSG_PROBE | \
++		NETIF_MSG_LINK | \
++		NETIF_MSG_TIMER | \
++		NETIF_MSG_IFDOWN | \
++		NETIF_MSG_IFUP | \
++		NETIF_MSG_RX_ERR | \
++		NETIF_MSG_TX_ERR)
++
++#define TX_DMA_DESP2_DEF	(TX_DMA_LS0 | TX_DMA_DONE)
++#define TX_DMA_DESP4_DEF	(TX_DMA_QN(3) | TX_DMA_PN(1))
++#define NEXT_TX_DESP_IDX(X)	(((X) + 1) & (ring->tx_ring_size - 1))
++#define NEXT_RX_DESP_IDX(X)	(((X) + 1) & (ring->rx_ring_size - 1))
++
++#define SYSC_REG_RSTCTRL	0x34
++
++static int fe_msg_level = -1;
++module_param_named(msg_level, fe_msg_level, int, 0);
++MODULE_PARM_DESC(msg_level, "Message level (-1=defaults,0=none,...,16=all)");
++
++static const u16 fe_reg_table_default[FE_REG_COUNT] = {
++	[FE_REG_PDMA_GLO_CFG] = FE_PDMA_GLO_CFG,
++	[FE_REG_PDMA_RST_CFG] = FE_PDMA_RST_CFG,
++	[FE_REG_DLY_INT_CFG] = FE_DLY_INT_CFG,
++	[FE_REG_TX_BASE_PTR0] = FE_TX_BASE_PTR0,
++	[FE_REG_TX_MAX_CNT0] = FE_TX_MAX_CNT0,
++	[FE_REG_TX_CTX_IDX0] = FE_TX_CTX_IDX0,
++	[FE_REG_TX_DTX_IDX0] = FE_TX_DTX_IDX0,
++	[FE_REG_RX_BASE_PTR0] = FE_RX_BASE_PTR0,
++	[FE_REG_RX_MAX_CNT0] = FE_RX_MAX_CNT0,
++	[FE_REG_RX_CALC_IDX0] = FE_RX_CALC_IDX0,
++	[FE_REG_RX_DRX_IDX0] = FE_RX_DRX_IDX0,
++	[FE_REG_FE_INT_ENABLE] = FE_FE_INT_ENABLE,
++	[FE_REG_FE_INT_STATUS] = FE_FE_INT_STATUS,
++	[FE_REG_FE_DMA_VID_BASE] = FE_DMA_VID0,
++	[FE_REG_FE_COUNTER_BASE] = FE_GDMA1_TX_GBCNT,
++	[FE_REG_FE_RST_GL] = FE_FE_RST_GL,
++};
++
++static const u16 *fe_reg_table = fe_reg_table_default;
++
++struct fe_work_t {
++	int bitnr;
++	void (*action)(struct fe_priv *);
++};
++
++static void __iomem *fe_base;
++
++void fe_w32(u32 val, unsigned reg)
++{
++	__raw_writel(val, fe_base + reg);
++}
++
++u32 fe_r32(unsigned reg)
++{
++	return __raw_readl(fe_base + reg);
++}
++
++void fe_reg_w32(u32 val, enum fe_reg reg)
++{
++	fe_w32(val, fe_reg_table[reg]);
++}
++
++u32 fe_reg_r32(enum fe_reg reg)
++{
++	return fe_r32(fe_reg_table[reg]);
++}
++
++void fe_m32(struct fe_priv *eth, u32 clear, u32 set, unsigned reg)
++{
++	u32 val;
++
++	spin_lock(&eth->page_lock);
++	val = __raw_readl(fe_base + reg);
++	val &= ~clear;
++	val |= set;
++	__raw_writel(val, fe_base + reg);
++	spin_unlock(&eth->page_lock);
++}
++
++void fe_reset(u32 reset_bits)
++{
++	u32 t;
++
++	t = rt_sysc_r32(SYSC_REG_RSTCTRL);
++	t |= reset_bits;
++	rt_sysc_w32(t, SYSC_REG_RSTCTRL);
++	usleep_range(10, 20);
++
++	t &= ~reset_bits;
++	rt_sysc_w32(t, SYSC_REG_RSTCTRL);
++	usleep_range(10, 20);
++}
++
++static inline void fe_int_disable(u32 mask)
++{
++	fe_reg_w32(fe_reg_r32(FE_REG_FE_INT_ENABLE) & ~mask,
++		   FE_REG_FE_INT_ENABLE);
++	/* flush write */
++	fe_reg_r32(FE_REG_FE_INT_ENABLE);
++}
++
++static inline void fe_int_enable(u32 mask)
++{
++	fe_reg_w32(fe_reg_r32(FE_REG_FE_INT_ENABLE) | mask,
++		   FE_REG_FE_INT_ENABLE);
++	/* flush write */
++	fe_reg_r32(FE_REG_FE_INT_ENABLE);
++}
++
++static inline void fe_hw_set_macaddr(struct fe_priv *priv, unsigned char *mac)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->page_lock, flags);
++	fe_w32((mac[0] << 8) | mac[1], FE_GDMA1_MAC_ADRH);
++	fe_w32((mac[2] << 24) | (mac[3] << 16) | (mac[4] << 8) | mac[5],
++	       FE_GDMA1_MAC_ADRL);
++	spin_unlock_irqrestore(&priv->page_lock, flags);
++}
++
++static int fe_set_mac_address(struct net_device *dev, void *p)
++{
++	int ret = eth_mac_addr(dev, p);
++
++	if (!ret) {
++		struct fe_priv *priv = netdev_priv(dev);
++
++		if (priv->soc->set_mac)
++			priv->soc->set_mac(priv, dev->dev_addr);
++		else
++			fe_hw_set_macaddr(priv, p);
++	}
++
++	return ret;
++}
++
++static inline int fe_max_frag_size(int mtu)
++{
++	/* make sure buf_size will be at least MAX_RX_LENGTH */
++	if (mtu + FE_RX_ETH_HLEN < MAX_RX_LENGTH)
++		mtu = MAX_RX_LENGTH - FE_RX_ETH_HLEN;
++
++	return SKB_DATA_ALIGN(FE_RX_HLEN + mtu) +
++		SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++}
++
++static inline int fe_max_buf_size(int frag_size)
++{
++	int buf_size = frag_size - NET_SKB_PAD - NET_IP_ALIGN -
++		       SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
++
++	BUG_ON(buf_size < MAX_RX_LENGTH);
++	return buf_size;
++}
++
++static inline void fe_get_rxd(struct fe_rx_dma *rxd, struct fe_rx_dma *dma_rxd)
++{
++	rxd->rxd1 = dma_rxd->rxd1;
++	rxd->rxd2 = dma_rxd->rxd2;
++	rxd->rxd3 = dma_rxd->rxd3;
++	rxd->rxd4 = dma_rxd->rxd4;
++}
++
++static inline void fe_set_txd(struct fe_tx_dma *txd, struct fe_tx_dma *dma_txd)
++{
++	dma_txd->txd1 = txd->txd1;
++	dma_txd->txd3 = txd->txd3;
++	dma_txd->txd4 = txd->txd4;
++	/* clean dma done flag last */
++	dma_txd->txd2 = txd->txd2;
++}
++
++static void fe_clean_rx(struct fe_priv *priv)
++{
++	struct fe_rx_ring *ring = &priv->rx_ring;
++	struct page *page;
++	int i;
++
++	if (ring->rx_data) {
++		for (i = 0; i < ring->rx_ring_size; i++)
++			if (ring->rx_data[i]) {
++				if (ring->rx_dma && ring->rx_dma[i].rxd1)
++					dma_unmap_single(priv->dev,
++							 ring->rx_dma[i].rxd1,
++							 ring->rx_buf_size,
++							 DMA_FROM_DEVICE);
++				skb_free_frag(ring->rx_data[i]);
++			}
++
++		kfree(ring->rx_data);
++		ring->rx_data = NULL;
++	}
++
++	if (ring->rx_dma) {
++		dma_free_coherent(priv->dev,
++				  ring->rx_ring_size * sizeof(*ring->rx_dma),
++				  ring->rx_dma,
++				  ring->rx_phys);
++		ring->rx_dma = NULL;
++	}
++
++	if (!ring->frag_cache.va)
++	    return;
++
++	page = virt_to_page(ring->frag_cache.va);
++	__page_frag_cache_drain(page, ring->frag_cache.pagecnt_bias);
++	memset(&ring->frag_cache, 0, sizeof(ring->frag_cache));
++}
++
++static int fe_alloc_rx(struct fe_priv *priv)
++{
++	struct fe_rx_ring *ring = &priv->rx_ring;
++	int i, pad;
++
++	ring->rx_data = kcalloc(ring->rx_ring_size, sizeof(*ring->rx_data),
++			GFP_KERNEL);
++	if (!ring->rx_data)
++		goto no_rx_mem;
++
++	for (i = 0; i < ring->rx_ring_size; i++) {
++		ring->rx_data[i] = page_frag_alloc(&ring->frag_cache,
++						   ring->frag_size,
++						   GFP_KERNEL);
++		if (!ring->rx_data[i])
++			goto no_rx_mem;
++	}
++
++	ring->rx_dma = dma_alloc_coherent(priv->dev,
++			ring->rx_ring_size * sizeof(*ring->rx_dma),
++			&ring->rx_phys,
++			GFP_ATOMIC | __GFP_ZERO);
++	if (!ring->rx_dma)
++		goto no_rx_mem;
++
++	if (priv->flags & FE_FLAG_RX_2B_OFFSET)
++		pad = 0;
++	else
++		pad = NET_IP_ALIGN;
++	for (i = 0; i < ring->rx_ring_size; i++) {
++		dma_addr_t dma_addr = dma_map_single(priv->dev,
++				ring->rx_data[i] + NET_SKB_PAD + pad,
++				ring->rx_buf_size,
++				DMA_FROM_DEVICE);
++		if (unlikely(dma_mapping_error(priv->dev, dma_addr)))
++			goto no_rx_mem;
++		ring->rx_dma[i].rxd1 = (unsigned int)dma_addr;
++
++		if (priv->flags & FE_FLAG_RX_SG_DMA)
++			ring->rx_dma[i].rxd2 = RX_DMA_PLEN0(ring->rx_buf_size);
++		else
++			ring->rx_dma[i].rxd2 = RX_DMA_LSO;
++	}
++	ring->rx_calc_idx = ring->rx_ring_size - 1;
++	/* make sure that all changes to the dma ring are flushed before we
++	 * continue
++	 */
++	wmb();
++
++	fe_reg_w32(ring->rx_phys, FE_REG_RX_BASE_PTR0);
++	fe_reg_w32(ring->rx_ring_size, FE_REG_RX_MAX_CNT0);
++	fe_reg_w32(ring->rx_calc_idx, FE_REG_RX_CALC_IDX0);
++	fe_reg_w32(FE_PST_DRX_IDX0, FE_REG_PDMA_RST_CFG);
++
++	return 0;
++
++no_rx_mem:
++	return -ENOMEM;
++}
++
++static void fe_txd_unmap(struct device *dev, struct fe_tx_buf *tx_buf)
++{
++	if (dma_unmap_len(tx_buf, dma_len0))
++		dma_unmap_page(dev,
++			       dma_unmap_addr(tx_buf, dma_addr0),
++			       dma_unmap_len(tx_buf, dma_len0),
++			       DMA_TO_DEVICE);
++
++	if (dma_unmap_len(tx_buf, dma_len1))
++		dma_unmap_page(dev,
++			       dma_unmap_addr(tx_buf, dma_addr1),
++			       dma_unmap_len(tx_buf, dma_len1),
++			       DMA_TO_DEVICE);
++
++	dma_unmap_len_set(tx_buf, dma_addr0, 0);
++	dma_unmap_len_set(tx_buf, dma_addr1, 0);
++	if (tx_buf->skb && (tx_buf->skb != (struct sk_buff *)DMA_DUMMY_DESC))
++		dev_kfree_skb_any(tx_buf->skb);
++	tx_buf->skb = NULL;
++}
++
++static void fe_clean_tx(struct fe_priv *priv)
++{
++	int i;
++	struct device *dev = priv->dev;
++	struct fe_tx_ring *ring = &priv->tx_ring;
++
++	if (ring->tx_buf) {
++		for (i = 0; i < ring->tx_ring_size; i++)
++			fe_txd_unmap(dev, &ring->tx_buf[i]);
++		kfree(ring->tx_buf);
++		ring->tx_buf = NULL;
++	}
++
++	if (ring->tx_dma) {
++		dma_free_coherent(dev,
++				  ring->tx_ring_size * sizeof(*ring->tx_dma),
++				  ring->tx_dma,
++				  ring->tx_phys);
++		ring->tx_dma = NULL;
++	}
++
++	netdev_reset_queue(priv->netdev);
++}
++
++static int fe_alloc_tx(struct fe_priv *priv)
++{
++	int i;
++	struct fe_tx_ring *ring = &priv->tx_ring;
++
++	ring->tx_free_idx = 0;
++	ring->tx_next_idx = 0;
++	ring->tx_thresh = max((unsigned long)ring->tx_ring_size >> 2,
++			      MAX_SKB_FRAGS);
++
++	ring->tx_buf = kcalloc(ring->tx_ring_size, sizeof(*ring->tx_buf),
++			GFP_KERNEL);
++	if (!ring->tx_buf)
++		goto no_tx_mem;
++
++	ring->tx_dma = dma_alloc_coherent(priv->dev,
++			ring->tx_ring_size * sizeof(*ring->tx_dma),
++			&ring->tx_phys,
++			GFP_ATOMIC | __GFP_ZERO);
++	if (!ring->tx_dma)
++		goto no_tx_mem;
++
++	for (i = 0; i < ring->tx_ring_size; i++) {
++		if (priv->soc->tx_dma)
++			priv->soc->tx_dma(&ring->tx_dma[i]);
++		ring->tx_dma[i].txd2 = TX_DMA_DESP2_DEF;
++	}
++	/* make sure that all changes to the dma ring are flushed before we
++	 * continue
++	 */
++	wmb();
++
++	fe_reg_w32(ring->tx_phys, FE_REG_TX_BASE_PTR0);
++	fe_reg_w32(ring->tx_ring_size, FE_REG_TX_MAX_CNT0);
++	fe_reg_w32(0, FE_REG_TX_CTX_IDX0);
++	fe_reg_w32(FE_PST_DTX_IDX0, FE_REG_PDMA_RST_CFG);
++
++	return 0;
++
++no_tx_mem:
++	return -ENOMEM;
++}
++
++static int fe_init_dma(struct fe_priv *priv)
++{
++	int err;
++
++	err = fe_alloc_tx(priv);
++	if (err)
++		return err;
++
++	err = fe_alloc_rx(priv);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static void fe_free_dma(struct fe_priv *priv)
++{
++	fe_clean_tx(priv);
++	fe_clean_rx(priv);
++}
++
++void fe_stats_update(struct fe_priv *priv)
++{
++	struct fe_hw_stats *hwstats = priv->hw_stats;
++	unsigned int base = fe_reg_table[FE_REG_FE_COUNTER_BASE];
++	u64 stats;
++
++	u64_stats_update_begin(&hwstats->syncp);
++
++	if (IS_ENABLED(CONFIG_SOC_MT7621)) {
++		hwstats->rx_bytes			+= fe_r32(base);
++		stats					=  fe_r32(base + 0x04);
++		if (stats)
++			hwstats->rx_bytes		+= (stats << 32);
++		hwstats->rx_packets			+= fe_r32(base + 0x08);
++		hwstats->rx_overflow			+= fe_r32(base + 0x10);
++		hwstats->rx_fcs_errors			+= fe_r32(base + 0x14);
++		hwstats->rx_short_errors		+= fe_r32(base + 0x18);
++		hwstats->rx_long_errors			+= fe_r32(base + 0x1c);
++		hwstats->rx_checksum_errors		+= fe_r32(base + 0x20);
++		hwstats->rx_flow_control_packets	+= fe_r32(base + 0x24);
++		hwstats->tx_skip			+= fe_r32(base + 0x28);
++		hwstats->tx_collisions			+= fe_r32(base + 0x2c);
++		hwstats->tx_bytes			+= fe_r32(base + 0x30);
++		stats					=  fe_r32(base + 0x34);
++		if (stats)
++			hwstats->tx_bytes		+= (stats << 32);
++		hwstats->tx_packets			+= fe_r32(base + 0x38);
++	} else {
++		hwstats->tx_bytes			+= fe_r32(base);
++		hwstats->tx_packets			+= fe_r32(base + 0x04);
++		hwstats->tx_skip			+= fe_r32(base + 0x08);
++		hwstats->tx_collisions			+= fe_r32(base + 0x0c);
++		hwstats->rx_bytes			+= fe_r32(base + 0x20);
++		hwstats->rx_packets			+= fe_r32(base + 0x24);
++		hwstats->rx_overflow			+= fe_r32(base + 0x28);
++		hwstats->rx_fcs_errors			+= fe_r32(base + 0x2c);
++		hwstats->rx_short_errors		+= fe_r32(base + 0x30);
++		hwstats->rx_long_errors			+= fe_r32(base + 0x34);
++		hwstats->rx_checksum_errors		+= fe_r32(base + 0x38);
++		hwstats->rx_flow_control_packets	+= fe_r32(base + 0x3c);
++	}
++
++	u64_stats_update_end(&hwstats->syncp);
++}
++
++static void fe_get_stats64(struct net_device *dev,
++				struct rtnl_link_stats64 *storage)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	struct fe_hw_stats *hwstats = priv->hw_stats;
++	unsigned int base = fe_reg_table[FE_REG_FE_COUNTER_BASE];
++	unsigned int start;
++
++	if (!base) {
++		netdev_stats_to_stats64(storage, &dev->stats);
++		return;
++	}
++
++	if (netif_running(dev) && netif_device_present(dev)) {
++		if (spin_trylock_bh(&hwstats->stats_lock)) {
++			fe_stats_update(priv);
++			spin_unlock_bh(&hwstats->stats_lock);
++		}
++	}
++
++	do {
++		start = u64_stats_fetch_begin_irq(&hwstats->syncp);
++		storage->rx_packets = hwstats->rx_packets;
++		storage->tx_packets = hwstats->tx_packets;
++		storage->rx_bytes = hwstats->rx_bytes;
++		storage->tx_bytes = hwstats->tx_bytes;
++		storage->collisions = hwstats->tx_collisions;
++		storage->rx_length_errors = hwstats->rx_short_errors +
++			hwstats->rx_long_errors;
++		storage->rx_over_errors = hwstats->rx_overflow;
++		storage->rx_crc_errors = hwstats->rx_fcs_errors;
++		storage->rx_errors = hwstats->rx_checksum_errors;
++		storage->tx_aborted_errors = hwstats->tx_skip;
++	} while (u64_stats_fetch_retry_irq(&hwstats->syncp, start));
++
++	storage->tx_errors = priv->netdev->stats.tx_errors;
++	storage->rx_dropped = priv->netdev->stats.rx_dropped;
++	storage->tx_dropped = priv->netdev->stats.tx_dropped;
++}
++
++static int fe_vlan_rx_add_vid(struct net_device *dev,
++			      __be16 proto, u16 vid)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	u32 idx = (vid & 0xf);
++	u32 vlan_cfg;
++
++	if (!((fe_reg_table[FE_REG_FE_DMA_VID_BASE]) &&
++	      (dev->features & NETIF_F_HW_VLAN_CTAG_TX)))
++		return 0;
++
++	if (test_bit(idx, &priv->vlan_map)) {
++		netdev_warn(dev, "disable tx vlan offload\n");
++		dev->wanted_features &= ~NETIF_F_HW_VLAN_CTAG_TX;
++		netdev_update_features(dev);
++	} else {
++		vlan_cfg = fe_r32(fe_reg_table[FE_REG_FE_DMA_VID_BASE] +
++				((idx >> 1) << 2));
++		if (idx & 0x1) {
++			vlan_cfg &= 0xffff;
++			vlan_cfg |= (vid << 16);
++		} else {
++			vlan_cfg &= 0xffff0000;
++			vlan_cfg |= vid;
++		}
++		fe_w32(vlan_cfg, fe_reg_table[FE_REG_FE_DMA_VID_BASE] +
++				((idx >> 1) << 2));
++		set_bit(idx, &priv->vlan_map);
++	}
++
++	return 0;
++}
++
++static int fe_vlan_rx_kill_vid(struct net_device *dev,
++			       __be16 proto, u16 vid)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	u32 idx = (vid & 0xf);
++
++	if (!((fe_reg_table[FE_REG_FE_DMA_VID_BASE]) &&
++	      (dev->features & NETIF_F_HW_VLAN_CTAG_TX)))
++		return 0;
++
++	clear_bit(idx, &priv->vlan_map);
++
++	return 0;
++}
++
++static inline u32 fe_empty_txd(struct fe_tx_ring *ring)
++{
++	barrier();
++	return (u32)(ring->tx_ring_size -
++			((ring->tx_next_idx - ring->tx_free_idx) &
++			 (ring->tx_ring_size - 1)));
++}
++
++struct fe_map_state {
++	struct device *dev;
++	struct fe_tx_dma txd;
++	u32 def_txd4;
++	int ring_idx;
++	int i;
++};
++
++static void fe_tx_dma_write_desc(struct fe_tx_ring *ring, struct fe_map_state *st)
++{
++	fe_set_txd(&st->txd, &ring->tx_dma[st->ring_idx]);
++	memset(&st->txd, 0, sizeof(st->txd));
++	st->txd.txd4 = st->def_txd4;
++	st->ring_idx = NEXT_TX_DESP_IDX(st->ring_idx);
++}
++
++static int __fe_tx_dma_map_page(struct fe_tx_ring *ring, struct fe_map_state *st,
++				struct page *page, size_t offset, size_t size)
++{
++	struct device *dev = st->dev;
++	struct fe_tx_buf *tx_buf;
++	dma_addr_t mapped_addr;
++
++	mapped_addr = dma_map_page(dev, page, offset, size, DMA_TO_DEVICE);
++	if (unlikely(dma_mapping_error(dev, mapped_addr)))
++		return -EIO;
++
++	if (st->i && !(st->i & 1))
++	    fe_tx_dma_write_desc(ring, st);
++
++	tx_buf = &ring->tx_buf[st->ring_idx];
++	if (st->i & 1) {
++		st->txd.txd3 = mapped_addr;
++		st->txd.txd2 |= TX_DMA_PLEN1(size);
++		dma_unmap_addr_set(tx_buf, dma_addr1, mapped_addr);
++		dma_unmap_len_set(tx_buf, dma_len1, size);
++	} else {
++		tx_buf->skb = (struct sk_buff *)DMA_DUMMY_DESC;
++		st->txd.txd1 = mapped_addr;
++		st->txd.txd2 = TX_DMA_PLEN0(size);
++		dma_unmap_addr_set(tx_buf, dma_addr0, mapped_addr);
++		dma_unmap_len_set(tx_buf, dma_len0, size);
++	}
++	st->i++;
++
++	return 0;
++}
++
++static int fe_tx_dma_map_page(struct fe_tx_ring *ring, struct fe_map_state *st,
++			      struct page *page, size_t offset, size_t size)
++{
++	int cur_size;
++	int ret;
++
++	while (size > 0) {
++		cur_size = min_t(size_t, size, TX_DMA_BUF_LEN);
++
++		ret = __fe_tx_dma_map_page(ring, st, page, offset, cur_size);
++		if (ret)
++			return ret;
++
++		size -= cur_size;
++		offset += cur_size;
++	}
++
++	return 0;
++}
++
++static int fe_tx_dma_map_skb(struct fe_tx_ring *ring, struct fe_map_state *st,
++			     struct sk_buff *skb)
++{
++	struct page *page = virt_to_page(skb->data);
++	size_t offset = offset_in_page(skb->data);
++	size_t size = skb_headlen(skb);
++
++	return fe_tx_dma_map_page(ring, st, page, offset, size);
++}
++
++static inline struct sk_buff *
++fe_next_frag(struct sk_buff *head, struct sk_buff *skb)
++{
++	if (skb != head)
++		return skb->next;
++
++	if (skb_has_frag_list(skb))
++		return skb_shinfo(skb)->frag_list;
++
++	return NULL;
++}
++
++
++static int fe_tx_map_dma(struct sk_buff *skb, struct net_device *dev,
++			 int tx_num, struct fe_tx_ring *ring)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	struct fe_map_state st = {
++		.dev = priv->dev,
++		.ring_idx = ring->tx_next_idx,
++	};
++	struct sk_buff *head = skb;
++	struct fe_tx_buf *tx_buf;
++	unsigned int nr_frags;
++	int i, j;
++
++	/* init tx descriptor */
++	if (priv->soc->tx_dma)
++		priv->soc->tx_dma(&st.txd);
++	else
++		st.txd.txd4 = TX_DMA_DESP4_DEF;
++	st.def_txd4 = st.txd.txd4;
++
++	/* TX Checksum offload */
++	if (skb->ip_summed == CHECKSUM_PARTIAL)
++		st.txd.txd4 |= TX_DMA_CHKSUM;
++
++	/* VLAN header offload */
++	if (skb_vlan_tag_present(skb)) {
++		u16 tag = skb_vlan_tag_get(skb);
++
++		if (IS_ENABLED(CONFIG_SOC_MT7621))
++			st.txd.txd4 |= TX_DMA_INS_VLAN_MT7621 | tag;
++		else
++			st.txd.txd4 |= TX_DMA_INS_VLAN |
++				((tag >> VLAN_PRIO_SHIFT) << 4) |
++				(tag & 0xF);
++	}
++
++	/* TSO: fill MSS info in tcp checksum field */
++	if (skb_is_gso(skb)) {
++		if (skb_cow_head(skb, 0)) {
++			netif_warn(priv, tx_err, dev,
++				   "GSO expand head fail.\n");
++			goto err_out;
++		}
++		if (skb_shinfo(skb)->gso_type &
++				(SKB_GSO_TCPV4 | SKB_GSO_TCPV6)) {
++			st.txd.txd4 |= TX_DMA_TSO;
++			tcp_hdr(skb)->check = htons(skb_shinfo(skb)->gso_size);
++		}
++	}
++
++next_frag:
++	if (skb_headlen(skb) && fe_tx_dma_map_skb(ring, &st, skb))
++		goto err_dma;
++
++	/* TX SG offload */
++	nr_frags = skb_shinfo(skb)->nr_frags;
++	for (i = 0; i < nr_frags; i++) {
++		skb_frag_t *frag;
++
++		frag = &skb_shinfo(skb)->frags[i];
++		if (fe_tx_dma_map_page(ring, &st, skb_frag_page(frag),
++				       skb_frag_off(frag), skb_frag_size(frag)))
++			goto err_dma;
++	}
++
++	skb = fe_next_frag(head, skb);
++	if (skb)
++		goto next_frag;
++
++	/* set last segment */
++	if (st.i & 0x1)
++		st.txd.txd2 |= TX_DMA_LS0;
++	else
++		st.txd.txd2 |= TX_DMA_LS1;
++
++	/* store skb to cleanup */
++	tx_buf = &ring->tx_buf[st.ring_idx];
++	tx_buf->skb = head;
++
++	netdev_sent_queue(dev, head->len);
++	skb_tx_timestamp(head);
++
++	fe_tx_dma_write_desc(ring, &st);
++	ring->tx_next_idx = st.ring_idx;
++
++	/* make sure that all changes to the dma ring are flushed before we
++	 * continue
++	 */
++	wmb();
++	if (unlikely(fe_empty_txd(ring) <= ring->tx_thresh)) {
++		netif_stop_queue(dev);
++		smp_mb();
++		if (unlikely(fe_empty_txd(ring) > ring->tx_thresh))
++			netif_wake_queue(dev);
++	}
++
++	if (netif_xmit_stopped(netdev_get_tx_queue(dev, 0)) || !netdev_xmit_more())
++		fe_reg_w32(ring->tx_next_idx, FE_REG_TX_CTX_IDX0);
++
++	return 0;
++
++err_dma:
++	j = ring->tx_next_idx;
++	for (i = 0; i < tx_num; i++) {
++		/* unmap dma */
++		fe_txd_unmap(priv->dev, &ring->tx_buf[j]);
++		ring->tx_dma[j].txd2 = TX_DMA_DESP2_DEF;
++
++		j = NEXT_TX_DESP_IDX(j);
++	}
++	/* make sure that all changes to the dma ring are flushed before we
++	 * continue
++	 */
++	wmb();
++
++err_out:
++	return -1;
++}
++
++static inline int fe_skb_padto(struct sk_buff *skb, struct fe_priv *priv)
++{
++	unsigned int len;
++	int ret;
++
++	ret = 0;
++	if (unlikely(skb->len < VLAN_ETH_ZLEN)) {
++		if ((priv->flags & FE_FLAG_PADDING_64B) &&
++		    !(priv->flags & FE_FLAG_PADDING_BUG))
++			return ret;
++
++		if (skb_vlan_tag_present(skb))
++			len = ETH_ZLEN;
++		else if (skb->protocol == cpu_to_be16(ETH_P_8021Q))
++			len = VLAN_ETH_ZLEN;
++		else if (!(priv->flags & FE_FLAG_PADDING_64B))
++			len = ETH_ZLEN;
++		else
++			return ret;
++
++		if (skb->len < len) {
++			ret = skb_pad(skb, len - skb->len);
++			if (ret < 0)
++				return ret;
++			skb->len = len;
++			skb_set_tail_pointer(skb, len);
++		}
++	}
++
++	return ret;
++}
++
++static inline int fe_cal_txd_req(struct sk_buff *skb)
++{
++	struct sk_buff *head = skb;
++	int i, nfrags = 0;
++	skb_frag_t *frag;
++
++next_frag:
++	nfrags++;
++	if (skb_is_gso(skb)) {
++		for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
++			frag = &skb_shinfo(skb)->frags[i];
++			nfrags += DIV_ROUND_UP(skb_frag_size(frag), TX_DMA_BUF_LEN);
++		}
++	} else {
++		nfrags += skb_shinfo(skb)->nr_frags;
++	}
++
++	skb = fe_next_frag(head, skb);
++	if (skb)
++		goto next_frag;
++
++	return DIV_ROUND_UP(nfrags, 2);
++}
++
++static int fe_start_xmit(struct sk_buff *skb, struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	struct fe_tx_ring *ring = &priv->tx_ring;
++	struct net_device_stats *stats = &dev->stats;
++	int tx_num;
++	int len = skb->len;
++
++	if (fe_skb_padto(skb, priv)) {
++		netif_warn(priv, tx_err, dev, "tx padding failed!\n");
++		return NETDEV_TX_OK;
++	}
++
++	tx_num = fe_cal_txd_req(skb);
++	if (unlikely(fe_empty_txd(ring) <= tx_num)) {
++		netif_stop_queue(dev);
++		netif_err(priv, tx_queued, dev,
++			  "Tx Ring full when queue awake!\n");
++		return NETDEV_TX_BUSY;
++	}
++
++	if (fe_tx_map_dma(skb, dev, tx_num, ring) < 0) {
++		stats->tx_dropped++;
++	} else {
++		stats->tx_packets++;
++		stats->tx_bytes += len;
++	}
++
++	return NETDEV_TX_OK;
++}
++
++static int fe_poll_rx(struct napi_struct *napi, int budget,
++		      struct fe_priv *priv, u32 rx_intr)
++{
++	struct net_device *netdev = priv->netdev;
++	struct net_device_stats *stats = &netdev->stats;
++	struct fe_soc_data *soc = priv->soc;
++	struct fe_rx_ring *ring = &priv->rx_ring;
++	int idx = ring->rx_calc_idx;
++	u32 checksum_bit;
++	struct sk_buff *skb;
++	u8 *data, *new_data;
++	struct fe_rx_dma *rxd, trxd;
++	int done = 0, pad;
++
++	if (netdev->features & NETIF_F_RXCSUM)
++		checksum_bit = soc->checksum_bit;
++	else
++		checksum_bit = 0;
++
++	if (priv->flags & FE_FLAG_RX_2B_OFFSET)
++		pad = 0;
++	else
++		pad = NET_IP_ALIGN;
++
++	while (done < budget) {
++		unsigned int pktlen;
++		dma_addr_t dma_addr;
++
++		idx = NEXT_RX_DESP_IDX(idx);
++		rxd = &ring->rx_dma[idx];
++		data = ring->rx_data[idx];
++
++		fe_get_rxd(&trxd, rxd);
++		if (!(trxd.rxd2 & RX_DMA_DONE))
++			break;
++
++		/* alloc new buffer */
++		new_data = page_frag_alloc(&ring->frag_cache, ring->frag_size,
++					   GFP_ATOMIC);
++		if (unlikely(!new_data)) {
++			stats->rx_dropped++;
++			goto release_desc;
++		}
++		dma_addr = dma_map_single(priv->dev,
++					  new_data + NET_SKB_PAD + pad,
++					  ring->rx_buf_size,
++					  DMA_FROM_DEVICE);
++		if (unlikely(dma_mapping_error(priv->dev, dma_addr))) {
++			skb_free_frag(new_data);
++			goto release_desc;
++		}
++
++		/* receive data */
++		skb = build_skb(data, ring->frag_size);
++		if (unlikely(!skb)) {
++			skb_free_frag(new_data);
++			goto release_desc;
++		}
++		skb_reserve(skb, NET_SKB_PAD + NET_IP_ALIGN);
++
++		dma_unmap_single(priv->dev, trxd.rxd1,
++				 ring->rx_buf_size, DMA_FROM_DEVICE);
++		pktlen = RX_DMA_GET_PLEN0(trxd.rxd2);
++		skb->dev = netdev;
++		skb_put(skb, pktlen);
++		if (trxd.rxd4 & checksum_bit)
++			skb->ip_summed = CHECKSUM_UNNECESSARY;
++		else
++			skb_checksum_none_assert(skb);
++		skb->protocol = eth_type_trans(skb, netdev);
++
++		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX &&
++		    RX_DMA_VID(trxd.rxd3))
++			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
++					       RX_DMA_VID(trxd.rxd3));
++
++		stats->rx_packets++;
++		stats->rx_bytes += pktlen;
++
++		napi_gro_receive(napi, skb);
++
++		ring->rx_data[idx] = new_data;
++		rxd->rxd1 = (unsigned int)dma_addr;
++
++release_desc:
++		if (priv->flags & FE_FLAG_RX_SG_DMA)
++			rxd->rxd2 = RX_DMA_PLEN0(ring->rx_buf_size);
++		else
++			rxd->rxd2 = RX_DMA_LSO;
++
++		ring->rx_calc_idx = idx;
++		/* make sure that all changes to the dma ring are flushed before
++		 * we continue
++		 */
++		wmb();
++		fe_reg_w32(ring->rx_calc_idx, FE_REG_RX_CALC_IDX0);
++		done++;
++	}
++
++	if (done < budget)
++		fe_reg_w32(rx_intr, FE_REG_FE_INT_STATUS);
++
++	return done;
++}
++
++static int fe_poll_tx(struct fe_priv *priv, int budget, u32 tx_intr,
++		      int *tx_again)
++{
++	struct net_device *netdev = priv->netdev;
++	unsigned int bytes_compl = 0;
++	struct sk_buff *skb;
++	struct fe_tx_buf *tx_buf;
++	int done = 0;
++	u32 idx, hwidx;
++	struct fe_tx_ring *ring = &priv->tx_ring;
++
++	idx = ring->tx_free_idx;
++	hwidx = fe_reg_r32(FE_REG_TX_DTX_IDX0);
++
++	while ((idx != hwidx) && budget) {
++		tx_buf = &ring->tx_buf[idx];
++		skb = tx_buf->skb;
++
++		if (!skb)
++			break;
++
++		if (skb != (struct sk_buff *)DMA_DUMMY_DESC) {
++			bytes_compl += skb->len;
++			done++;
++			budget--;
++		}
++		fe_txd_unmap(priv->dev, tx_buf);
++		idx = NEXT_TX_DESP_IDX(idx);
++	}
++	ring->tx_free_idx = idx;
++
++	if (idx == hwidx) {
++		/* read hw index again make sure no new tx packet */
++		hwidx = fe_reg_r32(FE_REG_TX_DTX_IDX0);
++		if (idx == hwidx)
++			fe_reg_w32(tx_intr, FE_REG_FE_INT_STATUS);
++		else
++			*tx_again = 1;
++	} else {
++		*tx_again = 1;
++	}
++
++	if (done) {
++		netdev_completed_queue(netdev, done, bytes_compl);
++		smp_mb();
++		if (unlikely(netif_queue_stopped(netdev) &&
++			     (fe_empty_txd(ring) > ring->tx_thresh)))
++			netif_wake_queue(netdev);
++	}
++
++	return done;
++}
++
++static int fe_poll(struct napi_struct *napi, int budget)
++{
++	struct fe_priv *priv = container_of(napi, struct fe_priv, rx_napi);
++	struct fe_hw_stats *hwstat = priv->hw_stats;
++	int tx_done, rx_done, tx_again;
++	u32 status, fe_status, status_reg, mask;
++	u32 tx_intr, rx_intr, status_intr;
++
++	status = fe_reg_r32(FE_REG_FE_INT_STATUS);
++	fe_status = status;
++	tx_intr = priv->soc->tx_int;
++	rx_intr = priv->soc->rx_int;
++	status_intr = priv->soc->status_int;
++	tx_done = 0;
++	rx_done = 0;
++	tx_again = 0;
++
++	if (fe_reg_table[FE_REG_FE_INT_STATUS2]) {
++		fe_status = fe_reg_r32(FE_REG_FE_INT_STATUS2);
++		status_reg = FE_REG_FE_INT_STATUS2;
++	} else {
++		status_reg = FE_REG_FE_INT_STATUS;
++	}
++
++	if (status & tx_intr)
++		tx_done = fe_poll_tx(priv, budget, tx_intr, &tx_again);
++
++	if (status & rx_intr)
++		rx_done = fe_poll_rx(napi, budget, priv, rx_intr);
++
++	if (unlikely(fe_status & status_intr)) {
++		if (hwstat && spin_trylock(&hwstat->stats_lock)) {
++			fe_stats_update(priv);
++			spin_unlock(&hwstat->stats_lock);
++		}
++		fe_reg_w32(status_intr, status_reg);
++	}
++
++	if (unlikely(netif_msg_intr(priv))) {
++		mask = fe_reg_r32(FE_REG_FE_INT_ENABLE);
++		netdev_info(priv->netdev,
++			    "done tx %d, rx %d, intr 0x%08x/0x%x\n",
++			    tx_done, rx_done, status, mask);
++	}
++
++	if (!tx_again && (rx_done < budget)) {
++		status = fe_reg_r32(FE_REG_FE_INT_STATUS);
++		if (status & (tx_intr | rx_intr)) {
++			/* let napi poll again */
++			rx_done = budget;
++			goto poll_again;
++		}
++
++		napi_complete_done(napi, rx_done);
++		fe_int_enable(tx_intr | rx_intr);
++	} else {
++		rx_done = budget;
++	}
++
++poll_again:
++	return rx_done;
++}
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 10, 0)
++static void fe_tx_timeout(struct net_device *dev)
++#else
++static void fe_tx_timeout(struct net_device *dev, unsigned int txqueue)
++#endif
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	struct fe_tx_ring *ring = &priv->tx_ring;
++
++	priv->netdev->stats.tx_errors++;
++	netif_err(priv, tx_err, dev,
++		  "transmit timed out\n");
++	netif_info(priv, drv, dev, "dma_cfg:%08x\n",
++		   fe_reg_r32(FE_REG_PDMA_GLO_CFG));
++	netif_info(priv, drv, dev, "tx_ring=%d, "
++		   "base=%08x, max=%u, ctx=%u, dtx=%u, fdx=%hu, next=%hu\n",
++		   0, fe_reg_r32(FE_REG_TX_BASE_PTR0),
++		   fe_reg_r32(FE_REG_TX_MAX_CNT0),
++		   fe_reg_r32(FE_REG_TX_CTX_IDX0),
++		   fe_reg_r32(FE_REG_TX_DTX_IDX0),
++		   ring->tx_free_idx,
++		   ring->tx_next_idx);
++	netif_info(priv, drv, dev,
++		   "rx_ring=%d, base=%08x, max=%u, calc=%u, drx=%u\n",
++		   0, fe_reg_r32(FE_REG_RX_BASE_PTR0),
++		   fe_reg_r32(FE_REG_RX_MAX_CNT0),
++		   fe_reg_r32(FE_REG_RX_CALC_IDX0),
++		   fe_reg_r32(FE_REG_RX_DRX_IDX0));
++
++	if (!test_and_set_bit(FE_FLAG_RESET_PENDING, priv->pending_flags))
++		schedule_work(&priv->pending_work);
++}
++
++static irqreturn_t fe_handle_irq(int irq, void *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	u32 status, int_mask;
++
++	status = fe_reg_r32(FE_REG_FE_INT_STATUS);
++
++	if (unlikely(!status))
++		return IRQ_NONE;
++
++	int_mask = (priv->soc->rx_int | priv->soc->tx_int);
++	if (likely(status & int_mask)) {
++		if (likely(napi_schedule_prep(&priv->rx_napi))) {
++			fe_int_disable(int_mask);
++			__napi_schedule(&priv->rx_napi);
++		}
++	} else {
++		fe_reg_w32(status, FE_REG_FE_INT_STATUS);
++	}
++
++	return IRQ_HANDLED;
++}
++
++#ifdef CONFIG_NET_POLL_CONTROLLER
++static void fe_poll_controller(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	u32 int_mask = priv->soc->tx_int | priv->soc->rx_int;
++
++	fe_int_disable(int_mask);
++	fe_handle_irq(dev->irq, dev);
++	fe_int_enable(int_mask);
++}
++#endif
++
++int fe_set_clock_cycle(struct fe_priv *priv)
++{
++	unsigned long sysclk = priv->sysclk;
++
++	sysclk /= FE_US_CYC_CNT_DIVISOR;
++	sysclk <<= FE_US_CYC_CNT_SHIFT;
++
++	fe_w32((fe_r32(FE_FE_GLO_CFG) &
++			~(FE_US_CYC_CNT_MASK << FE_US_CYC_CNT_SHIFT)) |
++			sysclk,
++			FE_FE_GLO_CFG);
++	return 0;
++}
++
++void fe_fwd_config(struct fe_priv *priv)
++{
++	u32 fwd_cfg;
++
++	fwd_cfg = fe_r32(FE_GDMA1_FWD_CFG);
++
++	/* disable jumbo frame */
++	if (priv->flags & FE_FLAG_JUMBO_FRAME)
++		fwd_cfg &= ~FE_GDM1_JMB_EN;
++
++	/* set unicast/multicast/broadcast frame to cpu */
++	fwd_cfg &= ~0xffff;
++
++	fe_w32(fwd_cfg, FE_GDMA1_FWD_CFG);
++}
++
++static void fe_rxcsum_config(bool enable)
++{
++	if (enable)
++		fe_w32(fe_r32(FE_GDMA1_FWD_CFG) | (FE_GDM1_ICS_EN |
++					FE_GDM1_TCS_EN | FE_GDM1_UCS_EN),
++				FE_GDMA1_FWD_CFG);
++	else
++		fe_w32(fe_r32(FE_GDMA1_FWD_CFG) & ~(FE_GDM1_ICS_EN |
++					FE_GDM1_TCS_EN | FE_GDM1_UCS_EN),
++				FE_GDMA1_FWD_CFG);
++}
++
++static void fe_txcsum_config(bool enable)
++{
++	if (enable)
++		fe_w32(fe_r32(FE_CDMA_CSG_CFG) | (FE_ICS_GEN_EN |
++					FE_TCS_GEN_EN | FE_UCS_GEN_EN),
++				FE_CDMA_CSG_CFG);
++	else
++		fe_w32(fe_r32(FE_CDMA_CSG_CFG) & ~(FE_ICS_GEN_EN |
++					FE_TCS_GEN_EN | FE_UCS_GEN_EN),
++				FE_CDMA_CSG_CFG);
++}
++
++void fe_csum_config(struct fe_priv *priv)
++{
++	struct net_device *dev = priv_netdev(priv);
++
++	fe_txcsum_config((dev->features & NETIF_F_IP_CSUM));
++	fe_rxcsum_config((dev->features & NETIF_F_RXCSUM));
++}
++
++static int fe_hw_init(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	int i, err;
++
++	err = devm_request_irq(priv->dev, dev->irq, fe_handle_irq, 0,
++			       dev_name(priv->dev), dev);
++	if (err)
++		return err;
++
++	if (priv->soc->set_mac)
++		priv->soc->set_mac(priv, dev->dev_addr);
++	else
++		fe_hw_set_macaddr(priv, dev->dev_addr);
++
++	/* disable delay interrupt */
++	fe_reg_w32(0, FE_REG_DLY_INT_CFG);
++
++	fe_int_disable(priv->soc->tx_int | priv->soc->rx_int);
++
++	/* frame engine will push VLAN tag regarding to VIDX feild in Tx desc */
++	if (fe_reg_table[FE_REG_FE_DMA_VID_BASE])
++		for (i = 0; i < 16; i += 2)
++			fe_w32(((i + 1) << 16) + i,
++			       fe_reg_table[FE_REG_FE_DMA_VID_BASE] +
++			       (i * 2));
++
++	if (priv->soc->fwd_config(priv))
++		netdev_err(dev, "unable to get clock\n");
++
++	if (fe_reg_table[FE_REG_FE_RST_GL]) {
++		fe_reg_w32(1, FE_REG_FE_RST_GL);
++		fe_reg_w32(0, FE_REG_FE_RST_GL);
++	}
++
++	return 0;
++}
++
++static int fe_open(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	unsigned long flags;
++	u32 val;
++	int err;
++
++	err = fe_init_dma(priv);
++	if (err) {
++		fe_free_dma(priv);
++		return err;
++	}
++
++	spin_lock_irqsave(&priv->page_lock, flags);
++
++	val = FE_TX_WB_DDONE | FE_RX_DMA_EN | FE_TX_DMA_EN;
++	if (priv->flags & FE_FLAG_RX_2B_OFFSET)
++		val |= FE_RX_2B_OFFSET;
++	val |= priv->soc->pdma_glo_cfg;
++	fe_reg_w32(val, FE_REG_PDMA_GLO_CFG);
++
++	spin_unlock_irqrestore(&priv->page_lock, flags);
++
++	if (priv->phy)
++		priv->phy->start(priv);
++
++	if (priv->soc->has_carrier && priv->soc->has_carrier(priv))
++		netif_carrier_on(dev);
++
++	napi_enable(&priv->rx_napi);
++	fe_int_enable(priv->soc->tx_int | priv->soc->rx_int);
++	netif_start_queue(dev);
++
++	return 0;
++}
++
++static int fe_stop(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	unsigned long flags;
++	int i;
++
++	netif_tx_disable(dev);
++	fe_int_disable(priv->soc->tx_int | priv->soc->rx_int);
++	napi_disable(&priv->rx_napi);
++
++	if (priv->phy)
++		priv->phy->stop(priv);
++
++	spin_lock_irqsave(&priv->page_lock, flags);
++
++	fe_reg_w32(fe_reg_r32(FE_REG_PDMA_GLO_CFG) &
++		     ~(FE_TX_WB_DDONE | FE_RX_DMA_EN | FE_TX_DMA_EN),
++		     FE_REG_PDMA_GLO_CFG);
++	spin_unlock_irqrestore(&priv->page_lock, flags);
++
++	/* wait dma stop */
++	for (i = 0; i < 10; i++) {
++		if (fe_reg_r32(FE_REG_PDMA_GLO_CFG) &
++				(FE_TX_DMA_BUSY | FE_RX_DMA_BUSY)) {
++			msleep(20);
++			continue;
++		}
++		break;
++	}
++
++	fe_free_dma(priv);
++
++	return 0;
++}
++
++static void fe_reset_phy(struct fe_priv *priv)
++{
++	int err, msec = 30;
++	struct gpio_desc *phy_reset;
++
++	phy_reset = devm_gpiod_get_optional(priv->dev, "phy-reset",
++					    GPIOD_OUT_HIGH);
++	if (!phy_reset)
++		return;
++
++	if (IS_ERR(phy_reset)) {
++		dev_err(priv->dev, "Error acquiring reset gpio pins: %ld\n",
++			PTR_ERR(phy_reset));
++		return;
++	}
++
++	err = of_property_read_u32(priv->dev->of_node, "phy-reset-duration",
++				   &msec);
++	if (!err && msec > 1000)
++		msec = 30;
++
++	if (msec > 20)
++		msleep(msec);
++	else
++		usleep_range(msec * 1000, msec * 1000 + 1000);
++
++	gpiod_set_value(phy_reset, 0);
++}
++
++static int __init fe_init(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	struct device_node *port;
++	const char *mac_addr;
++	int err;
++
++	priv->soc->reset_fe();
++
++	if (priv->soc->switch_init)
++		if (priv->soc->switch_init(priv)) {
++			netdev_err(dev, "failed to initialize switch core\n");
++			return -ENODEV;
++		}
++
++	fe_reset_phy(priv);
++
++	mac_addr = of_get_mac_address(priv->dev->of_node);
++	if (!IS_ERR_OR_NULL(mac_addr))
++		ether_addr_copy(dev->dev_addr, mac_addr);
++
++	/* If the mac address is invalid, use random mac address  */
++	if (!is_valid_ether_addr(dev->dev_addr)) {
++		eth_hw_addr_random(dev);
++		dev_err(priv->dev, "generated random MAC address %pM\n",
++			dev->dev_addr);
++	}
++
++	err = fe_mdio_init(priv);
++	if (err)
++		return err;
++
++	if (priv->soc->port_init)
++		for_each_child_of_node(priv->dev->of_node, port)
++			if (of_device_is_compatible(port, "mediatek,eth-port") &&
++			    of_device_is_available(port))
++				priv->soc->port_init(priv, port);
++
++	if (priv->phy) {
++		err = priv->phy->connect(priv);
++		if (err)
++			goto err_phy_disconnect;
++	}
++
++	err = fe_hw_init(dev);
++	if (err)
++		goto err_phy_disconnect;
++
++	if ((priv->flags & FE_FLAG_HAS_SWITCH) && priv->soc->switch_config)
++		priv->soc->switch_config(priv);
++
++	return 0;
++
++err_phy_disconnect:
++	if (priv->phy)
++		priv->phy->disconnect(priv);
++	fe_mdio_cleanup(priv);
++
++	return err;
++}
++
++static void fe_uninit(struct net_device *dev)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++
++	if (priv->phy)
++		priv->phy->disconnect(priv);
++	fe_mdio_cleanup(priv);
++
++	fe_reg_w32(0, FE_REG_FE_INT_ENABLE);
++	free_irq(dev->irq, dev);
++}
++
++static int fe_do_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++
++	if (!priv->phy_dev)
++		return -ENODEV;
++
++
++	return phy_mii_ioctl(priv->phy_dev, ifr, cmd);
++}
++
++static int fe_change_mtu(struct net_device *dev, int new_mtu)
++{
++	struct fe_priv *priv = netdev_priv(dev);
++	int frag_size, old_mtu;
++	u32 fwd_cfg;
++
++	old_mtu = dev->mtu;
++	dev->mtu = new_mtu;
++
++	if (!(priv->flags & FE_FLAG_JUMBO_FRAME))
++		return 0;
++
++	/* return early if the buffer sizes will not change */
++	if (old_mtu <= ETH_DATA_LEN && new_mtu <= ETH_DATA_LEN)
++		return 0;
++	if (old_mtu > ETH_DATA_LEN && new_mtu > ETH_DATA_LEN)
++		return 0;
++
++	if (new_mtu <= ETH_DATA_LEN)
++		priv->rx_ring.frag_size = fe_max_frag_size(ETH_DATA_LEN);
++	else
++		priv->rx_ring.frag_size = PAGE_SIZE;
++	priv->rx_ring.rx_buf_size = fe_max_buf_size(priv->rx_ring.frag_size);
++
++	if (!netif_running(dev))
++		return 0;
++
++	fe_stop(dev);
++	if (!IS_ENABLED(CONFIG_SOC_MT7621)) {
++		fwd_cfg = fe_r32(FE_GDMA1_FWD_CFG);
++		if (new_mtu <= ETH_DATA_LEN) {
++			fwd_cfg &= ~FE_GDM1_JMB_EN;
++		} else {
++			frag_size = fe_max_frag_size(new_mtu);
++			fwd_cfg &= ~(FE_GDM1_JMB_LEN_MASK << FE_GDM1_JMB_LEN_SHIFT);
++			fwd_cfg |= (DIV_ROUND_UP(frag_size, 1024) <<
++			FE_GDM1_JMB_LEN_SHIFT) | FE_GDM1_JMB_EN;
++		}
++		fe_w32(fwd_cfg, FE_GDMA1_FWD_CFG);
++	}
++
++	return fe_open(dev);
++}
++
++static const struct net_device_ops fe_netdev_ops = {
++	.ndo_init		= fe_init,
++	.ndo_uninit		= fe_uninit,
++	.ndo_open		= fe_open,
++	.ndo_stop		= fe_stop,
++	.ndo_start_xmit		= fe_start_xmit,
++	.ndo_set_mac_address	= fe_set_mac_address,
++	.ndo_validate_addr	= eth_validate_addr,
++	.ndo_do_ioctl		= fe_do_ioctl,
++	.ndo_change_mtu		= fe_change_mtu,
++	.ndo_tx_timeout		= fe_tx_timeout,
++	.ndo_get_stats64        = fe_get_stats64,
++	.ndo_vlan_rx_add_vid	= fe_vlan_rx_add_vid,
++	.ndo_vlan_rx_kill_vid	= fe_vlan_rx_kill_vid,
++#ifdef CONFIG_NET_POLL_CONTROLLER
++	.ndo_poll_controller	= fe_poll_controller,
++#endif
++};
++
++static void fe_reset_pending(struct fe_priv *priv)
++{
++	struct net_device *dev = priv->netdev;
++	int err;
++
++	rtnl_lock();
++	fe_stop(dev);
++
++	err = fe_open(dev);
++	if (err) {
++		netif_alert(priv, ifup, dev,
++			    "Driver up/down cycle failed, closing device.\n");
++		dev_close(dev);
++	}
++	rtnl_unlock();
++}
++
++static const struct fe_work_t fe_work[] = {
++	{FE_FLAG_RESET_PENDING, fe_reset_pending},
++};
++
++static void fe_pending_work(struct work_struct *work)
++{
++	struct fe_priv *priv = container_of(work, struct fe_priv, pending_work);
++	int i;
++	bool pending;
++
++	for (i = 0; i < ARRAY_SIZE(fe_work); i++) {
++		pending = test_and_clear_bit(fe_work[i].bitnr,
++					     priv->pending_flags);
++		if (pending)
++			fe_work[i].action(priv);
++	}
++}
++
++static int fe_probe(struct platform_device *pdev)
++{
++	struct resource *res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	const struct of_device_id *match;
++	struct fe_soc_data *soc;
++	struct net_device *netdev;
++	struct fe_priv *priv;
++	struct clk *sysclk;
++	int err, napi_weight;
++
++	device_reset(&pdev->dev);
++
++	match = of_match_device(of_fe_match, &pdev->dev);
++	soc = (struct fe_soc_data *)match->data;
++
++	if (soc->reg_table)
++		fe_reg_table = soc->reg_table;
++	else
++		soc->reg_table = fe_reg_table;
++
++	fe_base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(fe_base)) {
++		err = -EADDRNOTAVAIL;
++		goto err_out;
++	}
++
++	netdev = alloc_etherdev(sizeof(*priv));
++	if (!netdev) {
++		dev_err(&pdev->dev, "alloc_etherdev failed\n");
++		err = -ENOMEM;
++		goto err_iounmap;
++	}
++
++	SET_NETDEV_DEV(netdev, &pdev->dev);
++	netdev->netdev_ops = &fe_netdev_ops;
++	netdev->base_addr = (unsigned long)fe_base;
++
++	netdev->irq = platform_get_irq(pdev, 0);
++	if (netdev->irq < 0) {
++		dev_err(&pdev->dev, "no IRQ resource found\n");
++		err = -ENXIO;
++		goto err_free_dev;
++	}
++
++	if (soc->init_data)
++		soc->init_data(soc, netdev);
++	netdev->vlan_features = netdev->hw_features &
++				~(NETIF_F_HW_VLAN_CTAG_TX |
++				  NETIF_F_HW_VLAN_CTAG_RX);
++	netdev->features |= netdev->hw_features;
++
++	if (IS_ENABLED(CONFIG_SOC_MT7621))
++		netdev->max_mtu = 2048;
++
++	/* fake rx vlan filter func. to support tx vlan offload func */
++	if (fe_reg_table[FE_REG_FE_DMA_VID_BASE])
++		netdev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
++
++	priv = netdev_priv(netdev);
++	spin_lock_init(&priv->page_lock);
++	if (fe_reg_table[FE_REG_FE_COUNTER_BASE]) {
++		priv->hw_stats = kzalloc(sizeof(*priv->hw_stats), GFP_KERNEL);
++		if (!priv->hw_stats) {
++			err = -ENOMEM;
++			goto err_free_dev;
++		}
++		spin_lock_init(&priv->hw_stats->stats_lock);
++	}
++
++	sysclk = devm_clk_get(&pdev->dev, NULL);
++	if (!IS_ERR(sysclk)) {
++		priv->sysclk = clk_get_rate(sysclk);
++	} else if ((priv->flags & FE_FLAG_CALIBRATE_CLK)) {
++		dev_err(&pdev->dev, "this soc needs a clk for calibration\n");
++		err = -ENXIO;
++		goto err_free_dev;
++	}
++
++	priv->switch_np = of_parse_phandle(pdev->dev.of_node, "mediatek,switch", 0);
++	if ((priv->flags & FE_FLAG_HAS_SWITCH) && !priv->switch_np) {
++		dev_err(&pdev->dev, "failed to read switch phandle\n");
++		err = -ENODEV;
++		goto err_free_dev;
++	}
++
++	priv->netdev = netdev;
++	priv->dev = &pdev->dev;
++	priv->soc = soc;
++	priv->msg_enable = netif_msg_init(fe_msg_level, FE_DEFAULT_MSG_ENABLE);
++	priv->rx_ring.frag_size = fe_max_frag_size(ETH_DATA_LEN);
++	priv->rx_ring.rx_buf_size = fe_max_buf_size(priv->rx_ring.frag_size);
++	priv->tx_ring.tx_ring_size = NUM_DMA_DESC;
++	priv->rx_ring.rx_ring_size = NUM_DMA_DESC;
++	INIT_WORK(&priv->pending_work, fe_pending_work);
++	u64_stats_init(&priv->hw_stats->syncp);
++
++	napi_weight = 16;
++	if (priv->flags & FE_FLAG_NAPI_WEIGHT) {
++		napi_weight *= 4;
++		priv->tx_ring.tx_ring_size *= 4;
++		priv->rx_ring.rx_ring_size *= 4;
++	}
++	netif_napi_add(netdev, &priv->rx_napi, fe_poll, napi_weight);
++	fe_set_ethtool_ops(netdev);
++
++	err = register_netdev(netdev);
++	if (err) {
++		dev_err(&pdev->dev, "error bringing up device\n");
++		goto err_free_dev;
++	}
++
++	platform_set_drvdata(pdev, netdev);
++
++	netif_info(priv, probe, netdev, "mediatek frame engine at 0x%08lx, irq %d\n",
++		   netdev->base_addr, netdev->irq);
++
++	return 0;
++
++err_free_dev:
++	free_netdev(netdev);
++err_iounmap:
++	devm_iounmap(&pdev->dev, fe_base);
++err_out:
++	return err;
++}
++
++static int fe_remove(struct platform_device *pdev)
++{
++	struct net_device *dev = platform_get_drvdata(pdev);
++	struct fe_priv *priv = netdev_priv(dev);
++
++	netif_napi_del(&priv->rx_napi);
++	kfree(priv->hw_stats);
++
++	cancel_work_sync(&priv->pending_work);
++
++	unregister_netdev(dev);
++	free_netdev(dev);
++	platform_set_drvdata(pdev, NULL);
++
++	return 0;
++}
++
++static struct platform_driver fe_driver = {
++	.probe = fe_probe,
++	.remove = fe_remove,
++	.driver = {
++		.name = "mtk_soc_eth",
++		.owner = THIS_MODULE,
++		.of_match_table = of_fe_match,
++	},
++};
++
++module_platform_driver(fe_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("John Crispin <blogic@openwrt.org>");
++MODULE_DESCRIPTION("Ethernet driver for Ralink SoC");
++MODULE_VERSION(MTK_FE_DRV_VERSION);
+diff --git a/drivers/net/ethernet/ralink/mtk_eth_soc.h b/drivers/net/ethernet/ralink/mtk_eth_soc.h
+new file mode 100644
+index 000000000000..00f1a0e7e6a4
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/mtk_eth_soc.h
+@@ -0,0 +1,523 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#ifndef FE_ETH_H
++#define FE_ETH_H
++
++#include <linux/mii.h>
++#include <linux/interrupt.h>
++#include <linux/netdevice.h>
++#include <linux/dma-mapping.h>
++#include <linux/phy.h>
++#include <linux/ethtool.h>
++#include <linux/version.h>
++
++enum fe_reg {
++	FE_REG_PDMA_GLO_CFG = 0,
++	FE_REG_PDMA_RST_CFG,
++	FE_REG_DLY_INT_CFG,
++	FE_REG_TX_BASE_PTR0,
++	FE_REG_TX_MAX_CNT0,
++	FE_REG_TX_CTX_IDX0,
++	FE_REG_TX_DTX_IDX0,
++	FE_REG_RX_BASE_PTR0,
++	FE_REG_RX_MAX_CNT0,
++	FE_REG_RX_CALC_IDX0,
++	FE_REG_RX_DRX_IDX0,
++	FE_REG_FE_INT_ENABLE,
++	FE_REG_FE_INT_STATUS,
++	FE_REG_FE_DMA_VID_BASE,
++	FE_REG_FE_COUNTER_BASE,
++	FE_REG_FE_RST_GL,
++	FE_REG_FE_INT_STATUS2,
++	FE_REG_COUNT
++};
++
++enum fe_work_flag {
++	FE_FLAG_RESET_PENDING,
++	FE_FLAG_MAX
++};
++
++#define MTK_FE_DRV_VERSION		"0.1.2"
++
++/* power of 2 to let NEXT_TX_DESP_IDX work */
++#define NUM_DMA_DESC		BIT(10)
++#define MAX_DMA_DESC		0xfff
++
++#define FE_DELAY_EN_INT		0x80
++#define FE_DELAY_MAX_INT	0x04
++#define FE_DELAY_MAX_TOUT	0x04
++#define FE_DELAY_TIME		20
++#define FE_DELAY_CHAN		(((FE_DELAY_EN_INT | FE_DELAY_MAX_INT) << 8) | \
++				 FE_DELAY_MAX_TOUT)
++#define FE_DELAY_INIT		((FE_DELAY_CHAN << 16) | FE_DELAY_CHAN)
++#define FE_PSE_FQFC_CFG_INIT	0x80504000
++#define FE_PSE_FQFC_CFG_256Q	0xff908000
++
++/* interrupt bits */
++#define FE_CNT_PPE_AF		BIT(31)
++#define FE_CNT_GDM_AF		BIT(29)
++#define FE_PSE_P2_FC		BIT(26)
++#define FE_PSE_BUF_DROP		BIT(24)
++#define FE_GDM_OTHER_DROP	BIT(23)
++#define FE_PSE_P1_FC		BIT(22)
++#define FE_PSE_P0_FC		BIT(21)
++#define FE_PSE_FQ_EMPTY		BIT(20)
++#define FE_GE1_STA_CHG		BIT(18)
++#define FE_TX_COHERENT		BIT(17)
++#define FE_RX_COHERENT		BIT(16)
++#define FE_TX_DONE_INT3		BIT(11)
++#define FE_TX_DONE_INT2		BIT(10)
++#define FE_TX_DONE_INT1		BIT(9)
++#define FE_TX_DONE_INT0		BIT(8)
++#define FE_RX_DONE_INT0		BIT(2)
++#define FE_TX_DLY_INT		BIT(1)
++#define FE_RX_DLY_INT		BIT(0)
++
++#define FE_RX_DONE_INT		FE_RX_DONE_INT0
++#define FE_TX_DONE_INT		(FE_TX_DONE_INT0 | FE_TX_DONE_INT1 | \
++				 FE_TX_DONE_INT2 | FE_TX_DONE_INT3)
++
++#define RT5350_RX_DLY_INT	BIT(30)
++#define RT5350_TX_DLY_INT	BIT(28)
++#define RT5350_RX_DONE_INT1	BIT(17)
++#define RT5350_RX_DONE_INT0	BIT(16)
++#define RT5350_TX_DONE_INT3	BIT(3)
++#define RT5350_TX_DONE_INT2	BIT(2)
++#define RT5350_TX_DONE_INT1	BIT(1)
++#define RT5350_TX_DONE_INT0	BIT(0)
++
++#define RT5350_RX_DONE_INT	(RT5350_RX_DONE_INT0 | RT5350_RX_DONE_INT1)
++#define RT5350_TX_DONE_INT	(RT5350_TX_DONE_INT0 | RT5350_TX_DONE_INT1 | \
++				 RT5350_TX_DONE_INT2 | RT5350_TX_DONE_INT3)
++
++/* registers */
++#define FE_FE_OFFSET		0x0000
++#define FE_GDMA_OFFSET		0x0020
++#define FE_PSE_OFFSET		0x0040
++#define FE_GDMA2_OFFSET		0x0060
++#define FE_CDMA_OFFSET		0x0080
++#define FE_DMA_VID0		0x00a8
++#define FE_PDMA_OFFSET		0x0100
++#define FE_PPE_OFFSET		0x0200
++#define FE_CMTABLE_OFFSET	0x0400
++#define FE_POLICYTABLE_OFFSET	0x1000
++
++#define RT5350_PDMA_OFFSET	0x0800
++#define RT5350_SDM_OFFSET	0x0c00
++
++#define FE_MDIO_ACCESS		(FE_FE_OFFSET + 0x00)
++#define FE_MDIO_CFG		(FE_FE_OFFSET + 0x04)
++#define FE_FE_GLO_CFG		(FE_FE_OFFSET + 0x08)
++#define FE_FE_RST_GL		(FE_FE_OFFSET + 0x0C)
++#define FE_FE_INT_STATUS	(FE_FE_OFFSET + 0x10)
++#define FE_FE_INT_ENABLE	(FE_FE_OFFSET + 0x14)
++#define FE_MDIO_CFG2		(FE_FE_OFFSET + 0x18)
++#define FE_FOC_TS_T		(FE_FE_OFFSET + 0x1C)
++
++#define	FE_GDMA1_FWD_CFG	(FE_GDMA_OFFSET + 0x00)
++#define FE_GDMA1_SCH_CFG	(FE_GDMA_OFFSET + 0x04)
++#define FE_GDMA1_SHPR_CFG	(FE_GDMA_OFFSET + 0x08)
++#define FE_GDMA1_MAC_ADRL	(FE_GDMA_OFFSET + 0x0C)
++#define FE_GDMA1_MAC_ADRH	(FE_GDMA_OFFSET + 0x10)
++
++#define	FE_GDMA2_FWD_CFG	(FE_GDMA2_OFFSET + 0x00)
++#define FE_GDMA2_SCH_CFG	(FE_GDMA2_OFFSET + 0x04)
++#define FE_GDMA2_SHPR_CFG	(FE_GDMA2_OFFSET + 0x08)
++#define FE_GDMA2_MAC_ADRL	(FE_GDMA2_OFFSET + 0x0C)
++#define FE_GDMA2_MAC_ADRH	(FE_GDMA2_OFFSET + 0x10)
++
++#define FE_PSE_FQ_CFG		(FE_PSE_OFFSET + 0x00)
++#define FE_CDMA_FC_CFG		(FE_PSE_OFFSET + 0x04)
++#define FE_GDMA1_FC_CFG		(FE_PSE_OFFSET + 0x08)
++#define FE_GDMA2_FC_CFG		(FE_PSE_OFFSET + 0x0C)
++
++#define FE_CDMA_CSG_CFG		(FE_CDMA_OFFSET + 0x00)
++#define FE_CDMA_SCH_CFG		(FE_CDMA_OFFSET + 0x04)
++
++#ifdef CONFIG_SOC_MT7621
++#define MT7620A_GDMA_OFFSET		0x0500
++#else
++#define MT7620A_GDMA_OFFSET		0x0600
++#endif
++#define	MT7620A_GDMA1_FWD_CFG		(MT7620A_GDMA_OFFSET + 0x00)
++#define MT7620A_FE_GDMA1_SCH_CFG	(MT7620A_GDMA_OFFSET + 0x04)
++#define MT7620A_FE_GDMA1_SHPR_CFG	(MT7620A_GDMA_OFFSET + 0x08)
++#define MT7620A_FE_GDMA1_MAC_ADRL	(MT7620A_GDMA_OFFSET + 0x0C)
++#define MT7620A_FE_GDMA1_MAC_ADRH	(MT7620A_GDMA_OFFSET + 0x10)
++
++#define RT5350_TX_BASE_PTR0	(RT5350_PDMA_OFFSET + 0x00)
++#define RT5350_TX_MAX_CNT0	(RT5350_PDMA_OFFSET + 0x04)
++#define RT5350_TX_CTX_IDX0	(RT5350_PDMA_OFFSET + 0x08)
++#define RT5350_TX_DTX_IDX0	(RT5350_PDMA_OFFSET + 0x0C)
++#define RT5350_TX_BASE_PTR1	(RT5350_PDMA_OFFSET + 0x10)
++#define RT5350_TX_MAX_CNT1	(RT5350_PDMA_OFFSET + 0x14)
++#define RT5350_TX_CTX_IDX1	(RT5350_PDMA_OFFSET + 0x18)
++#define RT5350_TX_DTX_IDX1	(RT5350_PDMA_OFFSET + 0x1C)
++#define RT5350_TX_BASE_PTR2	(RT5350_PDMA_OFFSET + 0x20)
++#define RT5350_TX_MAX_CNT2	(RT5350_PDMA_OFFSET + 0x24)
++#define RT5350_TX_CTX_IDX2	(RT5350_PDMA_OFFSET + 0x28)
++#define RT5350_TX_DTX_IDX2	(RT5350_PDMA_OFFSET + 0x2C)
++#define RT5350_TX_BASE_PTR3	(RT5350_PDMA_OFFSET + 0x30)
++#define RT5350_TX_MAX_CNT3	(RT5350_PDMA_OFFSET + 0x34)
++#define RT5350_TX_CTX_IDX3	(RT5350_PDMA_OFFSET + 0x38)
++#define RT5350_TX_DTX_IDX3	(RT5350_PDMA_OFFSET + 0x3C)
++#define RT5350_RX_BASE_PTR0	(RT5350_PDMA_OFFSET + 0x100)
++#define RT5350_RX_MAX_CNT0	(RT5350_PDMA_OFFSET + 0x104)
++#define RT5350_RX_CALC_IDX0	(RT5350_PDMA_OFFSET + 0x108)
++#define RT5350_RX_DRX_IDX0	(RT5350_PDMA_OFFSET + 0x10C)
++#define RT5350_RX_BASE_PTR1	(RT5350_PDMA_OFFSET + 0x110)
++#define RT5350_RX_MAX_CNT1	(RT5350_PDMA_OFFSET + 0x114)
++#define RT5350_RX_CALC_IDX1	(RT5350_PDMA_OFFSET + 0x118)
++#define RT5350_RX_DRX_IDX1	(RT5350_PDMA_OFFSET + 0x11C)
++#define RT5350_PDMA_GLO_CFG	(RT5350_PDMA_OFFSET + 0x204)
++#define RT5350_PDMA_RST_CFG	(RT5350_PDMA_OFFSET + 0x208)
++#define RT5350_DLY_INT_CFG	(RT5350_PDMA_OFFSET + 0x20c)
++#define RT5350_FE_INT_STATUS	(RT5350_PDMA_OFFSET + 0x220)
++#define RT5350_FE_INT_ENABLE	(RT5350_PDMA_OFFSET + 0x228)
++#define RT5350_PDMA_SCH_CFG	(RT5350_PDMA_OFFSET + 0x280)
++
++#define FE_PDMA_GLO_CFG		(FE_PDMA_OFFSET + 0x00)
++#define FE_PDMA_RST_CFG		(FE_PDMA_OFFSET + 0x04)
++#define FE_PDMA_SCH_CFG		(FE_PDMA_OFFSET + 0x08)
++#define FE_DLY_INT_CFG		(FE_PDMA_OFFSET + 0x0C)
++#define FE_TX_BASE_PTR0		(FE_PDMA_OFFSET + 0x10)
++#define FE_TX_MAX_CNT0		(FE_PDMA_OFFSET + 0x14)
++#define FE_TX_CTX_IDX0		(FE_PDMA_OFFSET + 0x18)
++#define FE_TX_DTX_IDX0		(FE_PDMA_OFFSET + 0x1C)
++#define FE_TX_BASE_PTR1		(FE_PDMA_OFFSET + 0x20)
++#define FE_TX_MAX_CNT1		(FE_PDMA_OFFSET + 0x24)
++#define FE_TX_CTX_IDX1		(FE_PDMA_OFFSET + 0x28)
++#define FE_TX_DTX_IDX1		(FE_PDMA_OFFSET + 0x2C)
++#define FE_RX_BASE_PTR0		(FE_PDMA_OFFSET + 0x30)
++#define FE_RX_MAX_CNT0		(FE_PDMA_OFFSET + 0x34)
++#define FE_RX_CALC_IDX0		(FE_PDMA_OFFSET + 0x38)
++#define FE_RX_DRX_IDX0		(FE_PDMA_OFFSET + 0x3C)
++#define FE_TX_BASE_PTR2		(FE_PDMA_OFFSET + 0x40)
++#define FE_TX_MAX_CNT2		(FE_PDMA_OFFSET + 0x44)
++#define FE_TX_CTX_IDX2		(FE_PDMA_OFFSET + 0x48)
++#define FE_TX_DTX_IDX2		(FE_PDMA_OFFSET + 0x4C)
++#define FE_TX_BASE_PTR3		(FE_PDMA_OFFSET + 0x50)
++#define FE_TX_MAX_CNT3		(FE_PDMA_OFFSET + 0x54)
++#define FE_TX_CTX_IDX3		(FE_PDMA_OFFSET + 0x58)
++#define FE_TX_DTX_IDX3		(FE_PDMA_OFFSET + 0x5C)
++#define FE_RX_BASE_PTR1		(FE_PDMA_OFFSET + 0x60)
++#define FE_RX_MAX_CNT1		(FE_PDMA_OFFSET + 0x64)
++#define FE_RX_CALC_IDX1		(FE_PDMA_OFFSET + 0x68)
++#define FE_RX_DRX_IDX1		(FE_PDMA_OFFSET + 0x6C)
++
++/* Switch DMA configuration */
++#define RT5350_SDM_CFG		(RT5350_SDM_OFFSET + 0x00)
++#define RT5350_SDM_RRING	(RT5350_SDM_OFFSET + 0x04)
++#define RT5350_SDM_TRING	(RT5350_SDM_OFFSET + 0x08)
++#define RT5350_SDM_MAC_ADRL	(RT5350_SDM_OFFSET + 0x0C)
++#define RT5350_SDM_MAC_ADRH	(RT5350_SDM_OFFSET + 0x10)
++#define RT5350_SDM_TPCNT	(RT5350_SDM_OFFSET + 0x100)
++#define RT5350_SDM_TBCNT	(RT5350_SDM_OFFSET + 0x104)
++#define RT5350_SDM_RPCNT	(RT5350_SDM_OFFSET + 0x108)
++#define RT5350_SDM_RBCNT	(RT5350_SDM_OFFSET + 0x10C)
++#define RT5350_SDM_CS_ERR	(RT5350_SDM_OFFSET + 0x110)
++
++#define RT5350_SDM_ICS_EN	BIT(16)
++#define RT5350_SDM_TCS_EN	BIT(17)
++#define RT5350_SDM_UCS_EN	BIT(18)
++
++/* MDIO_CFG register bits */
++#define FE_MDIO_CFG_AUTO_POLL_EN	BIT(29)
++#define FE_MDIO_CFG_GP1_BP_EN		BIT(16)
++#define FE_MDIO_CFG_GP1_FRC_EN		BIT(15)
++#define FE_MDIO_CFG_GP1_SPEED_10	(0 << 13)
++#define FE_MDIO_CFG_GP1_SPEED_100	(1 << 13)
++#define FE_MDIO_CFG_GP1_SPEED_1000	(2 << 13)
++#define FE_MDIO_CFG_GP1_DUPLEX		BIT(12)
++#define FE_MDIO_CFG_GP1_FC_TX		BIT(11)
++#define FE_MDIO_CFG_GP1_FC_RX		BIT(10)
++#define FE_MDIO_CFG_GP1_LNK_DWN		BIT(9)
++#define FE_MDIO_CFG_GP1_AN_FAIL		BIT(8)
++#define FE_MDIO_CFG_MDC_CLK_DIV_1	(0 << 6)
++#define FE_MDIO_CFG_MDC_CLK_DIV_2	(1 << 6)
++#define FE_MDIO_CFG_MDC_CLK_DIV_4	(2 << 6)
++#define FE_MDIO_CFG_MDC_CLK_DIV_8	(3 << 6)
++#define FE_MDIO_CFG_TURBO_MII_FREQ	BIT(5)
++#define FE_MDIO_CFG_TURBO_MII_MODE	BIT(4)
++#define FE_MDIO_CFG_RX_CLK_SKEW_0	(0 << 2)
++#define FE_MDIO_CFG_RX_CLK_SKEW_200	(1 << 2)
++#define FE_MDIO_CFG_RX_CLK_SKEW_400	(2 << 2)
++#define FE_MDIO_CFG_RX_CLK_SKEW_INV	(3 << 2)
++#define FE_MDIO_CFG_TX_CLK_SKEW_0	0
++#define FE_MDIO_CFG_TX_CLK_SKEW_200	1
++#define FE_MDIO_CFG_TX_CLK_SKEW_400	2
++#define FE_MDIO_CFG_TX_CLK_SKEW_INV	3
++
++/* uni-cast port */
++#define FE_GDM1_JMB_LEN_MASK	0xf
++#define FE_GDM1_JMB_LEN_SHIFT	28
++#define FE_GDM1_ICS_EN		BIT(22)
++#define FE_GDM1_TCS_EN		BIT(21)
++#define FE_GDM1_UCS_EN		BIT(20)
++#define FE_GDM1_JMB_EN		BIT(19)
++#define FE_GDM1_STRPCRC		BIT(16)
++#define FE_GDM1_UFRC_P_CPU	(0 << 12)
++#define FE_GDM1_UFRC_P_GDMA1	(1 << 12)
++#define FE_GDM1_UFRC_P_PPE	(6 << 12)
++
++/* checksums */
++#define FE_ICS_GEN_EN		BIT(2)
++#define FE_UCS_GEN_EN		BIT(1)
++#define FE_TCS_GEN_EN		BIT(0)
++
++/* dma ring */
++#define FE_PST_DRX_IDX0		BIT(16)
++#define FE_PST_DTX_IDX3		BIT(3)
++#define FE_PST_DTX_IDX2		BIT(2)
++#define FE_PST_DTX_IDX1		BIT(1)
++#define FE_PST_DTX_IDX0		BIT(0)
++
++#define FE_RX_2B_OFFSET		BIT(31)
++#define FE_TX_WB_DDONE		BIT(6)
++#define FE_RX_DMA_BUSY		BIT(3)
++#define FE_TX_DMA_BUSY		BIT(1)
++#define FE_RX_DMA_EN		BIT(2)
++#define FE_TX_DMA_EN		BIT(0)
++
++#define FE_PDMA_SIZE_4DWORDS	(0 << 4)
++#define FE_PDMA_SIZE_8DWORDS	(1 << 4)
++#define FE_PDMA_SIZE_16DWORDS	(2 << 4)
++
++#define FE_US_CYC_CNT_MASK	0xff
++#define FE_US_CYC_CNT_SHIFT	0x8
++#define FE_US_CYC_CNT_DIVISOR	1000000
++
++/* rxd2 */
++#define RX_DMA_DONE		BIT(31)
++#define RX_DMA_LSO		BIT(30)
++#define RX_DMA_PLEN0(_x)	(((_x) & 0x3fff) << 16)
++#define RX_DMA_GET_PLEN0(_x)	(((_x) >> 16) & 0x3fff)
++#define RX_DMA_TAG		BIT(15)
++/* rxd3 */
++#define RX_DMA_TPID(_x)		(((_x) >> 16) & 0xffff)
++#define RX_DMA_VID(_x)		((_x) & 0xffff)
++/* rxd4 */
++#define RX_DMA_L4VALID		BIT(30)
++
++struct fe_rx_dma {
++	unsigned int rxd1;
++	unsigned int rxd2;
++	unsigned int rxd3;
++	unsigned int rxd4;
++} __packed __aligned(4);
++
++#define TX_DMA_BUF_LEN		0x3fff
++#define TX_DMA_PLEN0_MASK	(TX_DMA_BUF_LEN << 16)
++#define TX_DMA_PLEN0(_x)	(((_x) & TX_DMA_BUF_LEN) << 16)
++#define TX_DMA_PLEN1(_x)	((_x) & TX_DMA_BUF_LEN)
++#define TX_DMA_GET_PLEN0(_x)    (((_x) >> 16) & TX_DMA_BUF_LEN)
++#define TX_DMA_GET_PLEN1(_x)    ((_x) & TX_DMA_BUF_LEN)
++#define TX_DMA_LS1		BIT(14)
++#define TX_DMA_LS0		BIT(30)
++#define TX_DMA_DONE		BIT(31)
++
++#define TX_DMA_INS_VLAN_MT7621	BIT(16)
++#define TX_DMA_INS_VLAN		BIT(7)
++#define TX_DMA_INS_PPPOE	BIT(12)
++#define TX_DMA_QN(_x)		((_x) << 16)
++#define TX_DMA_PN(_x)		((_x) << 24)
++#define TX_DMA_QN_MASK		TX_DMA_QN(0x7)
++#define TX_DMA_PN_MASK		TX_DMA_PN(0x7)
++#define TX_DMA_UDF		BIT(20)
++#define TX_DMA_CHKSUM		(0x7 << 29)
++#define TX_DMA_TSO		BIT(28)
++
++/* frame engine counters */
++#define FE_PPE_AC_BCNT0		(FE_CMTABLE_OFFSET + 0x00)
++#define FE_GDMA1_TX_GBCNT	(FE_CMTABLE_OFFSET + 0x300)
++#define FE_GDMA2_TX_GBCNT	(FE_GDMA1_TX_GBCNT + 0x40)
++
++/* phy device flags */
++#define FE_PHY_FLAG_PORT	BIT(0)
++#define FE_PHY_FLAG_ATTACH	BIT(1)
++
++struct fe_tx_dma {
++	unsigned int txd1;
++	unsigned int txd2;
++	unsigned int txd3;
++	unsigned int txd4;
++} __packed __aligned(4);
++
++struct fe_priv;
++
++struct fe_phy {
++	/* make sure that phy operations are atomic */
++	spinlock_t		lock;
++
++	struct phy_device	*phy[8];
++	struct device_node	*phy_node[8];
++	const __be32		*phy_fixed[8];
++	int			duplex[8];
++	int			speed[8];
++	int			tx_fc[8];
++	int			rx_fc[8];
++	int (*connect)(struct fe_priv *priv);
++	void (*disconnect)(struct fe_priv *priv);
++	void (*start)(struct fe_priv *priv);
++	void (*stop)(struct fe_priv *priv);
++};
++
++struct fe_soc_data {
++	const u16 *reg_table;
++
++	void (*init_data)(struct fe_soc_data *data, struct net_device *netdev);
++	void (*reset_fe)(void);
++	void (*set_mac)(struct fe_priv *priv, unsigned char *mac);
++	int (*fwd_config)(struct fe_priv *priv);
++	void (*tx_dma)(struct fe_tx_dma *txd);
++	int (*switch_init)(struct fe_priv *priv);
++	int (*switch_config)(struct fe_priv *priv);
++	void (*port_init)(struct fe_priv *priv, struct device_node *port);
++	int (*has_carrier)(struct fe_priv *priv);
++	int (*mdio_init)(struct fe_priv *priv);
++	void (*mdio_cleanup)(struct fe_priv *priv);
++	int (*mdio_write)(struct mii_bus *bus, int phy_addr, int phy_reg,
++			  u16 val);
++	int (*mdio_read)(struct mii_bus *bus, int phy_addr, int phy_reg);
++	void (*mdio_adjust_link)(struct fe_priv *priv, int port);
++
++	void *swpriv;
++	u32 pdma_glo_cfg;
++	u32 rx_int;
++	u32 tx_int;
++	u32 status_int;
++	u32 checksum_bit;
++};
++
++#define FE_FLAG_PADDING_64B		BIT(0)
++#define FE_FLAG_PADDING_BUG		BIT(1)
++#define FE_FLAG_JUMBO_FRAME		BIT(2)
++#define FE_FLAG_RX_2B_OFFSET		BIT(3)
++#define FE_FLAG_RX_SG_DMA		BIT(4)
++#define FE_FLAG_NAPI_WEIGHT		BIT(6)
++#define FE_FLAG_CALIBRATE_CLK		BIT(7)
++#define FE_FLAG_HAS_SWITCH		BIT(8)
++
++#define FE_STAT_REG_DECLARE		\
++	_FE(tx_bytes)			\
++	_FE(tx_packets)			\
++	_FE(tx_skip)			\
++	_FE(tx_collisions)		\
++	_FE(rx_bytes)			\
++	_FE(rx_packets)			\
++	_FE(rx_overflow)		\
++	_FE(rx_fcs_errors)		\
++	_FE(rx_short_errors)		\
++	_FE(rx_long_errors)		\
++	_FE(rx_checksum_errors)		\
++	_FE(rx_flow_control_packets)
++
++struct fe_hw_stats {
++	/* make sure that stats operations are atomic */
++	spinlock_t stats_lock;
++
++	struct u64_stats_sync syncp;
++#define _FE(x) u64 x;
++	FE_STAT_REG_DECLARE
++#undef _FE
++};
++
++struct fe_tx_buf {
++	struct sk_buff *skb;
++	DEFINE_DMA_UNMAP_ADDR(dma_addr0);
++	DEFINE_DMA_UNMAP_ADDR(dma_addr1);
++	u16 dma_len0;
++	u16 dma_len1;
++};
++
++struct fe_tx_ring {
++	struct fe_tx_dma *tx_dma;
++	struct fe_tx_buf *tx_buf;
++	dma_addr_t tx_phys;
++	u16 tx_ring_size;
++	u16 tx_free_idx;
++	u16 tx_next_idx;
++	u16 tx_thresh;
++};
++
++struct fe_rx_ring {
++	struct page_frag_cache frag_cache;
++	struct fe_rx_dma *rx_dma;
++	u8 **rx_data;
++	dma_addr_t rx_phys;
++	u16 rx_ring_size;
++	u16 frag_size;
++	u16 rx_buf_size;
++	u16 rx_calc_idx;
++};
++
++struct fe_priv {
++	/* make sure that register operations are atomic */
++	spinlock_t			page_lock;
++
++	struct fe_soc_data		*soc;
++	struct net_device		*netdev;
++	struct device_node		*switch_np;
++	u32				msg_enable;
++	u32				flags;
++
++	struct device			*dev;
++	unsigned long			sysclk;
++
++	struct fe_rx_ring		rx_ring;
++	struct napi_struct		rx_napi;
++
++	struct fe_tx_ring               tx_ring;
++
++	struct fe_phy			*phy;
++	struct mii_bus			*mii_bus;
++	struct phy_device		*phy_dev;
++	u32				phy_flags;
++
++	int				link[8];
++
++	struct fe_hw_stats		*hw_stats;
++	unsigned long			vlan_map;
++	struct work_struct		pending_work;
++	DECLARE_BITMAP(pending_flags, FE_FLAG_MAX);
++
++	struct reset_control		*rst_ppe;
++	struct mtk_foe_entry		*foe_table;
++	dma_addr_t			foe_table_phys;
++	struct flow_offload __rcu	**foe_flow_table;
++};
++
++extern const struct of_device_id of_fe_match[];
++
++void fe_w32(u32 val, unsigned reg);
++void fe_m32(struct fe_priv *priv, u32 clear, u32 set, unsigned reg);
++u32 fe_r32(unsigned reg);
++
++int fe_set_clock_cycle(struct fe_priv *priv);
++void fe_csum_config(struct fe_priv *priv);
++void fe_stats_update(struct fe_priv *priv);
++void fe_fwd_config(struct fe_priv *priv);
++void fe_reg_w32(u32 val, enum fe_reg reg);
++u32 fe_reg_r32(enum fe_reg reg);
++
++void fe_reset(u32 reset_bits);
++
++static inline void *priv_netdev(struct fe_priv *priv)
++{
++	return (char *)priv - ALIGN(sizeof(struct net_device), NETDEV_ALIGN);
++}
++
++
++#endif /* FE_ETH_H */
+diff --git a/drivers/net/ethernet/ralink/soc_rt3050.c b/drivers/net/ethernet/ralink/soc_rt3050.c
+new file mode 100644
+index 000000000000..914b81410e5c
+--- /dev/null
++++ b/drivers/net/ethernet/ralink/soc_rt3050.c
+@@ -0,0 +1,158 @@
++/*   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; version 2 of the License
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   Copyright (C) 2009-2015 John Crispin <blogic@openwrt.org>
++ *   Copyright (C) 2009-2015 Felix Fietkau <nbd@nbd.name>
++ *   Copyright (C) 2013-2015 Michael Lee <igvtee@gmail.com>
++ */
++
++#include <linux/module.h>
++
++#include <asm/mach-ralink/ralink_regs.h>
++
++#include "mtk_eth_soc.h"
++#include "mdio_rt2880.h"
++
++#define RT305X_RESET_FE         BIT(21)
++#define RT305X_RESET_ESW        BIT(23)
++
++static const u16 rt5350_reg_table[FE_REG_COUNT] = {
++	[FE_REG_PDMA_GLO_CFG] = RT5350_PDMA_GLO_CFG,
++	[FE_REG_PDMA_RST_CFG] = RT5350_PDMA_RST_CFG,
++	[FE_REG_DLY_INT_CFG] = RT5350_DLY_INT_CFG,
++	[FE_REG_TX_BASE_PTR0] = RT5350_TX_BASE_PTR0,
++	[FE_REG_TX_MAX_CNT0] = RT5350_TX_MAX_CNT0,
++	[FE_REG_TX_CTX_IDX0] = RT5350_TX_CTX_IDX0,
++	[FE_REG_TX_DTX_IDX0] = RT5350_TX_DTX_IDX0,
++	[FE_REG_RX_BASE_PTR0] = RT5350_RX_BASE_PTR0,
++	[FE_REG_RX_MAX_CNT0] = RT5350_RX_MAX_CNT0,
++	[FE_REG_RX_CALC_IDX0] = RT5350_RX_CALC_IDX0,
++	[FE_REG_RX_DRX_IDX0] = RT5350_RX_DRX_IDX0,
++	[FE_REG_FE_INT_ENABLE] = RT5350_FE_INT_ENABLE,
++	[FE_REG_FE_INT_STATUS] = RT5350_FE_INT_STATUS,
++	[FE_REG_FE_RST_GL] = 0,
++	[FE_REG_FE_DMA_VID_BASE] = 0,
++};
++
++static void rt305x_init_data(struct fe_soc_data *data,
++			     struct net_device *netdev)
++{
++	struct fe_priv *priv = netdev_priv(netdev);
++
++	priv->flags = FE_FLAG_PADDING_64B | FE_FLAG_PADDING_BUG |
++		FE_FLAG_CALIBRATE_CLK | FE_FLAG_HAS_SWITCH;
++	netdev->hw_features = NETIF_F_SG | NETIF_F_IP_CSUM |
++		NETIF_F_RXCSUM | NETIF_F_HW_VLAN_CTAG_TX;
++}
++
++static int rt3050_fwd_config(struct fe_priv *priv)
++{
++	int ret;
++
++	if (ralink_soc != RT305X_SOC_RT3052) {
++		ret = fe_set_clock_cycle(priv);
++		if (ret)
++			return ret;
++	}
++
++	fe_fwd_config(priv);
++	if (ralink_soc != RT305X_SOC_RT3352)
++		fe_w32(FE_PSE_FQFC_CFG_INIT, FE_PSE_FQ_CFG);
++	fe_csum_config(priv);
++
++	return 0;
++}
++
++static void rt305x_fe_reset(void)
++{
++	fe_reset(RT305X_RESET_FE);
++}
++
++static void rt5350_init_data(struct fe_soc_data *data,
++			     struct net_device *netdev)
++{
++	struct fe_priv *priv = netdev_priv(netdev);
++
++	priv->flags = FE_FLAG_HAS_SWITCH;
++	netdev->hw_features = NETIF_F_SG | NETIF_F_RXCSUM;
++}
++
++static void rt5350_set_mac(struct fe_priv *priv, unsigned char *mac)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&priv->page_lock, flags);
++	fe_w32((mac[0] << 8) | mac[1], RT5350_SDM_MAC_ADRH);
++	fe_w32((mac[2] << 24) | (mac[3] << 16) | (mac[4] << 8) | mac[5],
++	       RT5350_SDM_MAC_ADRL);
++	spin_unlock_irqrestore(&priv->page_lock, flags);
++}
++
++static void rt5350_rxcsum_config(bool enable)
++{
++	if (enable)
++		fe_w32(fe_r32(RT5350_SDM_CFG) | (RT5350_SDM_ICS_EN |
++				RT5350_SDM_TCS_EN | RT5350_SDM_UCS_EN),
++				RT5350_SDM_CFG);
++	else
++		fe_w32(fe_r32(RT5350_SDM_CFG) & ~(RT5350_SDM_ICS_EN |
++				RT5350_SDM_TCS_EN | RT5350_SDM_UCS_EN),
++				RT5350_SDM_CFG);
++}
++
++static int rt5350_fwd_config(struct fe_priv *priv)
++{
++	struct net_device *dev = priv_netdev(priv);
++
++	rt5350_rxcsum_config((dev->features & NETIF_F_RXCSUM));
++
++	return 0;
++}
++
++static void rt5350_tx_dma(struct fe_tx_dma *txd)
++{
++	txd->txd4 = 0;
++}
++
++static void rt5350_fe_reset(void)
++{
++	fe_reset(RT305X_RESET_FE | RT305X_RESET_ESW);
++}
++
++static struct fe_soc_data rt3050_data = {
++	.init_data = rt305x_init_data,
++	.reset_fe = rt305x_fe_reset,
++	.fwd_config = rt3050_fwd_config,
++	.pdma_glo_cfg = FE_PDMA_SIZE_8DWORDS,
++	.checksum_bit = RX_DMA_L4VALID,
++	.rx_int = FE_RX_DONE_INT,
++	.tx_int = FE_TX_DONE_INT,
++	.status_int = FE_CNT_GDM_AF,
++};
++
++static struct fe_soc_data rt5350_data = {
++	.init_data = rt5350_init_data,
++	.reg_table = rt5350_reg_table,
++	.reset_fe = rt5350_fe_reset,
++	.set_mac = rt5350_set_mac,
++	.fwd_config = rt5350_fwd_config,
++	.tx_dma = rt5350_tx_dma,
++	.pdma_glo_cfg = FE_PDMA_SIZE_8DWORDS,
++	.checksum_bit = RX_DMA_L4VALID,
++	.rx_int = RT5350_RX_DONE_INT,
++	.tx_int = RT5350_TX_DONE_INT,
++};
++
++const struct of_device_id of_fe_match[] = {
++	{ .compatible = "ralink,rt3050-eth", .data = &rt3050_data },
++	{ .compatible = "ralink,rt5350-eth", .data = &rt5350_data },
++	{},
++};
++
++MODULE_DEVICE_TABLE(of, of_fe_match);
+diff --git a/drivers/net/phy/swconfig.c b/drivers/net/phy/swconfig.c
+new file mode 100644
+index 000000000000..a734e576080a
+--- /dev/null
++++ b/drivers/net/phy/swconfig.c
+@@ -0,0 +1,1242 @@
++/*
++ * swconfig.c: Switch configuration API
++ *
++ * Copyright (C) 2008 Felix Fietkau <nbd@nbd.name>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/types.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/list.h>
++#include <linux/if.h>
++#include <linux/if_ether.h>
++#include <linux/capability.h>
++#include <linux/skbuff.h>
++#include <linux/switch.h>
++#include <linux/of.h>
++#include <linux/version.h>
++#include <uapi/linux/mii.h>
++
++#define SWCONFIG_DEVNAME	"switch%d"
++
++#include "swconfig_leds.c"
++
++MODULE_AUTHOR("Felix Fietkau <nbd@nbd.name>");
++MODULE_LICENSE("GPL");
++
++static int swdev_id;
++static struct list_head swdevs;
++static DEFINE_MUTEX(swdevs_lock);
++struct swconfig_callback;
++
++struct swconfig_callback {
++	struct sk_buff *msg;
++	struct genlmsghdr *hdr;
++	struct genl_info *info;
++	int cmd;
++
++	/* callback for filling in the message data */
++	int (*fill)(struct swconfig_callback *cb, void *arg);
++
++	/* callback for closing the message before sending it */
++	int (*close)(struct swconfig_callback *cb, void *arg);
++
++	struct nlattr *nest[4];
++	int args[4];
++};
++
++/* defaults */
++
++static int
++swconfig_get_vlan_ports(struct switch_dev *dev, const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	int ret;
++	if (val->port_vlan >= dev->vlans)
++		return -EINVAL;
++
++	if (!dev->ops->get_vlan_ports)
++		return -EOPNOTSUPP;
++
++	ret = dev->ops->get_vlan_ports(dev, val);
++	return ret;
++}
++
++static int
++swconfig_set_vlan_ports(struct switch_dev *dev, const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	struct switch_port *ports = val->value.ports;
++	const struct switch_dev_ops *ops = dev->ops;
++	int i;
++
++	if (val->port_vlan >= dev->vlans)
++		return -EINVAL;
++
++	/* validate ports */
++	if (val->len > dev->ports)
++		return -EINVAL;
++
++	if (!ops->set_vlan_ports)
++		return -EOPNOTSUPP;
++
++	for (i = 0; i < val->len; i++) {
++		if (ports[i].id >= dev->ports)
++			return -EINVAL;
++
++		if (ops->set_port_pvid &&
++		    !(ports[i].flags & (1 << SWITCH_PORT_FLAG_TAGGED)))
++			ops->set_port_pvid(dev, ports[i].id, val->port_vlan);
++	}
++
++	return ops->set_vlan_ports(dev, val);
++}
++
++static int
++swconfig_set_pvid(struct switch_dev *dev, const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	if (val->port_vlan >= dev->ports)
++		return -EINVAL;
++
++	if (!dev->ops->set_port_pvid)
++		return -EOPNOTSUPP;
++
++	return dev->ops->set_port_pvid(dev, val->port_vlan, val->value.i);
++}
++
++static int
++swconfig_get_pvid(struct switch_dev *dev, const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	if (val->port_vlan >= dev->ports)
++		return -EINVAL;
++
++	if (!dev->ops->get_port_pvid)
++		return -EOPNOTSUPP;
++
++	return dev->ops->get_port_pvid(dev, val->port_vlan, &val->value.i);
++}
++
++static int
++swconfig_set_link(struct switch_dev *dev, const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	if (!dev->ops->set_port_link)
++		return -EOPNOTSUPP;
++
++	return dev->ops->set_port_link(dev, val->port_vlan, val->value.link);
++}
++
++static int
++swconfig_get_link(struct switch_dev *dev, const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	struct switch_port_link *link = val->value.link;
++
++	if (val->port_vlan >= dev->ports)
++		return -EINVAL;
++
++	if (!dev->ops->get_port_link)
++		return -EOPNOTSUPP;
++
++	memset(link, 0, sizeof(*link));
++	return dev->ops->get_port_link(dev, val->port_vlan, link);
++}
++
++static int
++swconfig_apply_config(struct switch_dev *dev, const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	/* don't complain if not supported by the switch driver */
++	if (!dev->ops->apply_config)
++		return 0;
++
++	return dev->ops->apply_config(dev);
++}
++
++static int
++swconfig_reset_switch(struct switch_dev *dev, const struct switch_attr *attr,
++			struct switch_val *val)
++{
++	/* don't complain if not supported by the switch driver */
++	if (!dev->ops->reset_switch)
++		return 0;
++
++	return dev->ops->reset_switch(dev);
++}
++
++enum global_defaults {
++	GLOBAL_APPLY,
++	GLOBAL_RESET,
++};
++
++enum vlan_defaults {
++	VLAN_PORTS,
++};
++
++enum port_defaults {
++	PORT_PVID,
++	PORT_LINK,
++};
++
++static struct switch_attr default_global[] = {
++	[GLOBAL_APPLY] = {
++		.type = SWITCH_TYPE_NOVAL,
++		.name = "apply",
++		.description = "Activate changes in the hardware",
++		.set = swconfig_apply_config,
++	},
++	[GLOBAL_RESET] = {
++		.type = SWITCH_TYPE_NOVAL,
++		.name = "reset",
++		.description = "Reset the switch",
++		.set = swconfig_reset_switch,
++	}
++};
++
++static struct switch_attr default_port[] = {
++	[PORT_PVID] = {
++		.type = SWITCH_TYPE_INT,
++		.name = "pvid",
++		.description = "Primary VLAN ID",
++		.set = swconfig_set_pvid,
++		.get = swconfig_get_pvid,
++	},
++	[PORT_LINK] = {
++		.type = SWITCH_TYPE_LINK,
++		.name = "link",
++		.description = "Get port link information",
++		.set = swconfig_set_link,
++		.get = swconfig_get_link,
++	}
++};
++
++static struct switch_attr default_vlan[] = {
++	[VLAN_PORTS] = {
++		.type = SWITCH_TYPE_PORTS,
++		.name = "ports",
++		.description = "VLAN port mapping",
++		.set = swconfig_set_vlan_ports,
++		.get = swconfig_get_vlan_ports,
++	},
++};
++
++static const struct switch_attr *
++swconfig_find_attr_by_name(const struct switch_attrlist *alist,
++				const char *name)
++{
++	int i;
++
++	for (i = 0; i < alist->n_attr; i++)
++		if (strcmp(name, alist->attr[i].name) == 0)
++			return &alist->attr[i];
++
++	return NULL;
++}
++
++static void swconfig_defaults_init(struct switch_dev *dev)
++{
++	const struct switch_dev_ops *ops = dev->ops;
++
++	dev->def_global = 0;
++	dev->def_vlan = 0;
++	dev->def_port = 0;
++
++	if (ops->get_vlan_ports || ops->set_vlan_ports)
++		set_bit(VLAN_PORTS, &dev->def_vlan);
++
++	if (ops->get_port_pvid || ops->set_port_pvid)
++		set_bit(PORT_PVID, &dev->def_port);
++
++	if (ops->get_port_link &&
++	    !swconfig_find_attr_by_name(&ops->attr_port, "link"))
++		set_bit(PORT_LINK, &dev->def_port);
++
++	/* always present, can be no-op */
++	set_bit(GLOBAL_APPLY, &dev->def_global);
++	set_bit(GLOBAL_RESET, &dev->def_global);
++}
++
++
++static struct genl_family switch_fam;
++
++static const struct nla_policy switch_policy[SWITCH_ATTR_MAX+1] = {
++	[SWITCH_ATTR_ID] = { .type = NLA_U32 },
++	[SWITCH_ATTR_OP_ID] = { .type = NLA_U32 },
++	[SWITCH_ATTR_OP_PORT] = { .type = NLA_U32 },
++	[SWITCH_ATTR_OP_VLAN] = { .type = NLA_U32 },
++	[SWITCH_ATTR_OP_VALUE_INT] = { .type = NLA_U32 },
++	[SWITCH_ATTR_OP_VALUE_STR] = { .type = NLA_NUL_STRING },
++	[SWITCH_ATTR_OP_VALUE_PORTS] = { .type = NLA_NESTED },
++	[SWITCH_ATTR_TYPE] = { .type = NLA_U32 },
++};
++
++static const struct nla_policy port_policy[SWITCH_PORT_ATTR_MAX+1] = {
++	[SWITCH_PORT_ID] = { .type = NLA_U32 },
++	[SWITCH_PORT_FLAG_TAGGED] = { .type = NLA_FLAG },
++};
++
++static struct nla_policy link_policy[SWITCH_LINK_ATTR_MAX] = {
++	[SWITCH_LINK_FLAG_DUPLEX] = { .type = NLA_FLAG },
++	[SWITCH_LINK_FLAG_ANEG] = { .type = NLA_FLAG },
++	[SWITCH_LINK_SPEED] = { .type = NLA_U32 },
++};
++
++static inline void
++swconfig_lock(void)
++{
++	mutex_lock(&swdevs_lock);
++}
++
++static inline void
++swconfig_unlock(void)
++{
++	mutex_unlock(&swdevs_lock);
++}
++
++static struct switch_dev *
++swconfig_get_dev(struct genl_info *info)
++{
++	struct switch_dev *dev = NULL;
++	struct switch_dev *p;
++	int id;
++
++	if (!info->attrs[SWITCH_ATTR_ID])
++		goto done;
++
++	id = nla_get_u32(info->attrs[SWITCH_ATTR_ID]);
++	swconfig_lock();
++	list_for_each_entry(p, &swdevs, dev_list) {
++		if (id != p->id)
++			continue;
++
++		dev = p;
++		break;
++	}
++	if (dev)
++		mutex_lock(&dev->sw_mutex);
++	else
++		pr_debug("device %d not found\n", id);
++	swconfig_unlock();
++done:
++	return dev;
++}
++
++static inline void
++swconfig_put_dev(struct switch_dev *dev)
++{
++	mutex_unlock(&dev->sw_mutex);
++}
++
++static int
++swconfig_dump_attr(struct swconfig_callback *cb, void *arg)
++{
++	struct switch_attr *op = arg;
++	struct genl_info *info = cb->info;
++	struct sk_buff *msg = cb->msg;
++	int id = cb->args[0];
++	void *hdr;
++
++	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq, &switch_fam,
++			NLM_F_MULTI, SWITCH_CMD_NEW_ATTR);
++	if (IS_ERR(hdr))
++		return -1;
++
++	if (nla_put_u32(msg, SWITCH_ATTR_OP_ID, id))
++		goto nla_put_failure;
++	if (nla_put_u32(msg, SWITCH_ATTR_OP_TYPE, op->type))
++		goto nla_put_failure;
++	if (nla_put_string(msg, SWITCH_ATTR_OP_NAME, op->name))
++		goto nla_put_failure;
++	if (op->description)
++		if (nla_put_string(msg, SWITCH_ATTR_OP_DESCRIPTION,
++			op->description))
++			goto nla_put_failure;
++
++	genlmsg_end(msg, hdr);
++	return msg->len;
++nla_put_failure:
++	genlmsg_cancel(msg, hdr);
++	return -EMSGSIZE;
++}
++
++/* spread multipart messages across multiple message buffers */
++static int
++swconfig_send_multipart(struct swconfig_callback *cb, void *arg)
++{
++	struct genl_info *info = cb->info;
++	int restart = 0;
++	int err;
++
++	do {
++		if (!cb->msg) {
++			cb->msg = nlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
++			if (cb->msg == NULL)
++				goto error;
++		}
++
++		if (!(cb->fill(cb, arg) < 0))
++			break;
++
++		/* fill failed, check if this was already the second attempt */
++		if (restart)
++			goto error;
++
++		/* try again in a new message, send the current one */
++		restart = 1;
++		if (cb->close) {
++			if (cb->close(cb, arg) < 0)
++				goto error;
++		}
++		err = genlmsg_reply(cb->msg, info);
++		cb->msg = NULL;
++		if (err < 0)
++			goto error;
++
++	} while (restart);
++
++	return 0;
++
++error:
++	if (cb->msg)
++		nlmsg_free(cb->msg);
++	return -1;
++}
++
++static int
++swconfig_list_attrs(struct sk_buff *skb, struct genl_info *info)
++{
++	struct genlmsghdr *hdr = nlmsg_data(info->nlhdr);
++	const struct switch_attrlist *alist;
++	struct switch_dev *dev;
++	struct swconfig_callback cb;
++	int err = -EINVAL;
++	int i;
++
++	/* defaults */
++	struct switch_attr *def_list;
++	unsigned long *def_active;
++	int n_def;
++
++	dev = swconfig_get_dev(info);
++	if (!dev)
++		return -EINVAL;
++
++	switch (hdr->cmd) {
++	case SWITCH_CMD_LIST_GLOBAL:
++		alist = &dev->ops->attr_global;
++		def_list = default_global;
++		def_active = &dev->def_global;
++		n_def = ARRAY_SIZE(default_global);
++		break;
++	case SWITCH_CMD_LIST_VLAN:
++		alist = &dev->ops->attr_vlan;
++		def_list = default_vlan;
++		def_active = &dev->def_vlan;
++		n_def = ARRAY_SIZE(default_vlan);
++		break;
++	case SWITCH_CMD_LIST_PORT:
++		alist = &dev->ops->attr_port;
++		def_list = default_port;
++		def_active = &dev->def_port;
++		n_def = ARRAY_SIZE(default_port);
++		break;
++	default:
++		WARN_ON(1);
++		goto out;
++	}
++
++	memset(&cb, 0, sizeof(cb));
++	cb.info = info;
++	cb.fill = swconfig_dump_attr;
++	for (i = 0; i < alist->n_attr; i++) {
++		if (alist->attr[i].disabled)
++			continue;
++		cb.args[0] = i;
++		err = swconfig_send_multipart(&cb, (void *) &alist->attr[i]);
++		if (err < 0)
++			goto error;
++	}
++
++	/* defaults */
++	for (i = 0; i < n_def; i++) {
++		if (!test_bit(i, def_active))
++			continue;
++		cb.args[0] = SWITCH_ATTR_DEFAULTS_OFFSET + i;
++		err = swconfig_send_multipart(&cb, (void *) &def_list[i]);
++		if (err < 0)
++			goto error;
++	}
++	swconfig_put_dev(dev);
++
++	if (!cb.msg)
++		return 0;
++
++	return genlmsg_reply(cb.msg, info);
++
++error:
++	if (cb.msg)
++		nlmsg_free(cb.msg);
++out:
++	swconfig_put_dev(dev);
++	return err;
++}
++
++static const struct switch_attr *
++swconfig_lookup_attr(struct switch_dev *dev, struct genl_info *info,
++		struct switch_val *val)
++{
++	struct genlmsghdr *hdr = nlmsg_data(info->nlhdr);
++	const struct switch_attrlist *alist;
++	const struct switch_attr *attr = NULL;
++	unsigned int attr_id;
++
++	/* defaults */
++	struct switch_attr *def_list;
++	unsigned long *def_active;
++	int n_def;
++
++	if (!info->attrs[SWITCH_ATTR_OP_ID])
++		goto done;
++
++	switch (hdr->cmd) {
++	case SWITCH_CMD_SET_GLOBAL:
++	case SWITCH_CMD_GET_GLOBAL:
++		alist = &dev->ops->attr_global;
++		def_list = default_global;
++		def_active = &dev->def_global;
++		n_def = ARRAY_SIZE(default_global);
++		break;
++	case SWITCH_CMD_SET_VLAN:
++	case SWITCH_CMD_GET_VLAN:
++		alist = &dev->ops->attr_vlan;
++		def_list = default_vlan;
++		def_active = &dev->def_vlan;
++		n_def = ARRAY_SIZE(default_vlan);
++		if (!info->attrs[SWITCH_ATTR_OP_VLAN])
++			goto done;
++		val->port_vlan = nla_get_u32(info->attrs[SWITCH_ATTR_OP_VLAN]);
++		if (val->port_vlan >= dev->vlans)
++			goto done;
++		break;
++	case SWITCH_CMD_SET_PORT:
++	case SWITCH_CMD_GET_PORT:
++		alist = &dev->ops->attr_port;
++		def_list = default_port;
++		def_active = &dev->def_port;
++		n_def = ARRAY_SIZE(default_port);
++		if (!info->attrs[SWITCH_ATTR_OP_PORT])
++			goto done;
++		val->port_vlan = nla_get_u32(info->attrs[SWITCH_ATTR_OP_PORT]);
++		if (val->port_vlan >= dev->ports)
++			goto done;
++		break;
++	default:
++		WARN_ON(1);
++		goto done;
++	}
++
++	if (!alist)
++		goto done;
++
++	attr_id = nla_get_u32(info->attrs[SWITCH_ATTR_OP_ID]);
++	if (attr_id >= SWITCH_ATTR_DEFAULTS_OFFSET) {
++		attr_id -= SWITCH_ATTR_DEFAULTS_OFFSET;
++		if (attr_id >= n_def)
++			goto done;
++		if (!test_bit(attr_id, def_active))
++			goto done;
++		attr = &def_list[attr_id];
++	} else {
++		if (attr_id >= alist->n_attr)
++			goto done;
++		attr = &alist->attr[attr_id];
++	}
++
++	if (attr->disabled)
++		attr = NULL;
++
++done:
++	if (!attr)
++		pr_debug("attribute lookup failed\n");
++	val->attr = attr;
++	return attr;
++}
++
++static int
++swconfig_parse_ports(struct sk_buff *msg, struct nlattr *head,
++		struct switch_val *val, int max)
++{
++	struct nlattr *nla;
++	int rem;
++
++	val->len = 0;
++	nla_for_each_nested(nla, head, rem) {
++		struct nlattr *tb[SWITCH_PORT_ATTR_MAX+1];
++		struct switch_port *port;
++
++		if (val->len >= max)
++			return -EINVAL;
++
++		port = &val->value.ports[val->len];
++
++		if (nla_parse_nested_deprecated(tb, SWITCH_PORT_ATTR_MAX, nla,
++				port_policy, NULL))
++			return -EINVAL;
++
++		if (!tb[SWITCH_PORT_ID])
++			return -EINVAL;
++
++		port->id = nla_get_u32(tb[SWITCH_PORT_ID]);
++		if (tb[SWITCH_PORT_FLAG_TAGGED])
++			port->flags |= (1 << SWITCH_PORT_FLAG_TAGGED);
++		val->len++;
++	}
++
++	return 0;
++}
++
++static int
++swconfig_parse_link(struct sk_buff *msg, struct nlattr *nla,
++		    struct switch_port_link *link)
++{
++	struct nlattr *tb[SWITCH_LINK_ATTR_MAX + 1];
++
++	if (nla_parse_nested_deprecated(tb, SWITCH_LINK_ATTR_MAX, nla, link_policy, NULL))
++		return -EINVAL;
++
++	link->duplex = !!tb[SWITCH_LINK_FLAG_DUPLEX];
++	link->aneg = !!tb[SWITCH_LINK_FLAG_ANEG];
++	link->speed = nla_get_u32(tb[SWITCH_LINK_SPEED]);
++
++	return 0;
++}
++
++static int
++swconfig_set_attr(struct sk_buff *skb, struct genl_info *info)
++{
++	const struct switch_attr *attr;
++	struct switch_dev *dev;
++	struct switch_val val;
++	int err = -EINVAL;
++
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
++	dev = swconfig_get_dev(info);
++	if (!dev)
++		return -EINVAL;
++
++	memset(&val, 0, sizeof(val));
++	attr = swconfig_lookup_attr(dev, info, &val);
++	if (!attr || !attr->set)
++		goto error;
++
++	val.attr = attr;
++	switch (attr->type) {
++	case SWITCH_TYPE_NOVAL:
++		break;
++	case SWITCH_TYPE_INT:
++		if (!info->attrs[SWITCH_ATTR_OP_VALUE_INT])
++			goto error;
++		val.value.i =
++			nla_get_u32(info->attrs[SWITCH_ATTR_OP_VALUE_INT]);
++		break;
++	case SWITCH_TYPE_STRING:
++		if (!info->attrs[SWITCH_ATTR_OP_VALUE_STR])
++			goto error;
++		val.value.s =
++			nla_data(info->attrs[SWITCH_ATTR_OP_VALUE_STR]);
++		break;
++	case SWITCH_TYPE_PORTS:
++		val.value.ports = dev->portbuf;
++		memset(dev->portbuf, 0,
++			sizeof(struct switch_port) * dev->ports);
++
++		/* TODO: implement multipart? */
++		if (info->attrs[SWITCH_ATTR_OP_VALUE_PORTS]) {
++			err = swconfig_parse_ports(skb,
++				info->attrs[SWITCH_ATTR_OP_VALUE_PORTS],
++				&val, dev->ports);
++			if (err < 0)
++				goto error;
++		} else {
++			val.len = 0;
++			err = 0;
++		}
++		break;
++	case SWITCH_TYPE_LINK:
++		val.value.link = &dev->linkbuf;
++		memset(&dev->linkbuf, 0, sizeof(struct switch_port_link));
++
++		if (info->attrs[SWITCH_ATTR_OP_VALUE_LINK]) {
++			err = swconfig_parse_link(skb,
++						  info->attrs[SWITCH_ATTR_OP_VALUE_LINK],
++						  val.value.link);
++			if (err < 0)
++				goto error;
++		} else {
++			val.len = 0;
++			err = 0;
++		}
++		break;
++	default:
++		goto error;
++	}
++
++	err = attr->set(dev, attr, &val);
++error:
++	swconfig_put_dev(dev);
++	return err;
++}
++
++static int
++swconfig_close_portlist(struct swconfig_callback *cb, void *arg)
++{
++	if (cb->nest[0])
++		nla_nest_end(cb->msg, cb->nest[0]);
++	return 0;
++}
++
++static int
++swconfig_send_port(struct swconfig_callback *cb, void *arg)
++{
++	const struct switch_port *port = arg;
++	struct nlattr *p = NULL;
++
++	if (!cb->nest[0]) {
++		cb->nest[0] = nla_nest_start(cb->msg, cb->cmd);
++		if (!cb->nest[0])
++			return -1;
++	}
++
++	p = nla_nest_start(cb->msg, SWITCH_ATTR_PORT);
++	if (!p)
++		goto error;
++
++	if (nla_put_u32(cb->msg, SWITCH_PORT_ID, port->id))
++		goto nla_put_failure;
++	if (port->flags & (1 << SWITCH_PORT_FLAG_TAGGED)) {
++		if (nla_put_flag(cb->msg, SWITCH_PORT_FLAG_TAGGED))
++			goto nla_put_failure;
++	}
++
++	nla_nest_end(cb->msg, p);
++	return 0;
++
++nla_put_failure:
++		nla_nest_cancel(cb->msg, p);
++error:
++	nla_nest_cancel(cb->msg, cb->nest[0]);
++	return -1;
++}
++
++static int
++swconfig_send_ports(struct sk_buff **msg, struct genl_info *info, int attr,
++		const struct switch_val *val)
++{
++	struct swconfig_callback cb;
++	int err = 0;
++	int i;
++
++	if (!val->value.ports)
++		return -EINVAL;
++
++	memset(&cb, 0, sizeof(cb));
++	cb.cmd = attr;
++	cb.msg = *msg;
++	cb.info = info;
++	cb.fill = swconfig_send_port;
++	cb.close = swconfig_close_portlist;
++
++	cb.nest[0] = nla_nest_start(cb.msg, cb.cmd);
++	for (i = 0; i < val->len; i++) {
++		err = swconfig_send_multipart(&cb, &val->value.ports[i]);
++		if (err)
++			goto done;
++	}
++	err = val->len;
++	swconfig_close_portlist(&cb, NULL);
++	*msg = cb.msg;
++
++done:
++	return err;
++}
++
++static int
++swconfig_send_link(struct sk_buff *msg, struct genl_info *info, int attr,
++		   const struct switch_port_link *link)
++{
++	struct nlattr *p = NULL;
++	int err = 0;
++
++	p = nla_nest_start(msg, attr);
++	if (link->link) {
++		if (nla_put_flag(msg, SWITCH_LINK_FLAG_LINK))
++			goto nla_put_failure;
++	}
++	if (link->duplex) {
++		if (nla_put_flag(msg, SWITCH_LINK_FLAG_DUPLEX))
++			goto nla_put_failure;
++	}
++	if (link->aneg) {
++		if (nla_put_flag(msg, SWITCH_LINK_FLAG_ANEG))
++			goto nla_put_failure;
++	}
++	if (link->tx_flow) {
++		if (nla_put_flag(msg, SWITCH_LINK_FLAG_TX_FLOW))
++			goto nla_put_failure;
++	}
++	if (link->rx_flow) {
++		if (nla_put_flag(msg, SWITCH_LINK_FLAG_RX_FLOW))
++			goto nla_put_failure;
++	}
++	if (nla_put_u32(msg, SWITCH_LINK_SPEED, link->speed))
++		goto nla_put_failure;
++	if (link->eee & ADVERTISED_100baseT_Full) {
++		if (nla_put_flag(msg, SWITCH_LINK_FLAG_EEE_100BASET))
++			goto nla_put_failure;
++	}
++	if (link->eee & ADVERTISED_1000baseT_Full) {
++		if (nla_put_flag(msg, SWITCH_LINK_FLAG_EEE_1000BASET))
++			goto nla_put_failure;
++	}
++	nla_nest_end(msg, p);
++
++	return err;
++
++nla_put_failure:
++	nla_nest_cancel(msg, p);
++	return -1;
++}
++
++static int
++swconfig_get_attr(struct sk_buff *skb, struct genl_info *info)
++{
++	struct genlmsghdr *hdr = nlmsg_data(info->nlhdr);
++	const struct switch_attr *attr;
++	struct switch_dev *dev;
++	struct sk_buff *msg = NULL;
++	struct switch_val val;
++	int err = -EINVAL;
++	int cmd = hdr->cmd;
++
++	dev = swconfig_get_dev(info);
++	if (!dev)
++		return -EINVAL;
++
++	memset(&val, 0, sizeof(val));
++	attr = swconfig_lookup_attr(dev, info, &val);
++	if (!attr || !attr->get)
++		goto error;
++
++	if (attr->type == SWITCH_TYPE_PORTS) {
++		val.value.ports = dev->portbuf;
++		memset(dev->portbuf, 0,
++			sizeof(struct switch_port) * dev->ports);
++	} else if (attr->type == SWITCH_TYPE_LINK) {
++		val.value.link = &dev->linkbuf;
++		memset(&dev->linkbuf, 0, sizeof(struct switch_port_link));
++	}
++
++	err = attr->get(dev, attr, &val);
++	if (err)
++		goto error;
++
++	msg = nlmsg_new(NLMSG_GOODSIZE, GFP_KERNEL);
++	if (!msg)
++		goto error;
++
++	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq, &switch_fam,
++			0, cmd);
++	if (IS_ERR(hdr))
++		goto nla_put_failure;
++
++	switch (attr->type) {
++	case SWITCH_TYPE_INT:
++		if (nla_put_u32(msg, SWITCH_ATTR_OP_VALUE_INT, val.value.i))
++			goto nla_put_failure;
++		break;
++	case SWITCH_TYPE_STRING:
++		if (nla_put_string(msg, SWITCH_ATTR_OP_VALUE_STR, val.value.s))
++			goto nla_put_failure;
++		break;
++	case SWITCH_TYPE_PORTS:
++		err = swconfig_send_ports(&msg, info,
++				SWITCH_ATTR_OP_VALUE_PORTS, &val);
++		if (err < 0)
++			goto nla_put_failure;
++		break;
++	case SWITCH_TYPE_LINK:
++		err = swconfig_send_link(msg, info,
++					 SWITCH_ATTR_OP_VALUE_LINK, val.value.link);
++		if (err < 0)
++			goto nla_put_failure;
++		break;
++	default:
++		pr_debug("invalid type in attribute\n");
++		err = -EINVAL;
++		goto nla_put_failure;
++	}
++	genlmsg_end(msg, hdr);
++	err = msg->len;
++	if (err < 0)
++		goto nla_put_failure;
++
++	swconfig_put_dev(dev);
++	return genlmsg_reply(msg, info);
++
++nla_put_failure:
++	if (msg)
++		nlmsg_free(msg);
++error:
++	swconfig_put_dev(dev);
++	if (!err)
++		err = -ENOMEM;
++	return err;
++}
++
++static int
++swconfig_send_switch(struct sk_buff *msg, u32 pid, u32 seq, int flags,
++		const struct switch_dev *dev)
++{
++	struct nlattr *p = NULL, *m = NULL;
++	void *hdr;
++	int i;
++
++	hdr = genlmsg_put(msg, pid, seq, &switch_fam, flags,
++			SWITCH_CMD_NEW_ATTR);
++	if (IS_ERR(hdr))
++		return -1;
++
++	if (nla_put_u32(msg, SWITCH_ATTR_ID, dev->id))
++		goto nla_put_failure;
++	if (nla_put_string(msg, SWITCH_ATTR_DEV_NAME, dev->devname))
++		goto nla_put_failure;
++	if (nla_put_string(msg, SWITCH_ATTR_ALIAS, dev->alias))
++		goto nla_put_failure;
++	if (nla_put_string(msg, SWITCH_ATTR_NAME, dev->name))
++		goto nla_put_failure;
++	if (nla_put_u32(msg, SWITCH_ATTR_VLANS, dev->vlans))
++		goto nla_put_failure;
++	if (nla_put_u32(msg, SWITCH_ATTR_PORTS, dev->ports))
++		goto nla_put_failure;
++	if (nla_put_u32(msg, SWITCH_ATTR_CPU_PORT, dev->cpu_port))
++		goto nla_put_failure;
++
++	m = nla_nest_start(msg, SWITCH_ATTR_PORTMAP);
++	if (!m)
++		goto nla_put_failure;
++	for (i = 0; i < dev->ports; i++) {
++		p = nla_nest_start(msg, SWITCH_ATTR_PORTS);
++		if (!p)
++			continue;
++		if (dev->portmap[i].s) {
++			if (nla_put_string(msg, SWITCH_PORTMAP_SEGMENT,
++						dev->portmap[i].s))
++				goto nla_put_failure;
++			if (nla_put_u32(msg, SWITCH_PORTMAP_VIRT,
++						dev->portmap[i].virt))
++				goto nla_put_failure;
++		}
++		nla_nest_end(msg, p);
++	}
++	nla_nest_end(msg, m);
++	genlmsg_end(msg, hdr);
++	return msg->len;
++nla_put_failure:
++	genlmsg_cancel(msg, hdr);
++	return -EMSGSIZE;
++}
++
++static int swconfig_dump_switches(struct sk_buff *skb,
++		struct netlink_callback *cb)
++{
++	struct switch_dev *dev;
++	int start = cb->args[0];
++	int idx = 0;
++
++	swconfig_lock();
++	list_for_each_entry(dev, &swdevs, dev_list) {
++		if (++idx <= start)
++			continue;
++		if (swconfig_send_switch(skb, NETLINK_CB(cb->skb).portid,
++				cb->nlh->nlmsg_seq, NLM_F_MULTI,
++				dev) < 0)
++			break;
++	}
++	swconfig_unlock();
++	cb->args[0] = idx;
++
++	return skb->len;
++}
++
++static int
++swconfig_done(struct netlink_callback *cb)
++{
++	return 0;
++}
++
++static struct genl_ops swconfig_ops[] = {
++	{
++		.cmd = SWITCH_CMD_LIST_GLOBAL,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = swconfig_list_attrs,
++	},
++	{
++		.cmd = SWITCH_CMD_LIST_VLAN,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = swconfig_list_attrs,
++	},
++	{
++		.cmd = SWITCH_CMD_LIST_PORT,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = swconfig_list_attrs,
++	},
++	{
++		.cmd = SWITCH_CMD_GET_GLOBAL,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = swconfig_get_attr,
++	},
++	{
++		.cmd = SWITCH_CMD_GET_VLAN,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = swconfig_get_attr,
++	},
++	{
++		.cmd = SWITCH_CMD_GET_PORT,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = swconfig_get_attr,
++	},
++	{
++		.cmd = SWITCH_CMD_SET_GLOBAL,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.flags = GENL_ADMIN_PERM,
++		.doit = swconfig_set_attr,
++	},
++	{
++		.cmd = SWITCH_CMD_SET_VLAN,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.flags = GENL_ADMIN_PERM,
++		.doit = swconfig_set_attr,
++	},
++	{
++		.cmd = SWITCH_CMD_SET_PORT,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.flags = GENL_ADMIN_PERM,
++		.doit = swconfig_set_attr,
++	},
++	{
++		.cmd = SWITCH_CMD_GET_SWITCH,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.dumpit = swconfig_dump_switches,
++		.done = swconfig_done,
++	}
++};
++
++static struct genl_family switch_fam = {
++	.name = "switch",
++	.hdrsize = 0,
++	.version = 1,
++	.maxattr = SWITCH_ATTR_MAX,
++	.policy = switch_policy,
++	.module = THIS_MODULE,
++	.ops = swconfig_ops,
++	.n_ops = ARRAY_SIZE(swconfig_ops),
++};
++
++#ifdef CONFIG_OF
++void
++of_switch_load_portmap(struct switch_dev *dev)
++{
++	struct device_node *port;
++
++	if (!dev->of_node)
++		return;
++
++	for_each_child_of_node(dev->of_node, port) {
++		const __be32 *prop;
++		const char *segment;
++		int size, phys;
++
++		if (!of_device_is_compatible(port, "swconfig,port"))
++			continue;
++
++		if (of_property_read_string(port, "swconfig,segment", &segment))
++			continue;
++
++		prop = of_get_property(port, "swconfig,portmap", &size);
++		if (!prop)
++			continue;
++
++		if (size != (2 * sizeof(*prop))) {
++			pr_err("%s: failed to parse port mapping\n",
++					port->name);
++			continue;
++		}
++
++		phys = be32_to_cpup(prop++);
++		if ((phys < 0) | (phys >= dev->ports)) {
++			pr_err("%s: physical port index out of range\n",
++					port->name);
++			continue;
++		}
++
++		dev->portmap[phys].s = kstrdup(segment, GFP_KERNEL);
++		dev->portmap[phys].virt = be32_to_cpup(prop);
++		pr_debug("Found port: %s, physical: %d, virtual: %d\n",
++			segment, phys, dev->portmap[phys].virt);
++	}
++}
++#endif
++
++int
++register_switch(struct switch_dev *dev, struct net_device *netdev)
++{
++	struct switch_dev *sdev;
++	const int max_switches = 8 * sizeof(unsigned long);
++	unsigned long in_use = 0;
++	int err;
++	int i;
++
++	INIT_LIST_HEAD(&dev->dev_list);
++	if (netdev) {
++		dev->netdev = netdev;
++		if (!dev->alias)
++			dev->alias = netdev->name;
++	}
++	BUG_ON(!dev->alias);
++
++	/* Make sure swdev_id doesn't overflow */
++	if (swdev_id == INT_MAX) {
++		return -ENOMEM;
++	}
++
++	if (dev->ports > 0) {
++		dev->portbuf = kzalloc(sizeof(struct switch_port) *
++				dev->ports, GFP_KERNEL);
++		if (!dev->portbuf)
++			return -ENOMEM;
++		dev->portmap = kzalloc(sizeof(struct switch_portmap) *
++				dev->ports, GFP_KERNEL);
++		if (!dev->portmap) {
++			kfree(dev->portbuf);
++			return -ENOMEM;
++		}
++	}
++	swconfig_defaults_init(dev);
++	mutex_init(&dev->sw_mutex);
++	swconfig_lock();
++	dev->id = ++swdev_id;
++
++	list_for_each_entry(sdev, &swdevs, dev_list) {
++		if (!sscanf(sdev->devname, SWCONFIG_DEVNAME, &i))
++			continue;
++		if (i < 0 || i > max_switches)
++			continue;
++
++		set_bit(i, &in_use);
++	}
++	i = find_first_zero_bit(&in_use, max_switches);
++
++	if (i == max_switches) {
++		swconfig_unlock();
++		return -ENFILE;
++	}
++
++#ifdef CONFIG_OF
++	if (dev->ports)
++		of_switch_load_portmap(dev);
++#endif
++
++	/* fill device name */
++	snprintf(dev->devname, IFNAMSIZ, SWCONFIG_DEVNAME, i);
++
++	list_add_tail(&dev->dev_list, &swdevs);
++	swconfig_unlock();
++
++	err = swconfig_create_led_trigger(dev);
++	if (err)
++		return err;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(register_switch);
++
++void
++unregister_switch(struct switch_dev *dev)
++{
++	swconfig_destroy_led_trigger(dev);
++	kfree(dev->portbuf);
++	mutex_lock(&dev->sw_mutex);
++	swconfig_lock();
++	list_del(&dev->dev_list);
++	swconfig_unlock();
++	mutex_unlock(&dev->sw_mutex);
++}
++EXPORT_SYMBOL_GPL(unregister_switch);
++
++int
++switch_generic_set_link(struct switch_dev *dev, int port,
++			struct switch_port_link *link)
++{
++	if (WARN_ON(!dev->ops->phy_write16))
++		return -ENOTSUPP;
++
++	/* Generic implementation */
++	if (link->aneg) {
++		dev->ops->phy_write16(dev, port, MII_BMCR, 0x0000);
++		dev->ops->phy_write16(dev, port, MII_BMCR, BMCR_ANENABLE | BMCR_ANRESTART);
++	} else {
++		u16 bmcr = 0;
++
++		if (link->duplex)
++			bmcr |= BMCR_FULLDPLX;
++
++		switch (link->speed) {
++		case SWITCH_PORT_SPEED_10:
++			break;
++		case SWITCH_PORT_SPEED_100:
++			bmcr |= BMCR_SPEED100;
++			break;
++		case SWITCH_PORT_SPEED_1000:
++			bmcr |= BMCR_SPEED1000;
++			break;
++		default:
++			return -ENOTSUPP;
++		}
++
++		dev->ops->phy_write16(dev, port, MII_BMCR, bmcr);
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(switch_generic_set_link);
++
++static int __init
++swconfig_init(void)
++{
++	INIT_LIST_HEAD(&swdevs);
++
++	return genl_register_family(&switch_fam);
++}
++
++static void __exit
++swconfig_exit(void)
++{
++	genl_unregister_family(&switch_fam);
++}
++
++module_init(swconfig_init);
++module_exit(swconfig_exit);
+diff --git a/drivers/net/phy/swconfig_leds.c b/drivers/net/phy/swconfig_leds.c
+new file mode 100644
+index 000000000000..df53e5cd4a21
+--- /dev/null
++++ b/drivers/net/phy/swconfig_leds.c
+@@ -0,0 +1,555 @@
++/*
++ * swconfig_led.c: LED trigger support for the switch configuration API
++ *
++ * Copyright (C) 2011 Gabor Juhos <juhosg@openwrt.org>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ */
++
++#ifdef CONFIG_SWCONFIG_LEDS
++
++#include <linux/leds.h>
++#include <linux/ctype.h>
++#include <linux/device.h>
++#include <linux/workqueue.h>
++
++#define SWCONFIG_LED_TIMER_INTERVAL	(HZ / 10)
++#define SWCONFIG_LED_NUM_PORTS		32
++
++#define SWCONFIG_LED_PORT_SPEED_NA	0x01	/* unknown speed */
++#define SWCONFIG_LED_PORT_SPEED_10	0x02	/* 10 Mbps */
++#define SWCONFIG_LED_PORT_SPEED_100	0x04	/* 100 Mbps */
++#define SWCONFIG_LED_PORT_SPEED_1000	0x08	/* 1000 Mbps */
++#define SWCONFIG_LED_PORT_SPEED_ALL	(SWCONFIG_LED_PORT_SPEED_NA | \
++					 SWCONFIG_LED_PORT_SPEED_10 | \
++					 SWCONFIG_LED_PORT_SPEED_100 | \
++					 SWCONFIG_LED_PORT_SPEED_1000)
++
++#define SWCONFIG_LED_MODE_LINK		0x01
++#define SWCONFIG_LED_MODE_TX		0x02
++#define SWCONFIG_LED_MODE_RX		0x04
++#define SWCONFIG_LED_MODE_TXRX		(SWCONFIG_LED_MODE_TX   | \
++					 SWCONFIG_LED_MODE_RX)
++#define SWCONFIG_LED_MODE_ALL		(SWCONFIG_LED_MODE_LINK | \
++					 SWCONFIG_LED_MODE_TX   | \
++					 SWCONFIG_LED_MODE_RX)
++
++struct switch_led_trigger {
++	struct led_trigger trig;
++	struct switch_dev *swdev;
++
++	struct delayed_work sw_led_work;
++	u32 port_mask;
++	u32 port_link;
++	unsigned long long port_tx_traffic[SWCONFIG_LED_NUM_PORTS];
++	unsigned long long port_rx_traffic[SWCONFIG_LED_NUM_PORTS];
++	u8 link_speed[SWCONFIG_LED_NUM_PORTS];
++};
++
++struct swconfig_trig_data {
++	struct led_classdev *led_cdev;
++	struct switch_dev *swdev;
++
++	rwlock_t lock;
++	u32 port_mask;
++
++	bool prev_link;
++	unsigned long prev_traffic;
++	enum led_brightness prev_brightness;
++	u8 mode;
++	u8 speed_mask;
++};
++
++static void
++swconfig_trig_set_brightness(struct swconfig_trig_data *trig_data,
++			     enum led_brightness brightness)
++{
++	led_set_brightness(trig_data->led_cdev, brightness);
++	trig_data->prev_brightness = brightness;
++}
++
++static void
++swconfig_trig_update_port_mask(struct led_trigger *trigger)
++{
++	struct list_head *entry;
++	struct switch_led_trigger *sw_trig;
++	u32 port_mask;
++
++	if (!trigger)
++		return;
++
++	sw_trig = (void *) trigger;
++
++	port_mask = 0;
++	read_lock(&trigger->leddev_list_lock);
++	list_for_each(entry, &trigger->led_cdevs) {
++		struct led_classdev *led_cdev;
++		struct swconfig_trig_data *trig_data;
++
++		led_cdev = list_entry(entry, struct led_classdev, trig_list);
++		trig_data = led_cdev->trigger_data;
++		if (trig_data) {
++			read_lock(&trig_data->lock);
++			port_mask |= trig_data->port_mask;
++			read_unlock(&trig_data->lock);
++		}
++	}
++	read_unlock(&trigger->leddev_list_lock);
++
++	sw_trig->port_mask = port_mask;
++
++	if (port_mask)
++		schedule_delayed_work(&sw_trig->sw_led_work,
++				      SWCONFIG_LED_TIMER_INTERVAL);
++	else
++		cancel_delayed_work_sync(&sw_trig->sw_led_work);
++}
++
++static ssize_t
++swconfig_trig_port_mask_store(struct device *dev, struct device_attribute *attr,
++			      const char *buf, size_t size)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct swconfig_trig_data *trig_data = led_cdev->trigger_data;
++	unsigned long port_mask;
++	int ret;
++	bool changed;
++
++	ret = kstrtoul(buf, 0, &port_mask);
++	if (ret)
++		return ret;
++
++	write_lock(&trig_data->lock);
++	changed = (trig_data->port_mask != port_mask);
++	trig_data->port_mask = port_mask;
++	write_unlock(&trig_data->lock);
++
++	if (changed) {
++		if (port_mask == 0)
++			swconfig_trig_set_brightness(trig_data, LED_OFF);
++
++		swconfig_trig_update_port_mask(led_cdev->trigger);
++	}
++
++	return size;
++}
++
++static ssize_t
++swconfig_trig_port_mask_show(struct device *dev, struct device_attribute *attr,
++			     char *buf)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct swconfig_trig_data *trig_data = led_cdev->trigger_data;
++	u32 port_mask;
++
++	read_lock(&trig_data->lock);
++	port_mask = trig_data->port_mask;
++	read_unlock(&trig_data->lock);
++
++	sprintf(buf, "%#x\n", port_mask);
++
++	return strlen(buf) + 1;
++}
++
++static DEVICE_ATTR(port_mask, 0644, swconfig_trig_port_mask_show,
++		   swconfig_trig_port_mask_store);
++
++/* speed_mask file handler - display value */
++static ssize_t swconfig_trig_speed_mask_show(struct device *dev,
++					     struct device_attribute *attr,
++					     char *buf)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct swconfig_trig_data *trig_data = led_cdev->trigger_data;
++	u8 speed_mask;
++
++	read_lock(&trig_data->lock);
++	speed_mask = trig_data->speed_mask;
++	read_unlock(&trig_data->lock);
++
++	sprintf(buf, "%#x\n", speed_mask);
++
++	return strlen(buf) + 1;
++}
++
++/* speed_mask file handler - store value */
++static ssize_t swconfig_trig_speed_mask_store(struct device *dev,
++					      struct device_attribute *attr,
++					      const char *buf, size_t size)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct swconfig_trig_data *trig_data = led_cdev->trigger_data;
++	u8 speed_mask;
++	int ret;
++
++	ret = kstrtou8(buf, 0, &speed_mask);
++	if (ret)
++		return ret;
++
++	write_lock(&trig_data->lock);
++	trig_data->speed_mask = speed_mask & SWCONFIG_LED_PORT_SPEED_ALL;
++	write_unlock(&trig_data->lock);
++
++	return size;
++}
++
++/* speed_mask special file */
++static DEVICE_ATTR(speed_mask, 0644, swconfig_trig_speed_mask_show,
++		   swconfig_trig_speed_mask_store);
++
++static ssize_t swconfig_trig_mode_show(struct device *dev,
++		struct device_attribute *attr, char *buf)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct swconfig_trig_data *trig_data = led_cdev->trigger_data;
++	u8 mode;
++
++	read_lock(&trig_data->lock);
++	mode = trig_data->mode;
++	read_unlock(&trig_data->lock);
++
++	if (mode == 0) {
++		strcpy(buf, "none\n");
++	} else {
++		if (mode & SWCONFIG_LED_MODE_LINK)
++			strcat(buf, "link ");
++		if (mode & SWCONFIG_LED_MODE_TX)
++			strcat(buf, "tx ");
++		if (mode & SWCONFIG_LED_MODE_RX)
++			strcat(buf, "rx ");
++		strcat(buf, "\n");
++	}
++
++	return strlen(buf)+1;
++}
++
++static ssize_t swconfig_trig_mode_store(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t size)
++{
++	struct led_classdev *led_cdev = dev_get_drvdata(dev);
++	struct swconfig_trig_data *trig_data = led_cdev->trigger_data;
++	char copybuf[128];
++	int new_mode = -1;
++	char *p, *token;
++
++	/* take a copy since we don't want to trash the inbound buffer when using strsep */
++	strncpy(copybuf, buf, sizeof(copybuf));
++	copybuf[sizeof(copybuf) - 1] = 0;
++	p = copybuf;
++
++	while ((token = strsep(&p, " \t\n")) != NULL) {
++		if (!*token)
++			continue;
++
++		if (new_mode < 0)
++			new_mode = 0;
++
++		if (!strcmp(token, "none"))
++			new_mode = 0;
++		else if (!strcmp(token, "tx"))
++			new_mode |= SWCONFIG_LED_MODE_TX;
++		else if (!strcmp(token, "rx"))
++			new_mode |= SWCONFIG_LED_MODE_RX;
++		else if (!strcmp(token, "link"))
++			new_mode |= SWCONFIG_LED_MODE_LINK;
++		else
++			return -EINVAL;
++	}
++
++	if (new_mode < 0)
++		return -EINVAL;
++
++	write_lock(&trig_data->lock);
++	trig_data->mode = (u8)new_mode;
++	write_unlock(&trig_data->lock);
++
++	return size;
++}
++
++/* mode special file */
++static DEVICE_ATTR(mode, 0644, swconfig_trig_mode_show,
++		   swconfig_trig_mode_store);
++
++static int
++swconfig_trig_activate(struct led_classdev *led_cdev)
++{
++	struct switch_led_trigger *sw_trig;
++	struct swconfig_trig_data *trig_data;
++	int err;
++
++	trig_data = kzalloc(sizeof(struct swconfig_trig_data), GFP_KERNEL);
++	if (!trig_data)
++		return -ENOMEM;
++
++	sw_trig = (void *) led_cdev->trigger;
++
++	rwlock_init(&trig_data->lock);
++	trig_data->led_cdev = led_cdev;
++	trig_data->swdev = sw_trig->swdev;
++	trig_data->speed_mask = SWCONFIG_LED_PORT_SPEED_ALL;
++	trig_data->mode = SWCONFIG_LED_MODE_ALL;
++	led_cdev->trigger_data = trig_data;
++
++	err = device_create_file(led_cdev->dev, &dev_attr_port_mask);
++	if (err)
++		goto err_free;
++
++	err = device_create_file(led_cdev->dev, &dev_attr_speed_mask);
++	if (err)
++		goto err_dev_free;
++
++	err = device_create_file(led_cdev->dev, &dev_attr_mode);
++	if (err)
++		goto err_mode_free;
++
++	return 0;
++
++err_mode_free:
++	device_remove_file(led_cdev->dev, &dev_attr_speed_mask);
++
++err_dev_free:
++	device_remove_file(led_cdev->dev, &dev_attr_port_mask);
++
++err_free:
++	led_cdev->trigger_data = NULL;
++	kfree(trig_data);
++
++	return err;
++}
++
++static void
++swconfig_trig_deactivate(struct led_classdev *led_cdev)
++{
++	struct swconfig_trig_data *trig_data;
++
++	swconfig_trig_update_port_mask(led_cdev->trigger);
++
++	trig_data = (void *) led_cdev->trigger_data;
++	if (trig_data) {
++		device_remove_file(led_cdev->dev, &dev_attr_port_mask);
++		device_remove_file(led_cdev->dev, &dev_attr_speed_mask);
++		device_remove_file(led_cdev->dev, &dev_attr_mode);
++		kfree(trig_data);
++	}
++}
++
++/*
++ * link off -> led off (can't be any other reason to turn it on)
++ * link on:
++ *	mode link: led on by default only if speed matches, else off
++ *	mode txrx: blink only if speed matches, else off
++ */
++static void
++swconfig_trig_led_event(struct switch_led_trigger *sw_trig,
++			struct led_classdev *led_cdev)
++{
++	struct swconfig_trig_data *trig_data;
++	u32 port_mask;
++	bool link;
++	u8 speed_mask, mode;
++	enum led_brightness led_base, led_blink;
++
++	trig_data = led_cdev->trigger_data;
++	if (!trig_data)
++		return;
++
++	read_lock(&trig_data->lock);
++	port_mask = trig_data->port_mask;
++	speed_mask = trig_data->speed_mask;
++	mode = trig_data->mode;
++	read_unlock(&trig_data->lock);
++
++	link = !!(sw_trig->port_link & port_mask);
++	if (!link) {
++		if (trig_data->prev_brightness != LED_OFF)
++			swconfig_trig_set_brightness(trig_data, LED_OFF); /* and stop */
++	}
++	else {
++		unsigned long traffic;
++		int speedok;	/* link speed flag */
++		int i;
++
++		led_base = LED_FULL;
++		led_blink = LED_OFF;
++		traffic = 0;
++		speedok = 0;
++		for (i = 0; i < SWCONFIG_LED_NUM_PORTS; i++) {
++			if (port_mask & (1 << i)) {
++				if (sw_trig->link_speed[i] & speed_mask) {
++					traffic += ((mode & SWCONFIG_LED_MODE_TX) ?
++						    sw_trig->port_tx_traffic[i] : 0) +
++						((mode & SWCONFIG_LED_MODE_RX) ?
++						 sw_trig->port_rx_traffic[i] : 0);
++					speedok = 1;
++				}
++			}
++		}
++
++		if (speedok) {
++			/* At least one port speed matches speed_mask */
++			if (!(mode & SWCONFIG_LED_MODE_LINK)) {
++				led_base = LED_OFF;
++				led_blink = LED_FULL;
++			}
++
++			if (trig_data->prev_brightness != led_base)
++				swconfig_trig_set_brightness(trig_data,
++							     led_base);
++			else if (traffic != trig_data->prev_traffic)
++				swconfig_trig_set_brightness(trig_data,
++							     led_blink);
++		} else if (trig_data->prev_brightness != LED_OFF)
++			swconfig_trig_set_brightness(trig_data, LED_OFF);
++
++		trig_data->prev_traffic = traffic;
++	}
++
++	trig_data->prev_link = link;
++}
++
++static void
++swconfig_trig_update_leds(struct switch_led_trigger *sw_trig)
++{
++	struct list_head *entry;
++	struct led_trigger *trigger;
++
++	trigger = &sw_trig->trig;
++	read_lock(&trigger->leddev_list_lock);
++	list_for_each(entry, &trigger->led_cdevs) {
++		struct led_classdev *led_cdev;
++
++		led_cdev = list_entry(entry, struct led_classdev, trig_list);
++		swconfig_trig_led_event(sw_trig, led_cdev);
++	}
++	read_unlock(&trigger->leddev_list_lock);
++}
++
++static void
++swconfig_led_work_func(struct work_struct *work)
++{
++	struct switch_led_trigger *sw_trig;
++	struct switch_dev *swdev;
++	u32 port_mask;
++	u32 link;
++	int i;
++
++	sw_trig = container_of(work, struct switch_led_trigger,
++			       sw_led_work.work);
++
++	port_mask = sw_trig->port_mask;
++	swdev = sw_trig->swdev;
++
++	link = 0;
++	for (i = 0; i < SWCONFIG_LED_NUM_PORTS; i++) {
++		u32 port_bit;
++
++		sw_trig->link_speed[i] = 0;
++
++		port_bit = BIT(i);
++		if ((port_mask & port_bit) == 0)
++			continue;
++
++		if (swdev->ops->get_port_link) {
++			struct switch_port_link port_link;
++
++			memset(&port_link, '\0', sizeof(port_link));
++			swdev->ops->get_port_link(swdev, i, &port_link);
++
++			if (port_link.link) {
++				link |= port_bit;
++				switch (port_link.speed) {
++				case SWITCH_PORT_SPEED_UNKNOWN:
++					sw_trig->link_speed[i] =
++						SWCONFIG_LED_PORT_SPEED_NA;
++					break;
++				case SWITCH_PORT_SPEED_10:
++					sw_trig->link_speed[i] =
++						SWCONFIG_LED_PORT_SPEED_10;
++					break;
++				case SWITCH_PORT_SPEED_100:
++					sw_trig->link_speed[i] =
++						SWCONFIG_LED_PORT_SPEED_100;
++					break;
++				case SWITCH_PORT_SPEED_1000:
++					sw_trig->link_speed[i] =
++						SWCONFIG_LED_PORT_SPEED_1000;
++					break;
++				}
++			}
++		}
++
++		if (swdev->ops->get_port_stats) {
++			struct switch_port_stats port_stats;
++
++			memset(&port_stats, '\0', sizeof(port_stats));
++			swdev->ops->get_port_stats(swdev, i, &port_stats);
++			sw_trig->port_tx_traffic[i] = port_stats.tx_bytes;
++			sw_trig->port_rx_traffic[i] = port_stats.rx_bytes;
++		}
++	}
++
++	sw_trig->port_link = link;
++
++	swconfig_trig_update_leds(sw_trig);
++
++	schedule_delayed_work(&sw_trig->sw_led_work,
++			      SWCONFIG_LED_TIMER_INTERVAL);
++}
++
++static int
++swconfig_create_led_trigger(struct switch_dev *swdev)
++{
++	struct switch_led_trigger *sw_trig;
++	int err;
++
++	if (!swdev->ops->get_port_link)
++		return 0;
++
++	sw_trig = kzalloc(sizeof(struct switch_led_trigger), GFP_KERNEL);
++	if (!sw_trig)
++		return -ENOMEM;
++
++	sw_trig->swdev = swdev;
++	sw_trig->trig.name = swdev->devname;
++	sw_trig->trig.activate = swconfig_trig_activate;
++	sw_trig->trig.deactivate = swconfig_trig_deactivate;
++
++	INIT_DELAYED_WORK(&sw_trig->sw_led_work, swconfig_led_work_func);
++
++	err = led_trigger_register(&sw_trig->trig);
++	if (err)
++		goto err_free;
++
++	swdev->led_trigger = sw_trig;
++
++	return 0;
++
++err_free:
++	kfree(sw_trig);
++	return err;
++}
++
++static void
++swconfig_destroy_led_trigger(struct switch_dev *swdev)
++{
++	struct switch_led_trigger *sw_trig;
++
++	sw_trig = swdev->led_trigger;
++	if (sw_trig) {
++		cancel_delayed_work_sync(&sw_trig->sw_led_work);
++		led_trigger_unregister(&sw_trig->trig);
++		kfree(sw_trig);
++	}
++}
++
++#else /* SWCONFIG_LEDS */
++static inline int
++swconfig_create_led_trigger(struct switch_dev *swdev) { return 0; }
++
++static inline void
++swconfig_destroy_led_trigger(struct switch_dev *swdev) { }
++#endif /* CONFIG_SWCONFIG_LEDS */
+diff --git a/include/linux/switch.h b/include/linux/switch.h
+new file mode 100644
+index 000000000000..4e6238470d30
+--- /dev/null
++++ b/include/linux/switch.h
+@@ -0,0 +1,179 @@
++/*
++ * switch.h: Switch configuration API
++ *
++ * Copyright (C) 2008 Felix Fietkau <nbd@nbd.name>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++#ifndef _LINUX_SWITCH_H
++#define _LINUX_SWITCH_H
++
++#include <net/genetlink.h>
++#include <uapi/linux/switch.h>
++
++struct switch_dev;
++struct switch_op;
++struct switch_val;
++struct switch_attr;
++struct switch_attrlist;
++struct switch_led_trigger;
++
++int register_switch(struct switch_dev *dev, struct net_device *netdev);
++void unregister_switch(struct switch_dev *dev);
++
++/**
++ * struct switch_attrlist - attribute list
++ *
++ * @n_attr: number of attributes
++ * @attr: pointer to the attributes array
++ */
++struct switch_attrlist {
++	int n_attr;
++	const struct switch_attr *attr;
++};
++
++enum switch_port_speed {
++	SWITCH_PORT_SPEED_UNKNOWN = 0,
++	SWITCH_PORT_SPEED_10 = 10,
++	SWITCH_PORT_SPEED_100 = 100,
++	SWITCH_PORT_SPEED_1000 = 1000,
++};
++
++struct switch_port_link {
++	bool link;
++	bool duplex;
++	bool aneg;
++	bool tx_flow;
++	bool rx_flow;
++	enum switch_port_speed speed;
++	/* in ethtool adv_t format */
++	u32 eee;
++};
++
++struct switch_port_stats {
++	unsigned long long tx_bytes;
++	unsigned long long rx_bytes;
++};
++
++/**
++ * struct switch_dev_ops - switch driver operations
++ *
++ * @attr_global: global switch attribute list
++ * @attr_port: port attribute list
++ * @attr_vlan: vlan attribute list
++ *
++ * Callbacks:
++ *
++ * @get_vlan_ports: read the port list of a VLAN
++ * @set_vlan_ports: set the port list of a VLAN
++ *
++ * @get_port_pvid: get the primary VLAN ID of a port
++ * @set_port_pvid: set the primary VLAN ID of a port
++ *
++ * @apply_config: apply all changed settings to the switch
++ * @reset_switch: resetting the switch
++ */
++struct switch_dev_ops {
++	struct switch_attrlist attr_global, attr_port, attr_vlan;
++
++	int (*get_vlan_ports)(struct switch_dev *dev, struct switch_val *val);
++	int (*set_vlan_ports)(struct switch_dev *dev, struct switch_val *val);
++
++	int (*get_port_pvid)(struct switch_dev *dev, int port, int *val);
++	int (*set_port_pvid)(struct switch_dev *dev, int port, int val);
++
++	int (*apply_config)(struct switch_dev *dev);
++	int (*reset_switch)(struct switch_dev *dev);
++
++	int (*get_port_link)(struct switch_dev *dev, int port,
++			     struct switch_port_link *link);
++	int (*set_port_link)(struct switch_dev *dev, int port,
++			     struct switch_port_link *link);
++	int (*get_port_stats)(struct switch_dev *dev, int port,
++			      struct switch_port_stats *stats);
++
++	int (*phy_read16)(struct switch_dev *dev, int addr, u8 reg, u16 *value);
++	int (*phy_write16)(struct switch_dev *dev, int addr, u8 reg, u16 value);
++};
++
++struct switch_dev {
++	struct device_node *of_node;
++	const struct switch_dev_ops *ops;
++	/* will be automatically filled */
++	char devname[IFNAMSIZ];
++
++	const char *name;
++	/* NB: either alias or netdev must be set */
++	const char *alias;
++	struct net_device *netdev;
++
++	unsigned int ports;
++	unsigned int vlans;
++	unsigned int cpu_port;
++
++	/* the following fields are internal for swconfig */
++	unsigned int id;
++	struct list_head dev_list;
++	unsigned long def_global, def_port, def_vlan;
++
++	struct mutex sw_mutex;
++	struct switch_port *portbuf;
++	struct switch_portmap *portmap;
++	struct switch_port_link linkbuf;
++
++	char buf[128];
++
++#ifdef CONFIG_SWCONFIG_LEDS
++	struct switch_led_trigger *led_trigger;
++#endif
++};
++
++struct switch_port {
++	u32 id;
++	u32 flags;
++};
++
++struct switch_portmap {
++	u32 virt;
++	const char *s;
++};
++
++struct switch_val {
++	const struct switch_attr *attr;
++	unsigned int port_vlan;
++	unsigned int len;
++	union {
++		const char *s;
++		u32 i;
++		struct switch_port *ports;
++		struct switch_port_link *link;
++	} value;
++};
++
++struct switch_attr {
++	int disabled;
++	int type;
++	const char *name;
++	const char *description;
++
++	int (*set)(struct switch_dev *dev, const struct switch_attr *attr, struct switch_val *val);
++	int (*get)(struct switch_dev *dev, const struct switch_attr *attr, struct switch_val *val);
++
++	/* for driver internal use */
++	int id;
++	int ofs;
++	int max;
++};
++
++int switch_generic_set_link(struct switch_dev *dev, int port,
++			    struct switch_port_link *link);
++
++#endif /* _LINUX_SWITCH_H */
+diff --git a/include/uapi/linux/switch.h b/include/uapi/linux/switch.h
+new file mode 100644
+index 000000000000..ea449653fafa
+--- /dev/null
++++ b/include/uapi/linux/switch.h
+@@ -0,0 +1,119 @@
++/*
++ * switch.h: Switch configuration API
++ *
++ * Copyright (C) 2008 Felix Fietkau <nbd@nbd.name>
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _UAPI_LINUX_SWITCH_H
++#define _UAPI_LINUX_SWITCH_H
++
++#include <linux/types.h>
++#include <linux/netdevice.h>
++#include <linux/netlink.h>
++#include <linux/genetlink.h>
++#ifndef __KERNEL__
++#include <netlink/netlink.h>
++#include <netlink/genl/genl.h>
++#include <netlink/genl/ctrl.h>
++#endif
++
++/* main attributes */
++enum {
++	SWITCH_ATTR_UNSPEC,
++	/* global */
++	SWITCH_ATTR_TYPE,
++	/* device */
++	SWITCH_ATTR_ID,
++	SWITCH_ATTR_DEV_NAME,
++	SWITCH_ATTR_ALIAS,
++	SWITCH_ATTR_NAME,
++	SWITCH_ATTR_VLANS,
++	SWITCH_ATTR_PORTS,
++	SWITCH_ATTR_PORTMAP,
++	SWITCH_ATTR_CPU_PORT,
++	/* attributes */
++	SWITCH_ATTR_OP_ID,
++	SWITCH_ATTR_OP_TYPE,
++	SWITCH_ATTR_OP_NAME,
++	SWITCH_ATTR_OP_PORT,
++	SWITCH_ATTR_OP_VLAN,
++	SWITCH_ATTR_OP_VALUE_INT,
++	SWITCH_ATTR_OP_VALUE_STR,
++	SWITCH_ATTR_OP_VALUE_PORTS,
++	SWITCH_ATTR_OP_VALUE_LINK,
++	SWITCH_ATTR_OP_DESCRIPTION,
++	/* port lists */
++	SWITCH_ATTR_PORT,
++	SWITCH_ATTR_MAX
++};
++
++enum {
++	/* port map */
++	SWITCH_PORTMAP_PORTS,
++	SWITCH_PORTMAP_SEGMENT,
++	SWITCH_PORTMAP_VIRT,
++	SWITCH_PORTMAP_MAX
++};
++
++/* commands */
++enum {
++	SWITCH_CMD_UNSPEC,
++	SWITCH_CMD_GET_SWITCH,
++	SWITCH_CMD_NEW_ATTR,
++	SWITCH_CMD_LIST_GLOBAL,
++	SWITCH_CMD_GET_GLOBAL,
++	SWITCH_CMD_SET_GLOBAL,
++	SWITCH_CMD_LIST_PORT,
++	SWITCH_CMD_GET_PORT,
++	SWITCH_CMD_SET_PORT,
++	SWITCH_CMD_LIST_VLAN,
++	SWITCH_CMD_GET_VLAN,
++	SWITCH_CMD_SET_VLAN
++};
++
++/* data types */
++enum switch_val_type {
++	SWITCH_TYPE_UNSPEC,
++	SWITCH_TYPE_INT,
++	SWITCH_TYPE_STRING,
++	SWITCH_TYPE_PORTS,
++	SWITCH_TYPE_LINK,
++	SWITCH_TYPE_NOVAL,
++};
++
++/* port nested attributes */
++enum {
++	SWITCH_PORT_UNSPEC,
++	SWITCH_PORT_ID,
++	SWITCH_PORT_FLAG_TAGGED,
++	SWITCH_PORT_ATTR_MAX
++};
++
++/* link nested attributes */
++enum {
++	SWITCH_LINK_UNSPEC,
++	SWITCH_LINK_FLAG_LINK,
++	SWITCH_LINK_FLAG_DUPLEX,
++	SWITCH_LINK_FLAG_ANEG,
++	SWITCH_LINK_FLAG_TX_FLOW,
++	SWITCH_LINK_FLAG_RX_FLOW,
++	SWITCH_LINK_SPEED,
++	SWITCH_LINK_FLAG_EEE_100BASET,
++	SWITCH_LINK_FLAG_EEE_1000BASET,
++	SWITCH_LINK_ATTR_MAX,
++};
++
++#define SWITCH_ATTR_DEFAULTS_OFFSET	0x1000
++
++
++#endif /* _UAPI_LINUX_SWITCH_H */
+-- 
+2.30.2
+
