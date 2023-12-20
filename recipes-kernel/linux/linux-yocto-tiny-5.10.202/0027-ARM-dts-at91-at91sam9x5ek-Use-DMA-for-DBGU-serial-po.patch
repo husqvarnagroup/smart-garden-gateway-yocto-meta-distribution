@@ -1,0 +1,37 @@
+From 3a716b0c51fa89eab0fec4142c9e3920191d6f84 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Tue, 2 Jan 2024 11:57:01 +0100
+Subject: [PATCH 27/28] ARM: dts: at91: at91sam9x5ek: Use DMA for DBGU serial
+ port
+
+The UART controller does not seem to be fast enough to receive data (at
+115200 baud) without dropping bytes when DMA is disabled.
+
+This has often been noticed when pasting SSH keys into the serial
+console (ttyS0). Only after multiple tries, the long strings would be
+successfully transferred without missing characters.
+
+Co-Developed-by: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Signed-off-by: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Submitted [linux-arm-kernel@lists.infradead.org]
+---
+ arch/arm/boot/dts/at91sam9x5ek.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/boot/dts/at91sam9x5ek.dtsi b/arch/arm/boot/dts/at91sam9x5ek.dtsi
+index 6d1264de6060..20fafd700c2c 100644
+--- a/arch/arm/boot/dts/at91sam9x5ek.dtsi
++++ b/arch/arm/boot/dts/at91sam9x5ek.dtsi
+@@ -39,6 +39,8 @@ &adc0 {
+ };
+ 
+ &dbgu {
++	atmel,use-dma-rx;
++	atmel,use-dma-tx;
+ 	status = "okay";
+ };
+ 
+-- 
+2.39.2
+

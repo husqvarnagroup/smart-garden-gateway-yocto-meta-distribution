@@ -1,13 +1,14 @@
-From 1cb286aad3a2fb823fd76d3ffc951609891c821e Mon Sep 17 00:00:00 2001
+From f19e8f22e4e8fa6e40e60ae6f81e00eb3ed9a68b Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 23 May 2019 13:39:16 +0200
-Subject: [PATCH] [sg nohup] MIPS: ralink: dts: gardena_smart_gateway_mt7688:
- Add ethernet and ESW DT nodes
+Subject: [PATCH 07/28] MIPS: ralink: dts: gardena_smart_gateway_mt7688: Add
+ ethernet and ESW DT nodes
 
 We can not upstream this because there is no DSA switch driver yet in
 mainline.
 
 Signed-off-by: Stefan Roese <sr@denx.de>
+Upstream-Status: Inappropriate [for OpenWRT driver]
 ---
  .../boot/dts/ralink/gardena_smart_gateway_mt7688.dts     | 9 +++++++++
  arch/mips/boot/dts/ralink/mt7628a.dtsi                   | 2 ++
@@ -54,5 +55,5 @@ index affba1859fb7..2b9efb1f9adf 100644
  
  	esw: esw@10110000 {
 -- 
-2.30.2
+2.39.2
 

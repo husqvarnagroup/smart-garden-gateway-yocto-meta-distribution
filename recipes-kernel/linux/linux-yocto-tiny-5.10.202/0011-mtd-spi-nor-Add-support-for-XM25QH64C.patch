@@ -1,7 +1,7 @@
-From 9ffb360cc4d76f213d50ae1d9c79b9619170e00d Mon Sep 17 00:00:00 2001
+From 7b2c47ba62389ed98936b01ca3ab0d2d5c034434 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Sun, 6 Jun 2021 01:15:24 +0200
-Subject: [PATCH] [sg toup] mtd: spi-nor: Add support for XM25QH64C
+Subject: [PATCH 11/28] mtd: spi-nor: Add support for XM25QH64C
 
 The data sheets can be found here:
 http://xmcwh.com/Uploads/2020-12-17/XM25QH64C_Ver1.1.pdf
@@ -10,6 +10,7 @@ This chip has been tested on the MediaTek MT7688 based GARDENA smart
 gateway.
 
 Signed-off-by: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Upstream-Status: Submitted [linux-mtd@lists.infradead.org, resubmit!]
 ---
  drivers/mtd/spi-nor/xmc.c | 2 ++
  1 file changed, 2 insertions(+)
@@ -28,5 +29,5 @@ index 2c7773b68993..b6ac37bd59b8 100644
  			     SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
  };
 -- 
-2.30.2
+2.39.2
 

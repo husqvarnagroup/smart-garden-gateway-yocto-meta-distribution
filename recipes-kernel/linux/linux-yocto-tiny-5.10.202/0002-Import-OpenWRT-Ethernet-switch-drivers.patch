@@ -1,13 +1,15 @@
-From 3c41114be987e6f89c1f2ac833f844383eb3a4a1 Mon Sep 17 00:00:00 2001
+From d24f0be6a72f2710a9ae863e423a7245d9449ff4 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Wed, 16 Jun 2021 10:10:45 +0200
-Subject: [PATCH] [sg noup] Import OpenWRT Ethernet switch drivers
+Subject: [PATCH 02/28] Import OpenWRT Ethernet switch drivers
 
 Repo: git://git.openwrt.org/openwrt/openwrt.git
 Commit: b118aba8cbac58a45d4882cd79e18e56c3fbdc70
 Subdirectories:
  - target/linux/generic/files
  - target/linux/ramips/files
+
+Upstream-Status: Pending [needs (a lot of) work]
 ---
  drivers/net/ethernet/Kconfig              |    1 +
  drivers/net/ethernet/Makefile             |    1 +
@@ -48,10 +50,10 @@ Subdirectories:
  create mode 100644 include/uapi/linux/switch.h
 
 diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index de50e8b9e656..69677bb3bc2e 100644
+index fad9a2c77fa7..3e46f1e73264 100644
 --- a/drivers/net/ethernet/Kconfig
 +++ b/drivers/net/ethernet/Kconfig
-@@ -159,6 +159,7 @@ source "drivers/net/ethernet/pensando/Kconfig"
+@@ -160,6 +160,7 @@ source "drivers/net/ethernet/pensando/Kconfig"
  source "drivers/net/ethernet/qlogic/Kconfig"
  source "drivers/net/ethernet/qualcomm/Kconfig"
  source "drivers/net/ethernet/rdc/Kconfig"
@@ -7028,5 +7030,5 @@ index 000000000000..ea449653fafa
 +
 +#endif /* _UAPI_LINUX_SWITCH_H */
 -- 
-2.30.2
+2.39.2
 

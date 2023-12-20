@@ -1,7 +1,7 @@
-From 60ca1843f954c2f4c70413841a42f4e40622c5d8 Mon Sep 17 00:00:00 2001
+From a1671737519ad4658a94c90728a5a8f7bd66b09e Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chris.chiu@canonical.com>
 Date: Thu, 30 Sep 2021 17:11:37 +0800
-Subject: [PATCH] [toup] rtl8xxxu: Add debugfs entries for registers
+Subject: [PATCH 15/28] rtl8xxxu: Add debugfs entries for registers
 
 Dump register contents of MAC, baseband, and RF for debugging. It will
 help cross-comparison with the same entries in the vendor driver. The
@@ -9,16 +9,17 @@ goal is to find out the differences which cause worse retransmission rate
 and throughput on the rtl8xxxu driver.
 
 Signed-Off-By: Chris Chiu <chrischiu@canonical.com>
+Upstream-Status: Pending
 ---
  .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  |   1 +
  .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 131 ++++++++++++++++++
  2 files changed, 132 insertions(+)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-index b28fa0c4d180..6a98e1165df1 100644
+index fe1e4c4c17c4..7a27cb909004 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-@@ -1391,6 +1391,7 @@ struct rtl8xxxu_priv {
+@@ -1392,6 +1392,7 @@ struct rtl8xxxu_priv {
  	spinlock_t c2hcmd_lock;
  	struct rtl8xxxu_btcoex bt_coex;
  	struct rtl8xxxu_ra_report ra_report;
@@ -27,10 +28,10 @@ index b28fa0c4d180..6a98e1165df1 100644
  
  struct rtl8xxxu_rx_urb {
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 0d374a294840..25f5bf994362 100644
+index 004778faf3d0..0c07aea4bf9e 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -6451,6 +6451,133 @@ static void rtl8xxxu_stop(struct ieee80211_hw *hw)
+@@ -6489,6 +6489,133 @@ static void rtl8xxxu_stop(struct ieee80211_hw *hw)
  	rtl8xxxu_free_tx_resources(priv);
  }
  
@@ -164,7 +165,7 @@ index 0d374a294840..25f5bf994362 100644
  static const struct ieee80211_ops rtl8xxxu_ops = {
  	.tx = rtl8xxxu_tx,
  	.add_interface = rtl8xxxu_add_interface,
-@@ -6712,6 +6839,8 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+@@ -6750,6 +6877,8 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
  		goto exit;
  	}
  
@@ -173,7 +174,7 @@ index 0d374a294840..25f5bf994362 100644
  	return 0;
  
  exit:
-@@ -6737,6 +6866,8 @@ static void rtl8xxxu_disconnect(struct usb_interface *interface)
+@@ -6775,6 +6904,8 @@ static void rtl8xxxu_disconnect(struct usb_interface *interface)
  	hw = usb_get_intfdata(interface);
  	priv = hw->priv;
  
@@ -183,5 +184,5 @@ index 0d374a294840..25f5bf994362 100644
  
  	priv->fops->power_off(priv);
 -- 
-2.30.2
+2.39.2
 

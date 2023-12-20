@@ -1,7 +1,7 @@
-From 5b4312226064d385750b34e7d12298654046934e Mon Sep 17 00:00:00 2001
+From 5139b39328cab172d3ef80913736d231c580647d Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Tue, 20 Oct 2020 13:27:37 +0800
-Subject: [PATCH] [toup] rtl8xxxu: Fix reported RX signal strength
+Subject: [PATCH 25/28] rtl8xxxu: Fix reported RX signal strength
 
 In rtl8xxxx_rx_query_desc for each chip in rtlwifi family, the
 rx_status->signal is always the status->recvsignalpower + 10.
@@ -12,15 +12,16 @@ We also observe the same thing in air capture - the RSSI is always
 Add 10dBm to avoid confusion.
 
 (cherry picked from commit e1a4f83da577474dfa23e85483a83eb7fb707edc)
+Upstream-Status: Pending [needs (a lot of) work]
 ---
  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 5 +++++
  1 file changed, 5 insertions(+)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 9d11bdca0bd4..ff37cdab201c 100644
+index 683031012b78..2fa7ffc8557a 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -5333,6 +5333,11 @@ static void rtl8xxxu_rx_parse_phystats(struct rtl8xxxu_priv *priv,
+@@ -5379,6 +5379,11 @@ static void rtl8xxxu_rx_parse_phystats(struct rtl8xxxu_priv *priv,
  		rx_status->signal =
  			(phy_stats->cck_sig_qual_ofdm_pwdb_all >> 1) - 110;
  	}
@@ -33,5 +34,5 @@ index 9d11bdca0bd4..ff37cdab201c 100644
  
  static void rtl8xxxu_free_rx_resources(struct rtl8xxxu_priv *priv)
 -- 
-2.30.2
+2.39.2
 

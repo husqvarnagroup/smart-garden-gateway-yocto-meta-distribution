@@ -1,0 +1,36 @@
+From a03e4d93d73de3b0964e0c0267ed942c3b94f9e1 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Tue, 2 Jan 2024 12:28:24 +0100
+Subject: [PATCH 28/28] ARM: dts: at91: gardena-smart-gateway: Use DMA for
+ USART3
+
+The AT91SAM9G25-based GARDENA smart Gateway uses USART3 (ttyS1) to
+communicate (over PPP, at 115200 baud) with the radio module.
+
+We have been experiencing packet loss and seeing errors on the ppp0
+interface. Enabling DMA for the serial interface resolves the issues.
+
+Co-Developed-by: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Signed-off-by: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Submitted [linux-arm-kernel@lists.infradead.org]
+---
+ arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts b/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
+index 7da70aeeb528..331ed968f27e 100644
+--- a/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
++++ b/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
+@@ -121,6 +121,8 @@ &usart2 {
+ };
+ 
+ &usart3 {
++	atmel,use-dma-rx;
++	atmel,use-dma-tx;
+ 	status = "okay";
+ 
+ 	pinctrl-0 = <&pinctrl_usart3
+-- 
+2.39.2
+

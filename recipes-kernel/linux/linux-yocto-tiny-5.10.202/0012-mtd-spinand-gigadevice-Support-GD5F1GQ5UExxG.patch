@@ -1,7 +1,7 @@
-From 118dcd94ce3561823661e4ac501180441531ca5e Mon Sep 17 00:00:00 2001
+From c93809aed9d0de3021897241b415b5f88441ffb1 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Thu, 11 Feb 2021 12:36:19 +0100
-Subject: [PATCH] [sg toup] mtd: spinand: gigadevice: Support GD5F1GQ5UExxG
+Subject: [PATCH 12/28] mtd: spinand: gigadevice: Support GD5F1GQ5UExxG
 
 The relevant changes to the already existing GD5F1GQ4UExxG support has
 been determined by consulting the GigaDevice product change notice
@@ -38,6 +38,7 @@ Reviewed-by: Stefan Roese <sr@denx.de>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 Link: https://lore.kernel.org/linux-mtd/20210211113619.3502-1-code@reto-schneider.ch
 (cherry picked from commit 469b992489852b500d39048aa0013639dfe9f2e6)
+Upstream-Status: Backport
 ---
  drivers/mtd/nand/spi/gigadevice.c | 69 +++++++++++++++++++++++++++----
  1 file changed, 60 insertions(+), 9 deletions(-)
@@ -173,5 +174,5 @@ index 33c67403c4aa..1dd1c5898093 100644
  
  static const struct spinand_manufacturer_ops gigadevice_spinand_manuf_ops = {
 -- 
-2.30.2
+2.39.2
 

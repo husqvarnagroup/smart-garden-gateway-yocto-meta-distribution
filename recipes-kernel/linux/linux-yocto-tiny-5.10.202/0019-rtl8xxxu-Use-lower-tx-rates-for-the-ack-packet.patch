@@ -1,7 +1,7 @@
-From 7a01c7cdcef4c04d0029ec6e2b270e92a32c084f Mon Sep 17 00:00:00 2001
+From 49f1ee22df8128d6a13dbe261bd98d4d7e4dfd4c Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chris.chiu@canonical.com>
 Date: Fri, 1 Oct 2021 12:00:44 +0800
-Subject: [PATCH] [fromup] rtl8xxxu: Use lower tx rates for the ack packet
+Subject: [PATCH 19/28] rtl8xxxu: Use lower tx rates for the ack packet
 
 According to the Realtek propritary driver and the rtw88 driver, the
 tx rates of the ack (includes block ack) are initialized with lower
@@ -20,16 +20,17 @@ Acked-by: Jes Sorensen <Jes.Sorensen@gmail.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Link: https://lore.kernel.org/r/20211001040044.1028708-1-chris.chiu@canonical.com
 (cherry picked from commit 7acd723c30c002293860bc17e15acdc4413b7272)
+Upstream-Status: Backport
 ---
  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 6 +++++-
  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_regs.h | 2 ++
  2 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 5cbada789e2d..6480a45aecc8 100644
+index 5deb69715270..eb83c5531751 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -4460,13 +4460,17 @@ void rtl8xxxu_gen1_init_aggregation(struct rtl8xxxu_priv *priv)
+@@ -4456,13 +4456,17 @@ void rtl8xxxu_gen1_init_aggregation(struct rtl8xxxu_priv *priv)
  
  static void rtl8xxxu_set_basic_rates(struct rtl8xxxu_priv *priv, u32 rate_cfg)
  {
@@ -62,5 +63,5 @@ index a2a31f374a82..438b65ba9640 100644
  #define  RSR_2M				BIT(1)
  #define  RSR_5_5M			BIT(2)
 -- 
-2.30.2
+2.39.2
 

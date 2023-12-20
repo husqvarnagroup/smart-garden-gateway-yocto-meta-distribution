@@ -1,10 +1,12 @@
-From fb0ab78dcadea9aecd72dc129faf83d44798136c Mon Sep 17 00:00:00 2001
+From b2f1aad9e7aff0ab5d6de4111f04e00d22c4bd60 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Thu, 6 Jan 2022 00:06:58 +0100
-Subject: [PATCH] [toup] rtlwifi: Use mac80211 debugfs location
+Subject: [PATCH 13/28] rtlwifi: Use mac80211 debugfs location
 
 Align behavior with other drivers, allow to determine the location of
 the debugfs entries using the iw phy number instead of the MAC address.
+
+Upstream-Status: Pending
 ---
  drivers/net/wireless/realtek/rtlwifi/base.c  |  6 ------
  drivers/net/wireless/realtek/rtlwifi/debug.c | 17 +----------------
@@ -37,7 +39,7 @@ index 1866f6c2acab..d60fea856d15 100644
  
  module_init(rtl_core_module_init);
 diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
-index 901cdfe3723c..51db0552be7a 100644
+index 9eb26dfe4ca9..23d294c1f6f7 100644
 --- a/drivers/net/wireless/realtek/rtlwifi/debug.c
 +++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
 @@ -50,8 +50,6 @@ struct rtl_debugfs_priv {
@@ -105,5 +107,5 @@ index fdccfd29fd61..46ef674970af 100644
  
  #define MIMO_PS_STATIC			0
 -- 
-2.30.2
+2.39.2
 

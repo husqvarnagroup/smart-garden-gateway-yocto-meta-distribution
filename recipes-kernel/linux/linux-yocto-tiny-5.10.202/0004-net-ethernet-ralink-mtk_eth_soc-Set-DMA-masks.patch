@@ -1,7 +1,7 @@
-From 53d53cfbb13ef440d31ce472a401c2e33b9d93fc Mon Sep 17 00:00:00 2001
+From ef2611a9d7f12f893e1f90beb9537c592c78cdb3 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Mon, 3 Dec 2018 10:54:57 +0100
-Subject: [PATCH] [sg noup] net: ethernet: ralink: mtk_eth_soc: Set DMA masks
+Subject: [PATCH 04/28] net: ethernet: ralink: mtk_eth_soc: Set DMA masks
 
 Without setting the DMA masks, the DMA subsystem complains and xfer
 does not work correctly. So lets set the DMA masks in the probe
@@ -10,6 +10,7 @@ function.
 Additionally the patch fixes some compile warnings.
 
 Signed-off-by: Stefan Roese <sr@denx.de>
+Upstream-Status: Inappropriate [for OpenWRT driver]
 ---
  drivers/net/ethernet/ralink/mtk_eth_soc.c | 19 ++++++++++++++++++-
  1 file changed, 18 insertions(+), 1 deletion(-)
@@ -52,5 +53,5 @@ index b6e321b78c0c..84d85a56ffc9 100644
  	if (err) {
  		dev_err(&pdev->dev, "error bringing up device\n");
 -- 
-2.30.2
+2.39.2
 

@@ -1,8 +1,8 @@
-From e52b2ebfad299a922cbdfb8092bd6cd459f71832 Mon Sep 17 00:00:00 2001
+From ee258ef9823c75e4fae680772aff1a1c6e0c5fc5 Mon Sep 17 00:00:00 2001
 From: Heiko Schocher <hs@denx.de>
 Date: Mon, 25 Feb 2013 12:39:21 +0100
-Subject: [PATCH] [sg noup] drivers, misc: add U-Boot bootcount driver
- (enhanced version with single-word support)
+Subject: [PATCH 01/28] drivers, misc: add U-Boot bootcount driver (enhanced
+ version with single-word support)
 
 This driver implements the Linux kernel half of the boot count feature -
 the boot counter can only be reset after it is clear that the
@@ -82,6 +82,7 @@ Cc: Ryan Mallon <rmallon@gmail.com>
     - remove __devinit as no longer needed
 
 Signed-off-by: Heiko Schocher <hs@denx.de>
+Upstream-Status: Pending [needs (a lot of) work]
 ---
  .../testing/sysfs-class-misc-uboot-bootcount  |  11 ++
  .../bindings/misc/uboot-bootcount.txt         |  36 ++++
@@ -366,5 +367,5 @@ index 000000000000..ffcbabb48a9d
 +MODULE_AUTHOR("Steffen Rumler <steffen.rumler@siemens.com>");
 +MODULE_DESCRIPTION("Provide (read/write) access to the U-Boot bootcounter via sysFS");
 -- 
-2.30.2
+2.39.2
 

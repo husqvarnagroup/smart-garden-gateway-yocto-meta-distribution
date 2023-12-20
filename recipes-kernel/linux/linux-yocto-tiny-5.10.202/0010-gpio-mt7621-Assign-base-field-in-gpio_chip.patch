@@ -1,7 +1,7 @@
-From f7f1c2202e4107dcc734325c91549e114966a1a5 Mon Sep 17 00:00:00 2001
+From b82f90c57bdf0f78b6c52a7c332f552bc0f05ae6 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Sat, 5 Jun 2021 14:21:17 +0200
-Subject: [PATCH] [sg noup] gpio: mt7621: Assign base field in gpio_chip
+Subject: [PATCH 10/28] gpio: mt7621: Assign base field in gpio_chip
 
 This is needed for gpiochip_sysfs_register() to properly export
 /sys/class/gpio/gpiochip{0,32,64}.
@@ -15,6 +15,7 @@ resulting in gpiochip{480,448,416}.
 Detected/fixed/tested on a MediaTek MT7688 based GARDENA smart gateway.
 
 Signed-off-by: Reto Schneider <reto.schneider@husqvarnagroup.com>
+Upstream-Status: Inappropriate [hack, requires userland changes]
 ---
  drivers/gpio/gpio-mt7621.c | 1 +
  1 file changed, 1 insertion(+)
@@ -32,5 +33,5 @@ index 82fb20dca53a..403d64cd65a6 100644
  	rg->chip.of_xlate = mediatek_gpio_xlate;
  	rg->chip.label = devm_kasprintf(dev, GFP_KERNEL, "%s-bank%d",
 -- 
-2.30.2
+2.39.2
 

@@ -1,13 +1,13 @@
-From d05c91e9ae905df78b5035feb76d3f220de7439c Mon Sep 17 00:00:00 2001
+From cfe7f45b83c6a0abbb887d786824a88e94895dee Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 23 May 2019 13:28:46 +0200
-Subject: [PATCH] [sg nohup] MIPS: ralink: mt7628a.dtsi: Add ethernet and ESW
- nodes
+Subject: [PATCH 06/28] MIPS: ralink: mt7628a.dtsi: Add ethernet and ESW nodes
 
 We can not upstream this because there is no DSA switch driver yet in
 mainline.
 
 Signed-off-by: Stefan Roese <sr@denx.de>
+Upstream-Status: Inappropriate [for OpenWRT driver]
 ---
  arch/mips/boot/dts/ralink/mt7628a.dtsi | 27 ++++++++++++++++++++++++++
  1 file changed, 27 insertions(+)
@@ -49,5 +49,5 @@ index 892e8ab863c5..affba1859fb7 100644
 +	};
  };
 -- 
-2.30.2
+2.39.2
 

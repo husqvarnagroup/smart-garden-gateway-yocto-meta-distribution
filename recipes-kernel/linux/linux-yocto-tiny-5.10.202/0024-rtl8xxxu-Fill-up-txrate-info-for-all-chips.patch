@@ -1,7 +1,7 @@
-From 613c6b12e09f7513850b943021ea65a6eaa01b51 Mon Sep 17 00:00:00 2001
+From fc15e99d44514bf401711dc7b1a475e4177a9ae5 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Wed, 7 Oct 2020 16:40:48 +0800
-Subject: [PATCH] [toup] rtl8xxxu: Fill up txrate info for all chips
+Subject: [PATCH 24/28] rtl8xxxu: Fill up txrate info for all chips
 
 RTL8188CUS/RTL8192CU (gen1) doesn't support rate adaptive report
 hence no real txrate info can be retrieved. The vendor driver reports
@@ -10,15 +10,16 @@ the highest rate in HT capabilities from AP side.
 This commit follows the same way to avoid empty info for txrate.
 
 (cherry picked from commit 831ecaf5e80b1cba26d3606b064020a22268f694)
+Upstream-Status: Pending [needs (a lot of) work]
 ---
  .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 86 ++++++++++++-------
  1 file changed, 57 insertions(+), 29 deletions(-)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 170099ab9b02..9d11bdca0bd4 100644
+index e0dc9357928f..683031012b78 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -4674,6 +4674,35 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
+@@ -4717,6 +4717,35 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
  	priv->fops->set_tx_power(priv, channel, ht40);
  }
  
@@ -54,7 +55,7 @@ index 170099ab9b02..9d11bdca0bd4 100644
  static void
  rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  			  struct ieee80211_bss_conf *bss_conf, u32 changed)
-@@ -4681,9 +4710,12 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+@@ -4724,9 +4753,12 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  	struct rtl8xxxu_priv *priv = hw->priv;
  	struct device *dev = &priv->udev->dev;
  	struct ieee80211_sta *sta;
@@ -67,7 +68,7 @@ index 170099ab9b02..9d11bdca0bd4 100644
  	if (changed & BSS_CHANGED_ASSOC) {
  		dev_dbg(dev, "Changed ASSOC: %i!\n", bss_conf->assoc);
  
-@@ -4692,6 +4724,9 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+@@ -4735,6 +4767,9 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  		if (bss_conf->assoc) {
  			u32 ramask;
  			int sgi = 0;
@@ -77,7 +78,7 @@ index 170099ab9b02..9d11bdca0bd4 100644
  
  			rcu_read_lock();
  			sta = ieee80211_find_sta(vif, bss_conf->bssid);
-@@ -4716,6 +4751,28 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+@@ -4759,6 +4794,28 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  				sgi = 1;
  			rcu_read_unlock();
  
@@ -106,7 +107,7 @@ index 170099ab9b02..9d11bdca0bd4 100644
  			priv->vif = vif;
  			priv->rssi_level = RTL8XXXU_RATR_STA_INIT;
  
-@@ -5571,35 +5628,6 @@ void rtl8723bu_handle_bt_info(struct rtl8xxxu_priv *priv)
+@@ -5617,35 +5674,6 @@ void rtl8723bu_handle_bt_info(struct rtl8xxxu_priv *priv)
  	}
  }
  
@@ -143,5 +144,5 @@ index 170099ab9b02..9d11bdca0bd4 100644
  {
  	struct rtl8xxxu_priv *priv;
 -- 
-2.30.2
+2.39.2
 

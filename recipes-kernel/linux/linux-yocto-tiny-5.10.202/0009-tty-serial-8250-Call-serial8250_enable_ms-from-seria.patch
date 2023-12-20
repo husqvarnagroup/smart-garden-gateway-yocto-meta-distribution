@@ -1,8 +1,8 @@
-From 51bb253b315bef3fca2c38078ebf6ff658f0e178 Mon Sep 17 00:00:00 2001
+From e2d66dd2388ba7d4ff4eb533455a40f1e76e100a Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Sat, 22 Dec 2018 11:26:46 +0100
-Subject: [PATCH] [sg temphack] tty/serial/8250: Call serial8250_enable_ms()
- from serial8250_config_port()
+Subject: [PATCH 09/28] tty/serial/8250: Call serial8250_enable_ms() from
+ serial8250_config_port()
 
 This hack can be used to verify the HW handshake on the Gardena smart
 gateway. First testing has shown than linux-serial-test now runs fine
@@ -21,15 +21,16 @@ dev/ttyS1: count for this session: rx=2785344, tx=2791967, rx err=0
 ^C
 
 Signed-off-by: Stefan Roese <sr@denx.de>
+Upstream-Status: Inappropriate [hack, still needed?]
 ---
  drivers/tty/serial/8250/8250_port.c | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 6e141429c980..fb3fb8fc0cd5 100644
+index 8b49ac4856d2..beb612e1a411 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3159,6 +3159,7 @@ static void serial8250_config_port(struct uart_port *port, int flags)
+@@ -3180,6 +3180,7 @@ static void serial8250_config_port(struct uart_port *port, int flags)
  
  	register_dev_spec_attr_grp(up);
  	up->fcr = uart_config[up->port.type].fcr;
@@ -38,5 +39,5 @@ index 6e141429c980..fb3fb8fc0cd5 100644
  
  static int
 -- 
-2.30.2
+2.39.2
 

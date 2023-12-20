@@ -1,7 +1,7 @@
-From ebb6dc9e3728963bd215ab1e1c477325636cad41 Mon Sep 17 00:00:00 2001
+From d3b13cc623c2584989d8d2c7b9a1452f2d61e218 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Tue, 29 Sep 2020 15:51:25 +0800
-Subject: [PATCH] [toup] rtl8xxxu: Handle
+Subject: [PATCH 20/28] rtl8xxxu: Handle
  BSS_CHANGED_TXPOWER/IEEE80211_CONF_CHANGE_POWER
 
 The 'iw set txpower' is not handled by the driver. Use the existing
@@ -9,6 +9,7 @@ set_tx_power function to apply the TX power change.
 
 Signed-off-by: Chris Chiu <chiu@endlessos.org>
 (cherry picked from commit 48f8fbccb7dff2d3c5f72a4267313d3c4cfc7df9)
+Upstream-Status: Pending [needs (a lot of) work]
 ---
  .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  |   9 ++
  .../realtek/rtl8xxxu/rtl8xxxu_8192c.c         |   1 +
@@ -17,7 +18,7 @@ Signed-off-by: Chris Chiu <chiu@endlessos.org>
  4 files changed, 128 insertions(+)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-index 65d3ab47e84b..fdb95531ecfb 100644
+index 1d2533cf7424..4241568c5530 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
 @@ -1296,6 +1296,12 @@ struct rtl8xxxu_priv {
@@ -33,7 +34,7 @@ index 65d3ab47e84b..fdb95531ecfb 100644
  	/*
  	 * The following entries are half-bytes split as:
  	 * bits 0-3: path A, bits 4-7: path B, all values 4 bits signed
-@@ -1423,6 +1429,7 @@ struct rtl8xxxu_fileops {
+@@ -1424,6 +1430,7 @@ struct rtl8xxxu_fileops {
  	void (*enable_rf) (struct rtl8xxxu_priv *priv);
  	void (*disable_rf) (struct rtl8xxxu_priv *priv);
  	void (*usb_quirks) (struct rtl8xxxu_priv *priv);
@@ -41,7 +42,7 @@ index 65d3ab47e84b..fdb95531ecfb 100644
  	void (*set_tx_power) (struct rtl8xxxu_priv *priv, int channel,
  			      bool ht40);
  	void (*update_rate_mask) (struct rtl8xxxu_priv *priv,
-@@ -1505,6 +1512,8 @@ void rtl8xxxu_disabled_to_emu(struct rtl8xxxu_priv *priv);
+@@ -1506,6 +1513,8 @@ void rtl8xxxu_disabled_to_emu(struct rtl8xxxu_priv *priv);
  int rtl8xxxu_init_llt_table(struct rtl8xxxu_priv *priv);
  void rtl8xxxu_gen1_phy_iq_calibrate(struct rtl8xxxu_priv *priv);
  void rtl8xxxu_gen1_init_phy_bb(struct rtl8xxxu_priv *priv);
@@ -75,7 +76,7 @@ index 4f93f88716a9..a5d56f61c4eb 100644
  	.update_rate_mask = rtl8xxxu_update_rate_mask,
  	.report_connect = rtl8xxxu_gen1_report_connect,
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 6480a45aecc8..f59f9c06a21a 100644
+index eb83c5531751..e63c20af3ff1 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 @@ -1382,6 +1382,38 @@ void rtl8xxxu_gen2_config_channel(struct ieee80211_hw *hw)
@@ -117,8 +118,8 @@ index 6480a45aecc8..f59f9c06a21a 100644
  void
  rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv, int channel, bool ht40)
  {
-@@ -4512,6 +4544,68 @@ rtl8xxxu_wireless_mode(struct ieee80211_hw *hw, struct ieee80211_sta *sta)
- 	return network_type;
+@@ -4555,6 +4587,68 @@ static void rtl8xxxu_set_aifs(struct rtl8xxxu_priv *priv, u8 slot_time)
+ 	}
  }
  
 +static int rtl8xxxu_get_txpower(struct ieee80211_hw *hw,
@@ -186,7 +187,7 @@ index 6480a45aecc8..f59f9c06a21a 100644
  static void
  rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  			  struct ieee80211_bss_conf *bss_conf, u32 changed)
-@@ -4608,6 +4702,11 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+@@ -4653,6 +4747,11 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  		dev_dbg(dev, "Changed BASIC_RATES!\n");
  		rtl8xxxu_set_basic_rates(priv, bss_conf->basic_rates);
  	}
@@ -198,7 +199,7 @@ index 6480a45aecc8..f59f9c06a21a 100644
  error:
  	return;
  }
-@@ -5907,6 +6006,9 @@ static int rtl8xxxu_config(struct ieee80211_hw *hw, u32 changed)
+@@ -5944,6 +6043,9 @@ static int rtl8xxxu_config(struct ieee80211_hw *hw, u32 changed)
  		priv->fops->config_channel(hw);
  	}
  
@@ -208,7 +209,7 @@ index 6480a45aecc8..f59f9c06a21a 100644
  exit:
  	return ret;
  }
-@@ -6677,6 +6779,20 @@ static int rtl8xxxu_parse_usb(struct rtl8xxxu_priv *priv,
+@@ -6715,6 +6817,20 @@ static int rtl8xxxu_parse_usb(struct rtl8xxxu_priv *priv,
  	return ret;
  }
  
@@ -229,7 +230,7 @@ index 6480a45aecc8..f59f9c06a21a 100644
  static int rtl8xxxu_probe(struct usb_interface *interface,
  			  const struct usb_device_id *id)
  {
-@@ -6779,6 +6895,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+@@ -6817,6 +6933,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
  		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
  		goto exit;
  	}
@@ -238,5 +239,5 @@ index 6480a45aecc8..f59f9c06a21a 100644
  	rtl8xxxu_print_chipinfo(priv);
  
 -- 
-2.30.2
+2.39.2
 

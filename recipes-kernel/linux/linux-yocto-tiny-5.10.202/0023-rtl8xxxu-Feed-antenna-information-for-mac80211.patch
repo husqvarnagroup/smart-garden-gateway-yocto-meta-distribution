@@ -1,15 +1,16 @@
-From 049160b77e7cfc8eab90ecfa73a80ce265a3b57c Mon Sep 17 00:00:00 2001
+From 76bfb863240dc6fc1dbddc647f66653b9af6fb05 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Wed, 7 Oct 2020 15:20:56 +0800
-Subject: [PATCH] [toup] rtl8xxxu: Feed antenna information for mac80211
+Subject: [PATCH 23/28] rtl8xxxu: Feed antenna information for mac80211
 
 (cherry picked from commit 557e87b5db655394a16c9b54a07a2fc11f1ea618)
+Upstream-Status: Pending [needs (a lot of) work]
 ---
  .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 15 +++++++++++++++
  1 file changed, 15 insertions(+)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index c3fdc25890e2..170099ab9b02 100644
+index 020564ee57a1..e0dc9357928f 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 @@ -1688,6 +1688,7 @@ static void rtl8xxxu_print_chipinfo(struct rtl8xxxu_priv *priv)
@@ -17,7 +18,7 @@ index c3fdc25890e2..170099ab9b02 100644
  {
  	struct device *dev = &priv->udev->dev;
 +	struct ieee80211_hw *hw = priv->hw;
- 	u32 val32, bonding;
+ 	u32 val32, bonding, sys_cfg;
  	u16 val16;
  
 @@ -1764,6 +1765,8 @@ static int rtl8xxxu_identify_chip(struct rtl8xxxu_priv *priv)
@@ -29,7 +30,7 @@ index c3fdc25890e2..170099ab9b02 100644
  
  	switch (priv->rtl_chip) {
  	case RTL8188E:
-@@ -4363,6 +4366,17 @@ static void rtl8xxxu_cam_write(struct rtl8xxxu_priv *priv,
+@@ -4364,6 +4367,17 @@ static void rtl8xxxu_cam_write(struct rtl8xxxu_priv *priv,
  	rtl8xxxu_debug = tmp_debug;
  }
  
@@ -47,7 +48,7 @@ index c3fdc25890e2..170099ab9b02 100644
  static void rtl8xxxu_sw_scan_start(struct ieee80211_hw *hw,
  				   struct ieee80211_vif *vif, const u8 *mac)
  {
-@@ -6755,6 +6769,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
+@@ -6793,6 +6807,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
  	.set_key = rtl8xxxu_set_key,
  	.ampdu_action = rtl8xxxu_ampdu_action,
  	.sta_statistics = rtl8xxxu_sta_statistics,
@@ -56,5 +57,5 @@ index c3fdc25890e2..170099ab9b02 100644
  };
  
 -- 
-2.30.2
+2.39.2
 

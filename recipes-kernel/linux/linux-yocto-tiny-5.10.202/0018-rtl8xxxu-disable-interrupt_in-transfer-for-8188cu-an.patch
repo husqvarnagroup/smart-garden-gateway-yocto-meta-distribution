@@ -1,8 +1,8 @@
-From 6751121bc81ace79eb7e9e09307f8819e2cdaedd Mon Sep 17 00:00:00 2001
+From 98f26bb6f61db593d24b6a29b200b6430294f72f Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chris.chiu@canonical.com>
 Date: Fri, 2 Jul 2021 00:33:54 +0800
-Subject: [PATCH] [fromup] rtl8xxxu: disable interrupt_in transfer for 8188cu
- and 8192cu
+Subject: [PATCH 18/28] rtl8xxxu: disable interrupt_in transfer for 8188cu and
+ 8192cu
 
 There will be crazy numbers of interrupts triggered by 8188cu and
 8192cu module, around 8000~10000 interrupts per second, on the usb
@@ -20,12 +20,13 @@ Acked-by: Jes Sorensen <Jes.Sorensen@gmail.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Link: https://lore.kernel.org/r/20210701163354.118403-1-chris.chiu@canonical.com
 (cherry picked from commit f62cdab7f5db4552067996f888d3874e2171c604)
+Upstream-Status: Backport
 ---
  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 7abea33e78dd..5cbada789e2d 100644
+index 5c424b738154..5deb69715270 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 @@ -1670,7 +1670,7 @@ static int rtl8xxxu_identify_chip(struct rtl8xxxu_priv *priv)
@@ -47,5 +48,5 @@ index 7abea33e78dd..5cbada789e2d 100644
  	}
  
 -- 
-2.30.2
+2.39.2
 

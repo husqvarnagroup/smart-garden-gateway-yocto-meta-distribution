@@ -1,16 +1,18 @@
-From 67777152da5355a0dd81d92d80498acec9f084da Mon Sep 17 00:00:00 2001
+From c68ce11d659a2998cf9428c85de536bdef69a2f7 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Sun, 23 Jan 2022 19:46:46 +0100
-Subject: [PATCH] [toup] rtl8xxxu: Raise error level of IQK failures
+Subject: [PATCH 26/28] rtl8xxxu: Raise error level of IQK failures
 
 Despite being recoverable, RX IQ calibration failure prints a warning.
 Final IQ calibration errors should be noticed even more so.
+
+Upstream-Status: Pending
 ---
  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 9 ++++++---
  1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index ff37cdab201c..c741b2231288 100644
+index 2fa7ffc8557a..0f3501fef0eb 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 @@ -3306,7 +3306,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
@@ -51,5 +53,5 @@ index ff37cdab201c..c741b2231288 100644
  
  	/* Back to BB mode, load original value */
 -- 
-2.30.2
+2.39.2
 

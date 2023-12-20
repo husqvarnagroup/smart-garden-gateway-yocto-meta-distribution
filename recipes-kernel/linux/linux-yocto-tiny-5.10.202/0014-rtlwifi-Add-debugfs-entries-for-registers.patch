@@ -1,18 +1,20 @@
-From c1ed2f0e8f52e2f7ae5f77c02f1edca163edaeef Mon Sep 17 00:00:00 2001
+From 09b0fbe49fa2e66d63ad3eb1f42d87f25c7c4e9c Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Thu, 6 Jan 2022 00:23:01 +0100
-Subject: [PATCH] [noup] rtlwifi: Add debugfs entries for registers
+Subject: [PATCH 14/28] rtlwifi: Add debugfs entries for registers
 
 This is similar to what the vendor driver, e.g. 8192cu, offers.
 
 In the current state, the RF dumping functionality works only for path
 A.
+
+Upstream-Status: Inappropriate [hack]
 ---
  drivers/net/wireless/realtek/rtlwifi/debug.c | 90 ++++++++++++++++++++
  1 file changed, 90 insertions(+)
 
 diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
-index 51db0552be7a..f1e476799577 100644
+index 23d294c1f6f7..405d70315053 100644
 --- a/drivers/net/wireless/realtek/rtlwifi/debug.c
 +++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
 @@ -69,6 +69,31 @@ static const struct file_operations file_ops_common = {
@@ -134,5 +136,5 @@ index 51db0552be7a..f1e476799577 100644
  	RTL_DEBUGFS_ADD(mac_1);
  	RTL_DEBUGFS_ADD(mac_2);
 -- 
-2.30.2
+2.39.2
 
