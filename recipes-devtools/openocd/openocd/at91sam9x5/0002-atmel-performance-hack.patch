@@ -1,11 +1,15 @@
-commit bddca08477b1ad12236b4abe8cf28eb6ded18bc7
-Author: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
-Date:   Mon Sep 2 15:15:23 2019 +0200
+From d60147d5ffb008312c6b0b0b6f9cfefbb517b70b Mon Sep 17 00:00:00 2001
+From: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Date: Mon, 2 Sep 2019 15:15:23 +0200
+Subject: [PATCH 2/2] atmel performance hack
 
-    atmel performance hack
+Upstream-Status: Inappropriate [hack]
+---
+ src/jtag/drivers/gpiod.c | 94 +++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 83 insertions(+), 11 deletions(-)
 
 diff --git a/src/jtag/drivers/gpiod.c b/src/jtag/drivers/gpiod.c
-index faa26277..db578b99 100644
+index faa26277a..db578b999 100644
 --- a/src/jtag/drivers/gpiod.c
 +++ b/src/jtag/drivers/gpiod.c
 @@ -45,6 +45,8 @@
@@ -197,3 +201,6 @@ index faa26277..db578b99 100644
  	if (gpiod_jtag_mode_possible()) {
  		if (gpiod_swd_mode_possible())
  			LOG_INFO("JTAG and SWD modes enabled");
+-- 
+2.39.2
+

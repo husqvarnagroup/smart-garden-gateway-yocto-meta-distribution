@@ -3,8 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 PR:append = ".4"
 
 SRC_URI += " \
-    file://0001-jtag-sysfsgpio-clean-up-swd-gpios.patch \
-    file://0002-libgpiod.patch \
+    file://0001-add-libgpiod-jtag-driver.patch \
 "
 
 SRC_URI:append:mt7688 = " \
@@ -13,7 +12,7 @@ SRC_URI:append:mt7688 = " \
 "
 
 SRC_URI:append:at91sam9x5 = " \
-    file://0003-atmel-performance-hack.patch \
+    file://0002-atmel-performance-hack.patch \
     file://gardena_nrf52.cfg \
     file://gardena_radio.cfg \
 "
