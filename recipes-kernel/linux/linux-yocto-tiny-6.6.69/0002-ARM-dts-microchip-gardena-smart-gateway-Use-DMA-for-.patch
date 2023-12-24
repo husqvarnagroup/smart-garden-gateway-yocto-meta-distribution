@@ -1,0 +1,42 @@
+From 86ff260dc78470096626d8edcd288851b15fe918 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Tue, 2 Jan 2024 17:18:39 +0100
+Subject: [PATCH] ARM: dts: microchip: gardena-smart-gateway: Use DMA for
+ USART3
+
+The AT91SAM9G25-based GARDENA smart Gateway uses USART3 (ttyS1) to
+communicate (over PPP, at 115200 baud) with the radio module.
+
+We have been experiencing packet loss and seeing errors on the ppp0
+interface. Enabling DMA for the serial interface resolves the issues.
+
+Co-developed-by: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Signed-off-by: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20240102161839.702625-3-ezra.buehler@husqvarna.com
+[claudiu.beznea: s/Co-Developed-by/Co-developed-by to make checkpatch.pl
+ happy, s/at91/microchip in commit title]
+Signed-off-by: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+(cherry picked from commit 1ef75c67f15df1106a673b8de8c62dda6aa57861)
+Upstream-Status: Backport
+---
+ .../boot/dts/microchip/at91sam9g25-gardena-smart-gateway.dts    | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/boot/dts/microchip/at91sam9g25-gardena-smart-gateway.dts b/arch/arm/boot/dts/microchip/at91sam9g25-gardena-smart-gateway.dts
+index 92f2c05c873f..af70eb8a3a02 100644
+--- a/arch/arm/boot/dts/microchip/at91sam9g25-gardena-smart-gateway.dts
++++ b/arch/arm/boot/dts/microchip/at91sam9g25-gardena-smart-gateway.dts
+@@ -121,6 +121,8 @@ &usart2 {
+ };
+ 
+ &usart3 {
++	atmel,use-dma-rx;
++	atmel,use-dma-tx;
+ 	status = "okay";
+ 
+ 	pinctrl-0 = <&pinctrl_usart3
+-- 
+2.43.0
+

@@ -1,0 +1,34 @@
+From 619991fc4d31bab01df452c09092ca381845d7e7 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Tue, 4 Feb 2025 17:14:12 +0100
+Subject: [PATCH] wifi: rtl8xxxu: Use macid in rtl8xxxu_update_rate_mask()
+
+This is needed in order for AP mode to work correctly on gen1 devices
+like the RTL8192CU.
+
+For more information, see the corresponding change for gen2 devices,
+commit 769f326322e7 ("wifi: rtl8xxxu: Add parameter macid to
+update_rate_mask").
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Submitted [https://lore.kernel.org/all/20250219175228.850583-1-ezra@easyb.ch/]
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 86ad8e9056b1..f25e89235961 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -4700,7 +4700,7 @@ void rtl8xxxu_update_rate_mask(struct rtl8xxxu_priv *priv,
+ 	h2c.ramask.mask_lo = cpu_to_le16(ramask & 0xffff);
+ 	h2c.ramask.mask_hi = cpu_to_le16(ramask >> 16);
+ 
+-	h2c.ramask.arg = 0x80;
++	h2c.ramask.arg = macid | 0x80;
+ 	if (sgi)
+ 		h2c.ramask.arg |= 0x20;
+ 
+-- 
+2.43.0
+

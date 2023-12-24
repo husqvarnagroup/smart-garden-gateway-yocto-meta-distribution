@@ -1,0 +1,194 @@
+From e864e29e9e44cdea6c6ec980a839d0cc65f62464 Mon Sep 17 00:00:00 2001
+From: Chris Chiu <chris.chiu@canonical.com>
+Date: Thu, 30 Sep 2021 17:11:37 +0800
+Subject: [PATCH] rtl8xxxu: Add debugfs entries for registers
+
+Dump register contents of MAC, baseband, and RF for debugging. It will
+help cross-comparison with the same entries in the vendor driver. The
+goal is to find out the differences which cause worse retransmission rate
+and throughput on the rtl8xxxu driver.
+
+Signed-Off-By: Chris Chiu <chrischiu@canonical.com>
+Upstream-Status: Pending
+---
+ .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  |   1 +
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 130 ++++++++++++++++++
+ 2 files changed, 131 insertions(+)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+index af541e52e683..d10d27ed284d 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+@@ -1914,6 +1914,7 @@ struct rtl8xxxu_priv {
+ 	struct rtl8xxxu_ra_report ra_report;
+ 	struct rtl8xxxu_cfo_tracking cfo_tracking;
+ 	struct rtl8xxxu_ra_info ra_info;
++	struct dentry *debugfs_dir;
+ 
+ 	bool led_registered;
+ 	char led_name[32];
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 6e47dde93890..f72b7a376983 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -28,6 +28,8 @@
+ #include <linux/wireless.h>
+ #include <linux/firmware.h>
+ #include <linux/moduleparam.h>
++#include <linux/debugfs.h>
++#include <linux/seq_file.h>
+ #include <net/mac80211.h>
+ #include "rtl8xxxu.h"
+ #include "rtl8xxxu_regs.h"
+@@ -7340,6 +7342,130 @@ static int rtl8xxxu_sta_remove(struct ieee80211_hw *hw,
+ 	return 0;
+ }
+ 
++struct rtl8xxxu_debugfs_priv {
++	struct rtl8xxxu_priv *priv;
++	int (*cb_read)(struct seq_file *m, void *v);
++	ssize_t (*cb_write)(struct file *filp, const char __user *buffer,
++			    size_t count, loff_t *loff);
++	u32 cb_data;
++};
++
++static int rtl8xxxu_debug_get_common(struct seq_file *m, void *v)
++{
++	struct rtl8xxxu_debugfs_priv *debugfs_priv = m->private;
++
++	return debugfs_priv->cb_read(m, v);
++}
++
++static int dl_debug_open_common(struct inode *inode, struct file *file)
++{
++	return single_open(file, rtl8xxxu_debug_get_common, inode->i_private);
++}
++
++static const struct file_operations file_ops_common = {
++	.open = dl_debug_open_common,
++	.read = seq_read,
++	.llseek = seq_lseek,
++	.release = single_release,
++};
++
++static int rtl8xxxu_debug_get_macregs(struct seq_file *m, void *v)
++{
++	struct rtl8xxxu_debugfs_priv *debugfs_priv = m->private;
++	struct rtl8xxxu_priv *priv = debugfs_priv->priv;
++	int i, j = 1;
++
++	seq_printf(m, "======= MAC REG (rtl8xxxu) =======\n");
++	for (i = 0; i < 0x800; i += 4) {
++		if (j % 4 == 1)
++			seq_printf(m, "0x%03x:", i);
++		seq_printf(m, " 0x%08x", rtl8xxxu_read32(priv, i));
++		if ((j++) % 4 == 0)
++			seq_puts(m, "\n");
++	}
++	return 0;
++}
++
++static struct rtl8xxxu_debugfs_priv rtl8xxxu_debug_priv_macregs = {
++	.cb_read = rtl8xxxu_debug_get_macregs,
++	.cb_data = 0,
++};
++
++static int rtl8xxxu_debug_get_bbregs(struct seq_file *m, void *v)
++{
++	struct rtl8xxxu_debugfs_priv *debugfs_priv = m->private;
++	struct rtl8xxxu_priv *priv = debugfs_priv->priv;
++	int i, j = 1;
++
++	seq_printf(m, "======= BB REG (rtl8xxxu) =======\n");
++	for (i = 0x800; i < 0x1000; i += 4) {
++		if (j % 4 == 1)
++			seq_printf(m, "0x%03x:", i);
++		seq_printf(m, " 0x%08x", rtl8xxxu_read32(priv, i));
++		if ((j++) % 4 == 0)
++			seq_puts(m, "\n");
++	}
++	return 0;
++}
++
++static struct rtl8xxxu_debugfs_priv rtl8xxxu_debug_priv_bbregs = {
++	.cb_read = rtl8xxxu_debug_get_bbregs,
++	.cb_data = 0,
++};
++
++static int rtl8xxxu_debug_get_rfregs(struct seq_file *m, void *v)
++{
++	struct rtl8xxxu_debugfs_priv *debugfs_priv = m->private;
++	struct rtl8xxxu_priv *priv = debugfs_priv->priv;
++	int i, j = 1, path, path_nums;
++
++	if (priv->tx_paths == 1)
++		path_nums = 1;
++	else
++		path_nums = 2;
++
++	for (path = 0; path < path_nums; path++) {
++		seq_printf(m, "======= RF REG (rtl8xxxu) =======\n");
++		seq_printf(m, "RF_Path(%x)\n", path);
++		for (i = 0; i < 0x100; i++) {
++			if (j % 4 == 1)
++				seq_printf(m, "0x%02x:", i);
++			seq_printf(m, " 0x%08x",
++				   rtl8xxxu_read_rfreg(priv, path, i));
++			if ((j++) % 4 == 0)
++				seq_puts(m, "\n");
++		}
++	}
++	return 0;
++}
++
++static struct rtl8xxxu_debugfs_priv rtl8xxxu_debug_priv_rfregs = {
++	.cb_read = rtl8xxxu_debug_get_rfregs,
++	.cb_data = 0,
++};
++
++void rtl8xxxu_debugfs_init(struct rtl8xxxu_priv *priv)
++{
++	priv->debugfs_dir =
++		debugfs_create_dir("rtl8xxxu", priv->hw->wiphy->debugfsdir);
++
++	rtl8xxxu_debug_priv_macregs.priv = priv;
++	debugfs_create_file("mac_reg_dump", S_IFREG | 0400, priv->debugfs_dir,
++			    &rtl8xxxu_debug_priv_macregs, &file_ops_common);
++	rtl8xxxu_debug_priv_bbregs.priv = priv;
++	debugfs_create_file("bb_reg_dump", S_IFREG | 0400, priv->debugfs_dir,
++			    &rtl8xxxu_debug_priv_bbregs, &file_ops_common);
++	rtl8xxxu_debug_priv_rfregs.priv = priv;
++	debugfs_create_file("rf_reg_dump", S_IFREG | 0400, priv->debugfs_dir,
++			    &rtl8xxxu_debug_priv_rfregs, &file_ops_common);
++}
++
++void rtl8xxxu_debugfs_remove(struct rtl8xxxu_priv *priv)
++{
++	debugfs_remove_recursive(priv->debugfs_dir);
++	priv->debugfs_dir = NULL;
++}
++
+ static const struct ieee80211_ops rtl8xxxu_ops = {
+ 	.tx = rtl8xxxu_tx,
+ 	.wake_tx_queue = ieee80211_handle_wake_tx_queue,
+@@ -7669,6 +7795,8 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 
+ 	rtl8xxxu_init_led(priv);
+ 
++	rtl8xxxu_debugfs_init(priv);
++
+ 	return 0;
+ 
+ err_set_intfdata:
+@@ -7696,6 +7824,8 @@ static void rtl8xxxu_disconnect(struct usb_interface *interface)
+ 
+ 	rtl8xxxu_deinit_led(priv);
+ 
++	rtl8xxxu_debugfs_remove(priv);
++
+ 	ieee80211_unregister_hw(hw);
+ 
+ 	priv->fops->power_off(priv);
+-- 
+2.43.0
+

@@ -1,0 +1,26 @@
+From 5bf44eb3043d8d177ecd85b1ac6ac446d26917ff Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra@easyb.ch>
+Date: Wed, 17 Jan 2024 15:37:23 +0200
+Subject: [PATCH] MIPS: dts: ralink: mt7628a: Fix sysc compatible string
+
+Upstream-Status: Pending
+---
+ arch/mips/boot/dts/ralink/mt7628a.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/mips/boot/dts/ralink/mt7628a.dtsi b/arch/mips/boot/dts/ralink/mt7628a.dtsi
+index d4cff969d003..4aa387b1811e 100644
+--- a/arch/mips/boot/dts/ralink/mt7628a.dtsi
++++ b/arch/mips/boot/dts/ralink/mt7628a.dtsi
+@@ -37,7 +37,7 @@ palmbus: palmbus@10000000 {
+ 		#size-cells = <1>;
+ 
+ 		sysc: system-controller@0 {
+-			compatible = "ralink,mt7620a-sysc", "syscon";
++			compatible = "ralink,mt7628-sysc", "ralink,mt7688-sysc", "syscon";
+ 			reg = <0x0 0x60>;
+ 		};
+ 
+-- 
+2.43.0
+

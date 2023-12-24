@@ -1,0 +1,43 @@
+From 75911a968547b32c0b19842fe52e4df4693a9081 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Tue, 2 Jan 2024 17:18:38 +0100
+Subject: [PATCH] ARM: dts: microchip: at91sam9x5ek: Use DMA for DBGU serial
+ port
+
+The UART controller does not seem to be fast enough to receive data (at
+115200 baud) without dropping bytes when DMA is disabled.
+
+This has often been noticed when pasting SSH keys into the serial
+console (ttyS0). Only after multiple tries, the long strings would be
+successfully transferred without missing characters.
+
+Co-developed-by: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Signed-off-by: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20240102161839.702625-2-ezra.buehler@husqvarna.com
+[claudiu.beznea: s/Co-Developed-by/Co-developed-by to make checkpatch.pl
+ happy, s/at91/microchip in commit title]
+Signed-off-by: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+(cherry picked from commit f8f4f44277028a41622c9b4ff3ee9fd22ec5d233)
+Upstream-Status: Backport
+---
+ arch/arm/boot/dts/microchip/at91sam9x5ek.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/boot/dts/microchip/at91sam9x5ek.dtsi b/arch/arm/boot/dts/microchip/at91sam9x5ek.dtsi
+index 5f4eaa618ab4..9618b8d965b0 100644
+--- a/arch/arm/boot/dts/microchip/at91sam9x5ek.dtsi
++++ b/arch/arm/boot/dts/microchip/at91sam9x5ek.dtsi
+@@ -39,6 +39,8 @@ &adc0 {
+ };
+ 
+ &dbgu {
++	atmel,use-dma-rx;
++	atmel,use-dma-tx;
+ 	status = "okay";
+ };
+ 
+-- 
+2.43.0
+

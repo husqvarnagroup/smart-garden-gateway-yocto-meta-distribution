@@ -1,0 +1,58 @@
+From 0912e67eae92ca755f443538250fd2c5c1d24cc2 Mon Sep 17 00:00:00 2001
+From: Martin Kaistra <martin.kaistra@linutronix.de>
+Date: Fri, 22 Dec 2023 11:14:39 +0100
+Subject: [PATCH] wifi: rtl8xxxu: remove obsolete priv->vif
+
+Now that all uses of priv->vif have been converted to priv->vifs[]
+remove the old attribute.
+
+Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://msgid.link/20231222101442.626837-19-martin.kaistra@linutronix.de
+(cherry picked from commit f232e9d91bb84817c60c051a3e3b56dd2721a7b3)
+Upstream-Status: Backport
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h      | 5 -----
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 2 --
+ 2 files changed, 7 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+index 5ed717ed085b..1c8f36269740 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
+@@ -1909,11 +1909,6 @@ struct rtl8xxxu_priv {
+ 	u8 rssi_level;
+ 	DECLARE_BITMAP(tx_aggr_started, IEEE80211_NUM_TIDS);
+ 	DECLARE_BITMAP(tid_tx_operational, IEEE80211_NUM_TIDS);
+-	/*
+-	 * Only one virtual interface permitted because only STA mode
+-	 * is supported and no iface_combinations are provided.
+-	 */
+-	struct ieee80211_vif *vif;
+ 
+ 	struct ieee80211_vif *vifs[2];
+ 	struct delayed_work ra_watchdog;
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index e9c236534f67..f5f0eb16a59c 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -6825,7 +6825,6 @@ static int rtl8xxxu_add_interface(struct ieee80211_hw *hw,
+ 	}
+ 
+ 	priv->vifs[port_num] = vif;
+-	priv->vif = vif;
+ 	rtlvif->port_num = port_num;
+ 
+ 	rtl8xxxu_set_linktype(priv, vif->type, port_num);
+@@ -6843,7 +6842,6 @@ static void rtl8xxxu_remove_interface(struct ieee80211_hw *hw,
+ 
+ 	dev_dbg(&priv->udev->dev, "%s\n", __func__);
+ 
+-	priv->vif = NULL;
+ 	priv->vifs[rtlvif->port_num] = NULL;
+ }
+ 
+-- 
+2.43.0
+

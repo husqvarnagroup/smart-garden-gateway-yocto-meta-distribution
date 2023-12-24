@@ -1,0 +1,34 @@
+From b9e3c01838b4a3d9d056f8a72800f3daae95fbba Mon Sep 17 00:00:00 2001
+From: Martin Kaistra <martin.kaistra@linutronix.de>
+Date: Fri, 22 Dec 2023 11:14:22 +0100
+Subject: [PATCH] wifi: rtl8xxxu: remove assignment of priv->vif in
+ rtl8xxxu_bss_info_changed()
+
+priv->vif gets already set in rtl8xxxu_add_interface, there is no need
+to set it also in rtl8xxxu_bss_info_changed().
+
+Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://msgid.link/20231222101442.626837-2-martin.kaistra@linutronix.de
+(cherry picked from commit d55cb6d8a99441aff55cb9ce663a07f7f1667e83)
+Upstream-Status: Backport
+---
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 27c7dd38f288..bcdeaad54270 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -5152,7 +5152,6 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+ 
+ 			rtl8xxxu_update_ra_report(rarpt, highest_rate, sgi, bw);
+ 
+-			priv->vif = vif;
+ 			priv->rssi_level = RTL8XXXU_RATR_STA_INIT;
+ 
+ 			priv->fops->update_rate_mask(priv, ramask, 0, sgi,
+-- 
+2.43.0
+
