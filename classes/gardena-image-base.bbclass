@@ -22,6 +22,7 @@ IMAGE_INSTALL += " \
     mtd-utils-ubifs \
     nftables \
     openocd \
+    openssl-ossl-module-legacy \
     packagegroup-core-boot \
     ppp \
     reset-rm \
