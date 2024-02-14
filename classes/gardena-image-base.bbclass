@@ -1,6 +1,6 @@
 # Base for all GARDENA images; Open Source software only
 
-IMAGE_INSTALL += " \
+IMAGE_INSTALL:append = " \
     dhcpcd \
     dnsmasq \
     environment \
@@ -53,12 +53,12 @@ IMAGE_INSTALL += " \
     virtual/os-release \
 "
 
-IMAGE_INSTALL:append:mt7688 += " \
+IMAGE_INSTALL:append:mt7688 = " \
     kernel-module-mt7603e \
     linux-firmware-mt7628 \
 "
 
-IMAGE_FEATURES += " \
+IMAGE_FEATURES:append = " \
     empty-root-password \
     package-management \
     ssh-server-dropbear \
