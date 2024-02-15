@@ -11,14 +11,14 @@ DEPENDS = "zlib e2fsprogs util-linux"
 RDEPENDS:mtd-utils-tests += "bash"
 
 PV = "2.1.1"
-PR = "r1"
+PR = "r2"
 
 SRCREV = "18d7bd618cda71cc664cbdb3366ac30a5c3479cc"
 SRC_URI = "git://ssh.dev.azure.com/v3/HQV-Gardena/SG-Gateway/mtd-utils;protocol=ssh;branch=gardena/master \
            file://add-exclusion-to-mkfs-jffs2-git-2.patch \
 "
 
-S = "${WORKDIR}/git/"
+S = "${WORKDIR}/git"
 
 # xattr support creates an additional compile-time dependency on acl because
 # the sys/acl.h header is needed. libacl is not needed and thus enabling xattr
