@@ -8,25 +8,29 @@ inherit gardena-image-foss
 IMAGE_INSTALL:remove = "firewall"
 
 # SWUpdate makes no sense when booting from NFS
-IMAGE_INSTALL:remove = "swupdate"
+IMAGE_INSTALL:remove = "swupdate swupdate-check"
+
+IMAGE_INSTALL += " \
+    accessory-server \
+    cloudadapter \
+    coap-transport-proxy \
+    fwrolloutd \
+    gateway-config-backend \
+    gateway-firmware \
+    lemonbeatd \
+    lwm2mserver \
+    nngforward \
+    os-release-dev-nfsboot \
+    ppp-network \
+    ssh-authorized-keys-dev \
+    sshtunnel \
+    sshtunnel-check \
+"
 
 # Stuff to make developers happy
 IMAGE_INSTALL += " \
-    ca-certificates \
-    curl \
-    iw \
-    led-indicator \
-    libubootenv-bin \
-    mdns \
-    openocd \
-    openssl-bin \
-    os-release-dev-nfsboot \
-    systemd \
-"
-
-# Allow the image to start
-IMAGE_INSTALL += " \
-    manufacturing-tools-shim \
+    gdb \
+    gdbserver \
 "
 
 # Tarball is all we need. No compression to speed things up.
