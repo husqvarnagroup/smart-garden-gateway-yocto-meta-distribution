@@ -73,27 +73,27 @@ end";
                     {
                         filename = "gardena-image-bnw-zephyr-@@MACHINE@@.squashfs-xz";
                         volume = "rootfs1";
-                        sha256 = "@gardena-image-bnw-zephyr-@@MACHINE@@.squashfs-xz";
+                        sha256 = "$swupdate_get_sha256(gardena-image-bnw-zephyr-@@MACHINE@@.squashfs-xz)";
                         hook = "check_version_and_leds";
                         installed-directly = true;
                     },
                     {
                         filename = "fitImage-@@MACHINE@@.bin";
                         volume = "kernel1";
-                        sha256 = "@fitImage-@@MACHINE@@.bin";
+                        sha256 = "$swupdate_get_sha256(fitImage-@@MACHINE@@.bin)";
                         installed-directly = true;
                     },
                     {
                         filename = "uEnv-@@MACHINE@@.txt";
                         type = "bootloader";
-                        sha256 = "@uEnv-@@MACHINE@@.txt";
+                        sha256 = "$swupdate_get_sha256(uEnv-@@MACHINE@@.txt)";
                     },
                     {
                         name = "u-boot";
                         filename = "@@UBOOT_FILENAME_IN_DEPLOYDIR@@";
                         mtdname = "uboot";
                         type = "flash";
-                        sha256 = "@@@UBOOT_FILENAME_IN_DEPLOYDIR@@";
+                        sha256 = "$swupdate_get_sha256(@@UBOOT_FILENAME_IN_DEPLOYDIR@@)";
                         install-if-different = true;
                         version = "@@UBOOT_VERSION@@";
                     }
@@ -152,27 +152,27 @@ end";
                     {
                         filename = "gardena-image-bnw-zephyr-@@MACHINE@@.squashfs-xz";
                         volume = "rootfs0";
-                        sha256 = "@gardena-image-bnw-zephyr-@@MACHINE@@.squashfs-xz";
+                        sha256 = "$swupdate_get_sha256(gardena-image-bnw-zephyr-@@MACHINE@@.squashfs-xz)";
                         hook = "check_version_and_leds";
                         installed-directly = true;
                     },
                     {
                         filename = "fitImage-@@MACHINE@@.bin";
                         volume = "kernel0";
-                        sha256 = "@fitImage-@@MACHINE@@.bin";
+                        sha256 = "$swupdate_get_sha256(fitImage-@@MACHINE@@.bin)";
                         installed-directly = true;
                     },
                     {
                         filename = "uEnv-@@MACHINE@@.txt";
                         type = "bootloader";
-                        sha256 = "@uEnv-@@MACHINE@@.txt";
+                        sha256 = "$swupdate_get_sha256(uEnv-@@MACHINE@@.txt)";
                     },
                     {
                         name = "u-boot";
                         filename = "@@UBOOT_FILENAME_IN_DEPLOYDIR@@";
                         mtdname = "uboot";
                         type = "flash";
-                        sha256 = "@@@UBOOT_FILENAME_IN_DEPLOYDIR@@";
+                        sha256 = "$swupdate_get_sha256(@@UBOOT_FILENAME_IN_DEPLOYDIR@@)";
                         install-if-different = true;
                         version = "@@UBOOT_VERSION@@";
                     }
