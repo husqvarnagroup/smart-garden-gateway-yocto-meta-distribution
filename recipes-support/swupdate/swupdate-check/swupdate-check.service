@@ -12,6 +12,6 @@ ExecStart=/usr/bin/swupdate-check
 Type=oneshot
 # allow swupdate to fail (e.g. when network unavailable or version
 # already installed) without degrading the systemd status
-SuccessExitStatus=1
+SuccessExitStatus=4
 # SG-14860 For unknown, rare reasons, swupdate can get stuck. Killing it to allow a new attempt.
 TimeoutStartSec=11h
