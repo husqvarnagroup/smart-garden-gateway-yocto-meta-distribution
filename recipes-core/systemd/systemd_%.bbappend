@@ -7,9 +7,7 @@ SRC_URI += "\
     file://systemd-disable-pager.sh \
     file://systemd-networkd-wait-online.service \
     file://99-default.link \
-    file://99-eth0.network \
     file://99-husqvarna-default.conf \
-    file://99-wlan0.network \
 "
 
 FILES:${PN} += "\
@@ -38,11 +36,6 @@ do_install:append() {
     # Override systemd-networkd-wait-online.service to only wait for one interface
     install -d ${D}${sysconfdir}/systemd/system
     install -m 0644 ${WORKDIR}/systemd-networkd-wait-online.service ${D}${sysconfdir}/systemd/system
-
-    # Make systemd-networkd aware of eth0 and wlan0
-    install -d ${D}${systemd_unitdir}/network
-    install -m 0644 ${WORKDIR}/99-eth0.network ${D}${systemd_unitdir}/network
-    install -m 0644 ${WORKDIR}/99-wlan0.network ${D}${systemd_unitdir}/network
 
     # Keep relevant systemd data from being erased on update
     install -d ${D}${base_libdir}/upgrade/keep.d
