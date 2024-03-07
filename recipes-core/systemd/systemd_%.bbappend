@@ -33,7 +33,7 @@ do_install:append() {
     install -d ${D}${sysconfdir}/systemd/timesyncd.conf.d
     install -m 0644 ${WORKDIR}/99-husqvarna-default.conf ${D}${sysconfdir}/systemd/timesyncd.conf.d
 
-    # Override systemd-networkd-wait-online.service to only wait for one interface
+    # Override systemd-networkd-wait-online.service to remove it from network-online.target.wants
     install -d ${D}${sysconfdir}/systemd/system
     install -m 0644 ${WORKDIR}/systemd-networkd-wait-online.service ${D}${sysconfdir}/systemd/system
 

@@ -20,6 +20,3 @@ Before=network-online.target shutdown.target
 Type=oneshot
 ExecStart=/lib/systemd/systemd-networkd-wait-online --any
 RemainAfterExit=yes
-
-[Install]
-WantedBy=network-online.target
