@@ -7,8 +7,6 @@ BBFILES ?= ""
 
 BBLAYERS ?= " \
   ##OEROOT##/meta \
-  ##OEROOT##/../meta-mediatek \
-  ##OEROOT##/../meta-atmel \
   ##OEROOT##/../meta-aws \
   ##OEROOT##/../meta-distribution \
   ##OEROOT##/../meta-gardena \
