@@ -32,7 +32,7 @@ RestartSec=5s
 # Limit number of starts to prevent infinite retry, mainly because ExecStartPre check that can let unit fail
 # when hostapd is running
 StartLimitInterval=30
-StartLimitBurst=3
+StartLimitBurst=5
 
 [Install]
 WantedBy=multi-user.target

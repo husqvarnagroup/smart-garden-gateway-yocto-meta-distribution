@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".9"
+PR:append = ".10"
 
 SRC_URI += " \
     file://keep.d/${BPN} \
@@ -36,7 +36,7 @@ do_install:append() {
     # Install customized unit
     install -m 644 ${WORKDIR}/wpa_supplicant@.service ${D}/${systemd_unitdir}/system/
 
-    # Install D-Bus service 
+    # Install D-Bus service
     install -m 644 ${WORKDIR}/dbus/fi.w1.wpa_supplicant1.service ${D}/${datadir}/dbus-1/system-services
     # Hack for D-Bus alias
     ln -s wpa_supplicant@.service ${D}/${systemd_unitdir}/system/dbus-fi.w1.wpa_supplicant1@.service
