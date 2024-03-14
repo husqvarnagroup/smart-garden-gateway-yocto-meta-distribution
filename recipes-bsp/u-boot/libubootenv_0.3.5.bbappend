@@ -6,7 +6,6 @@ SRC_URI += " \
   file://fw_env.config \
   file://0001-sg-noup-fw_printenv-Exit-with-error-code-on-unset-va.patch \
   file://0002-sg-noup-fw_setenv-Support-extra-long-lines.patch \
-  file://0003-Revert-fw_setenv-fix-bug-when-SPI-flash-write-size-s.patch \
 "
 
 do_install:append() {
