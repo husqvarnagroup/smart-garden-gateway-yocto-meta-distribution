@@ -12,8 +12,7 @@ IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_ID}"
 
 # Define U-Boot filename and version. This is only relevant when the "freshly"
 # built U-Boot binary should get used. See comment below this section.
-UBOOT_FILENAME = "u-boot-${MACHINE}.bin"
-UBOOT_FILENAME:at91sam9x5 = "u-boot-with-spl.bin-${MACHINE}"
+UBOOT_FILENAME = "u-boot-with-spl.bin-${MACHINE}"
 UBOOT_VERSION = "${@d.getVar("PREFERRED_VERSION_u-boot", False).replace("-prebuilt", "")}"
 UBOOT_VERSION = "XXX"
 # This is a workaround to allow multiple SWUpdate images having their "own"
