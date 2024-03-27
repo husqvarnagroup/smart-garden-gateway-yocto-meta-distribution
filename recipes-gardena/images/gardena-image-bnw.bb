@@ -11,6 +11,7 @@ IMAGE_INSTALL += " \
     gateway-firmware \
     lemonbeatd \
     lwm2mserver \
+    metrics \
     nngforward \
     os-release-bnw \
     ppp-network \

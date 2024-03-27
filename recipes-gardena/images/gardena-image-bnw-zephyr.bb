@@ -11,6 +11,7 @@ IMAGE_INSTALL += " \
     gateway-firmware-zephyr \
     lemonbeatd-zephyr \
     lwm2mserver \
+    metrics \
     nngforward \
     os-release-bnw-zephyr \
     ppp-network-zephyr \
