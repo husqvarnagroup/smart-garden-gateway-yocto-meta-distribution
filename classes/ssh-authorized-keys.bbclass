@@ -7,12 +7,10 @@
 
 inherit allarch
 
-SSH_USER ?= "root"
-
-FILES:${PN} += "/home/${SSH_USER}/.ssh/authorized_keys"
+FILES:${PN} += "${ROOT_HOME}/.ssh/authorized_keys"
 
 do_install() {
-        install -d ${D}/home/${SSH_USER}/.ssh/
-        cat ${WORKDIR}/*.pub > ${D}/home/${SSH_USER}/.ssh/authorized_keys
-        chmod 600 ${D}/home/${SSH_USER}/.ssh/authorized_keys
+        install -d ${D}${ROOT_HOME}/.ssh/
+        cat ${WORKDIR}/*.pub > ${D}${ROOT_HOME}/.ssh/authorized_keys
+        chmod 600 ${D}${ROOT_HOME}/.ssh/authorized_keys
 }

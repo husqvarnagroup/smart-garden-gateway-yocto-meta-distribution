@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-PV = "0.5"
+PV = "1.0"
 
 # TODO: Remove maintenance-access-factory.pub (SG-20638)
 SRC_URI = " \
