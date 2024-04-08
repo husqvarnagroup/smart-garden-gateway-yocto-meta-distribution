@@ -3,6 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI += "\
     file://credit-random-seed.conf \
     file://keep.d/${BPN} \
+    file://serial-getty@ttyS0.service_override.conf \
     file://systemd-disable-colors.sh \
     file://systemd-disable-pager.sh \
     file://systemd-networkd-wait-online.service \
@@ -17,7 +18,7 @@ FILES:${PN} += "\
     ${systemd_unitdir}/system/systemd-random-seed.service.d \
 "
 
-PR:append = ".0"
+PR:append = ".1"
 
 do_install:append() {
     # Disable colorized output of system tools (systemctl, etc.)
@@ -36,6 +37,11 @@ do_install:append() {
     # Override systemd-networkd-wait-online.service to remove it from network-online.target.wants
     install -d ${D}${sysconfdir}/systemd/system
     install -m 0644 ${WORKDIR}/systemd-networkd-wait-online.service ${D}${sysconfdir}/systemd/system
+
+    # Override serial-getty@ttyS0.service to add (re)start limit
+    install -d ${D}${sysconfdir}/systemd/system/serial-getty@ttyS0.service.d
+    install -m 0644 ${WORKDIR}/serial-getty@ttyS0.service_override.conf \
+        ${D}${sysconfdir}/systemd/system/serial-getty@ttyS0.service.d/override.conf
 
     # Keep relevant systemd data from being erased on update
     install -d ${D}${base_libdir}/upgrade/keep.d
