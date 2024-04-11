@@ -8,7 +8,7 @@
 
 update_url_query="?gwVersion=@DISTRO_VERSION_ID@"
 
-# shellcheck source=/dev/null
+# shellcheck source=/dev/null disable=SC2153
 image_id=$( (. /etc/os-release; echo "$IMAGE_ID") || echo "")
 if [ "$image_id" ]; then
     update_url_query="${update_url_query}&gwImageId=${image_id}"
