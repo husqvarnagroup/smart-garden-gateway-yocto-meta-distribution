@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck shell=dash
 # this tool merges multiple hostapd configs into one because hostapd doesn't
 # support that itself.
 

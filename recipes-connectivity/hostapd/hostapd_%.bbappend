@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".3"
+PR:append = ".4"
 
 SRC_URI:append = " \
     file://hostapd-genconf.sh \
