@@ -1,5 +1,6 @@
 require ppp-network.inc
 
-SUMMARY = "IP configuration on ppp0 for Zephyr based RM firmware"
+# Prefer our customized files
+FILESEXTRAPATHS:prepend := "${THISDIR}/ppp-network-zephyr:"
 
 PR:append = ".0"
