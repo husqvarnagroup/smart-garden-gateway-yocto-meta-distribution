@@ -4,7 +4,7 @@ SRC_URI += " \
     file://zram-run-log-journal.service \
     "
 
-PR:append = ".0"
+PR:append = ".1"
 
 do_install:append () {
     install -d ${D}${systemd_unitdir}/system
