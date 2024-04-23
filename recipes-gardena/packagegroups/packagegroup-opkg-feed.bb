@@ -39,7 +39,6 @@ RDEPENDS:packagegroup-opkg-feed = "\
     pstree \
     pv \
     python3-aiocoap \
-    python3-coap-transport-proxy \
     python3-dbus-next \
     python3-lemonbeat \
     python3-opentelemetry-exporter-otlp-proto-http \
