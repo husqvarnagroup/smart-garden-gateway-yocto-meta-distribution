@@ -32,6 +32,11 @@ IMAGE_INSTALL += " \
     systemd \
 "
 
+# healthcheck dependencies
+IMAGE_INSTALL += " \
+    iproute2-tc \
+"
+
 IMAGE_INSTALL += " \
     os-release-foss-bnw \
 "
