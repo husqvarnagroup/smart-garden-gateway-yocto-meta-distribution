@@ -26,6 +26,7 @@ RDEPENDS:packagegroup-opkg-feed = "\
     iotop \
     iperf2 \
     iperf3 \
+    iproute2-ip \
     iputils \
     lsof \
     mc \
