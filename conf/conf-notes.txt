@@ -10,3 +10,4 @@ Common targets are:
     gardena-image-bnw-zephyr
     gardena-update-image-bnw
     gardena-update-image-bnw-zephyr
+    gardena-update-image-factory (only for gardena-sg-mt7688)
