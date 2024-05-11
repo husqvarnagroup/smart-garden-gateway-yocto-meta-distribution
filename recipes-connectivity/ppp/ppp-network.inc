@@ -31,4 +31,7 @@ RDEPENDS:${PN} += " \
     virtual/gardena-gateway-firmware \
 "
 
-PR = "r2"
+inherit systemd
+SYSTEMD_SERVICE:${PN} = "ppp.service"
+
+PR = "r3"
