@@ -3,6 +3,7 @@
 IMAGE_INSTALL += " \
     devpkginstaller \
     healthcheck \
+    iproute2-tc \
     manufacturing-tools-shim \
     memtester \
     nngforward \
