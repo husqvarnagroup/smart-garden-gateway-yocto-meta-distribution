@@ -8,7 +8,7 @@ inherit gardena-image-foss
 IMAGE_INSTALL:remove = "firewall"
 
 # SWUpdate makes no sense when booting from NFS
-IMAGE_INSTALL:remove = "swupdate-legacy swupdate-check"
+IMAGE_INSTALL:remove = "swupdate swupdate-legacy swupdate-check"
 
 IMAGE_INSTALL += " \
     accessory-server \

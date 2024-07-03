@@ -8,5 +8,7 @@ Common targets are:
     gardena-image-factory (only for gardena-sg-mt7688)
     gardena-image-foss-bnw
     gardena-image-bnw-zephyr
+    gardena-image-ddi
     gardena-update-image-bnw-zephyr
+    gardena-update-image-ddi
     gardena-update-image-factory (only for gardena-sg-mt7688)
