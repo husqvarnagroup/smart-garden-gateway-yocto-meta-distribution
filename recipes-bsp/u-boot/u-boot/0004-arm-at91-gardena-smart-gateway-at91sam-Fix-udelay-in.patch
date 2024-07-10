@@ -1,0 +1,36 @@
+From a8f8415e291532a44daad74e17565188c90ebc1c Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Thu, 26 Sep 2024 20:46:20 +0200
+Subject: [PATCH] arm: at91: gardena-smart-gateway-at91sam: Fix udelay() in SPL
+
+This prevents SPL from panicking with:
+
+    Could not initialize timer (err -19)
+
+It appears that the `udelay()` call in `ddr2_init()` has not been
+working as expected for a long time. Probably since the introduction of
+the DM-based PIT timer. Since commit 4b2be78ab6 ("time: Fix get_ticks
+being non-monotonic") this is an actual problem for us as our board
+would mo longer boot.
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Pending
+---
+ configs/gardena-smart-gateway-at91sam_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/gardena-smart-gateway-at91sam_defconfig b/configs/gardena-smart-gateway-at91sam_defconfig
+index fffa53fd8caa..339a2b98b121 100644
+--- a/configs/gardena-smart-gateway-at91sam_defconfig
++++ b/configs/gardena-smart-gateway-at91sam_defconfig
+@@ -112,6 +112,7 @@ CONFIG_DM_SERIAL=y
+ CONFIG_ATMEL_USART=y
+ CONFIG_TIMER=y
+ CONFIG_SPL_TIMER=y
++CONFIG_TIMER_EARLY=y
+ CONFIG_ATMEL_PIT_TIMER=y
+ CONFIG_SPL_ATMEL_PIT_TIMER=y
+ CONFIG_WDT=y
+-- 
+2.43.0
+

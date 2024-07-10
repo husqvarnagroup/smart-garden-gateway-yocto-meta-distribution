@@ -1,0 +1,47 @@
+From a69e927eb2b981106f351e4c1e3e28d47e7d75ee Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Thu, 11 Jul 2024 17:49:36 +0200
+Subject: [PATCH 1/2] arm: at91: gardena-smart-gateway-at91sam: Enable boot
+ counter
+
+---
+ configs/gardena-smart-gateway-at91sam_defconfig | 3 +++
+ drivers/bootcount/Kconfig                       | 4 ++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/configs/gardena-smart-gateway-at91sam_defconfig b/configs/gardena-smart-gateway-at91sam_defconfig
+index e3d5bc47d6..9a16db7d0e 100644
+--- a/configs/gardena-smart-gateway-at91sam_defconfig
++++ b/configs/gardena-smart-gateway-at91sam_defconfig
+@@ -84,3 +84,6 @@ CONFIG_ATMEL_PIT_TIMER=y
+ CONFIG_WDT=y
+ CONFIG_WDT_AT91=y
+ # CONFIG_UBIFS_SILENCE_MSG is not set
++
++CONFIG_CMD_BOOTCOUNT=y
++CONFIG_BOOTCOUNT_LIMIT=y
+diff --git a/drivers/bootcount/Kconfig b/drivers/bootcount/Kconfig
+index b5ccea0d9c..61d03cc50e 100644
+--- a/drivers/bootcount/Kconfig
++++ b/drivers/bootcount/Kconfig
+@@ -13,7 +13,7 @@ if BOOTCOUNT_LIMIT
+ choice
+ 	prompt "Boot count device"
+ 	default BOOTCOUNT_AM33XX if AM33XX || SOC_DA8XX
+-	default BOOTCOUNT_AT91 if AT91SAM9XE
++	default BOOTCOUNT_AT91 if AT91SAM9XE || AT91SAM9X5
+ 	default BOOTCOUNT_GENERIC
+ 
+ config BOOTCOUNT_GENERIC
+@@ -70,7 +70,7 @@ config BOOTCOUNT_I2C
+ 
+ config BOOTCOUNT_AT91
+ 	bool "Boot counter for Atmel AT91SAM9XE"
+-	depends on AT91SAM9XE
++	depends on AT91SAM9XE || AT91SAM9X5
+ 
+ config DM_BOOTCOUNT
+         bool "Boot counter in a device-model device"
+-- 
+2.39.2
+

@@ -1,0 +1,79 @@
+From f72c0e1baed266080515461f04ad552aa35f59c5 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Thu, 26 Sep 2024 20:02:13 +0200
+Subject: [PATCH] timers: atmel_pit: Add early timer support
+
+The timer can now be used before the driver model is set up, provided
+CONFIG_TIMER_EARLY is enabled.
+
+This has been tested on the AT91SAM9G25-based GARDENA smart Gateway.
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Pending
+---
+ drivers/timer/atmel_pit_timer.c | 37 +++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/drivers/timer/atmel_pit_timer.c b/drivers/timer/atmel_pit_timer.c
+index 5cf46f224ab0..ece4c6360dbb 100644
+--- a/drivers/timer/atmel_pit_timer.c
++++ b/drivers/timer/atmel_pit_timer.c
+@@ -9,6 +9,9 @@
+ #include <dm.h>
+ #include <timer.h>
+ #include <asm/io.h>
++#if IS_ENABLED(CONFIG_TIMER_EARLY)
++#include <asm/arch/hardware.h>
++#endif
+ #include <linux/bitops.h>
+ 
+ #define AT91_PIT_VALUE		0xfffff
+@@ -25,6 +28,39 @@ struct atmel_pit_plat {
+ 	struct atmel_pit_regs *regs;
+ };
+ 
++#if IS_ENABLED(CONFIG_TIMER_EARLY)
++static void notrace timer_early_init(void)
++{
++	struct atmel_pit_regs *regs = (struct atmel_pit_regs *)ATMEL_BASE_PIT;
++	u32 tmp;
++
++	tmp = readl(&regs->mode);
++	if ((tmp & AT91_PIT_VALUE) && (tmp & AT91_PIT_PITEN))
++		return;
++
++	writel(AT91_PIT_VALUE | AT91_PIT_PITEN, &regs->mode);
++}
++
++unsigned long notrace timer_early_get_rate(void)
++{
++	timer_early_init();
++
++	return CFG_SYS_MASTER_CLOCK / 16;
++}
++
++u64 notrace timer_early_get_count(void)
++{
++	struct atmel_pit_regs *regs = (struct atmel_pit_regs *)ATMEL_BASE_PIT;
++	u32 val;
++
++	timer_early_init();
++
++	val = readl(&regs->value_image);
++
++	return timer_conv_64(val);
++}
++#endif
++
+ static u64 atmel_pit_get_count(struct udevice *dev)
+ {
+ 	struct atmel_pit_plat *plat = dev_get_plat(dev);
+@@ -84,4 +120,5 @@ U_BOOT_DRIVER(atmel_pit) = {
+ 	.plat_auto	= sizeof(struct atmel_pit_plat),
+ 	.probe	= atmel_pit_probe,
+ 	.ops	= &atmel_pit_ops,
++	.flags = DM_FLAG_PRE_RELOC,
+ };
+-- 
+2.43.0
+

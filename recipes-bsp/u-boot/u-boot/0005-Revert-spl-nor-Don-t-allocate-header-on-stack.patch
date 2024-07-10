@@ -1,0 +1,62 @@
+From 728c291319252197c9c127748c6dc92f7816e47e Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Tue, 1 Oct 2024 23:05:39 +0200
+Subject: [PATCH] Revert "spl: nor: Don't allocate header on stack"
+
+This reverts commit 6cc2182c84a94d7d765b392e4801cc3e11f404ca.
+
+Since commit 6cc2182c84a ("spl: nor: Don't allocate header on stack")
+the MT7688/MIPS-based GARDENA smart Gateway no longer boots. The root
+cause seems to be a read of an unaligned 32 bit value from the SPI NOR
+flash (image_get_magic() called by spl_parse_image_header()). Before,
+having the legacy image header at an unaligned address (directly after
+the FDT) was not a problem, because the header was copied to the stack
+first.
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Pending
+---
+ common/spl/spl_nor.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/common/spl/spl_nor.c b/common/spl/spl_nor.c
+index 236b07182833..c74d439d15a5 100644
+--- a/common/spl/spl_nor.c
++++ b/common/spl/spl_nor.c
+@@ -28,7 +28,7 @@ unsigned long __weak spl_nor_get_uboot_base(void)
+ static int spl_nor_load_image(struct spl_image_info *spl_image,
+ 			      struct spl_boot_device *bootdev)
+ {
+-	struct legacy_img_hdr *header;
++	__maybe_unused const struct legacy_img_hdr *header;
+ 	__maybe_unused struct spl_load_info load;
+ 
+ 	/*
+@@ -43,7 +43,7 @@ static int spl_nor_load_image(struct spl_image_info *spl_image,
+ 		 * Load Linux from its location in NOR flash to its defined
+ 		 * location in SDRAM
+ 		 */
+-		header = (void *)CONFIG_SYS_OS_BASE;
++		header = (const struct legacy_img_hdr *)CONFIG_SYS_OS_BASE;
+ #ifdef CONFIG_SPL_LOAD_FIT
+ 		if (image_get_magic(header) == FDT_MAGIC) {
+ 			int ret;
+@@ -114,11 +114,14 @@ static int spl_nor_load_image(struct spl_image_info *spl_image,
+ 
+ 	/* Legacy image handling */
+ 	if (IS_ENABLED(CONFIG_SPL_LEGACY_IMAGE_FORMAT)) {
++		struct legacy_img_hdr hdr;
++
+ 		load.bl_len = 1;
+ 		load.read = spl_nor_load_read;
++		spl_nor_load_read(&load, spl_nor_get_uboot_base(), sizeof(hdr), &hdr);
+ 		return spl_load_legacy_img(spl_image, bootdev, &load,
+ 					   spl_nor_get_uboot_base(),
+-					   header);
++					   &hdr);
+ 	}
+ 
+ 	return -EINVAL;
+-- 
+2.43.0
+

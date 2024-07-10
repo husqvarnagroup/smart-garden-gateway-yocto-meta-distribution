@@ -1,9 +1,10 @@
-From b0602462ff8196422908c90cfeac33a0b128c97c Mon Sep 17 00:00:00 2001
+From efc404381d542750e3a1bcc196cf1a518e11df79 Mon Sep 17 00:00:00 2001
 From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
 Date: Thu, 11 Jul 2024 17:49:36 +0200
 Subject: [PATCH] bootcount: Allow boot counter to be enabled for AT91SAM9X5
 
-The driver is compatible with similar SoCs like the AT91SAM9X5 family.
+The AT91 boot count driver also works for the AT91SAM9X5 SoC family.
+
 This has been tested on the AT91SAM9G25-based GARDENA smart Gateway.
 
 Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
@@ -13,7 +14,7 @@ Upstream-Status: Pending
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/bootcount/Kconfig b/drivers/bootcount/Kconfig
-index b5ccea0d9c..828ac90ffe 100644
+index 3c56253b1eaa..7281ab35543b 100644
 --- a/drivers/bootcount/Kconfig
 +++ b/drivers/bootcount/Kconfig
 @@ -13,7 +13,7 @@ if BOOTCOUNT_LIMIT
@@ -25,8 +26,8 @@ index b5ccea0d9c..828ac90ffe 100644
  	default BOOTCOUNT_GENERIC
  
  config BOOTCOUNT_GENERIC
-@@ -69,8 +69,8 @@ config BOOTCOUNT_I2C
- 	                              the bootcounter.
+@@ -80,8 +80,8 @@ config BOOTCOUNT_RAM
+ 	  due to short power loss or holding a system in RESET.
  
  config BOOTCOUNT_AT91
 -	bool "Boot counter for Atmel AT91SAM9XE"

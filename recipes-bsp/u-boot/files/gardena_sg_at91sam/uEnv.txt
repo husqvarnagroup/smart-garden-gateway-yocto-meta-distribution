@@ -23,7 +23,7 @@ do_if_migration=if test "${migration_done}" != "1"; then ubi read 0x22000000 mig
 
 # Relevant for startup during migration. Will get overwritten with a simplified
 # one on the first run of SWUpdate.
-bootcmd=run do_print_ids && ubi part ubi && run do_if_migration && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset
+bootcmd=run do_print_ids && ubi detach && ubi part ubi && run do_if_migration && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset
 
 # Custom commands required for booting the gateway at customers site
 # Warning: Removing or changing any of this lines requires care as gateways in
