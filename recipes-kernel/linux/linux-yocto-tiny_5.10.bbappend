@@ -37,4 +37,5 @@ SRC_URI += " \
     file://0026-rtl8xxxu-Raise-error-level-of-IQK-failures.patch \
     file://0027-ARM-dts-at91-at91sam9x5ek-Use-DMA-for-DBGU-serial-po.patch \
     file://0028-ARM-dts-at91-gardena-smart-gateway-Use-DMA-for-USART.patch \
+    file://0029-ARM-dts-microchip-gardena-smart-gateway-Add-bootcoun.patch \
 "
