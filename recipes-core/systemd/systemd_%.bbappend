@@ -18,7 +18,7 @@ FILES:${PN} += "\
     ${systemd_unitdir}/system/systemd-random-seed.service.d \
 "
 
-PR:append = ".1"
+PR:append = ".2"
 
 do_install:append() {
     # Disable colorized output of system tools (systemctl, etc.)
@@ -71,6 +71,7 @@ PACKAGECONFIG:remove = " \
     resolved \
     sysusers \
     sysvinit \
+    timesyncd \
     userdb \
     utmp \
     vconsole \

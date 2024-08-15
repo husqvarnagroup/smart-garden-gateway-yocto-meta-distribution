@@ -1,10 +1,9 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-PR:append = ".4"
+PR:append = ".5"
 
 SRC_URI += " \
     file://40-swupdate-check.sh \
-    file://50-timesyncd.conf.sh \
     file://dhcpcd.conf \
     file://keep.d/${BPN} \
 "

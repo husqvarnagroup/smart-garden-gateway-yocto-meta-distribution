@@ -1,4 +1,3 @@
 # Those values have been identified "by hand" - feel free to append
 /var/lib/systemd/random-seed
 /var/lib/systemd/rfkill
-/var/lib/systemd/timesync/clock
