@@ -1,0 +1,2 @@
+# Set the system clock to the last modification time of the file specified by the driftfile directive.
+OPTIONS="-s"

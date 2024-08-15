@@ -1,0 +1,2 @@
+# Keep driftfile
+/var/lib/chrony/drift
