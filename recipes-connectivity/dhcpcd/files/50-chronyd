@@ -1,0 +1,95 @@
+# shellcheck disable=SC2148
+# shellcheck disable=SC2154
+# shellcheck shell=dash
+#
+# Environment provided by dhcpcd:
+# ${new|old}_ntp_servers
+# ${new|old}_dhcp6_ntp_server_addr
+# ${new|old}_dhcp6_sntp_servers
+# ${new|old}_dhcp6_ntp_server_fqdn
+#
+# $interface
+# $reason
+#
+# Set NTP servers provided by
+# - DHCPv4 option 42 rfc2132
+# - DHCPv6 option 31 rfc4075
+# - DHCPv6 option 56 rfc5908
+# to chronyd. The default Husqvarna NTP pool will be still used as a fallback as soon as
+# the network is available.
+#
+# https://datatracker.ietf.org/doc/html/rfc2132 - DHCP Options and BOOTP Vendor Extensions
+# https://datatracker.ietf.org/doc/html/rfc4075 - Simple Network Time Protocol (SNTP) Configuration Option for DHCPv6
+# https://datatracker.ietf.org/doc/html/rfc5908 - Network Time Protocol (NTP) Server Option for DHCPv6
+#
+# To list the current state variables run `dhcpcd -U`
+
+if [ "$reason" = "BOUND" -o "$reason" = "BOUND6" -o "$reason" = "ROUTERADVERT" ] && [ "$if_up" = "true" ]; then
+    # Set chronyd online, if there are no time sources online yet
+    if [ -z "$(chronyc -n -c sources)" ]; then
+        echo "Set chronyd fallback pool online (reason: $reason, iface: $interface)"
+        chronyc online
+    fi
+fi
+
+case "$reason" in
+BOUND6|RENEW6|REBIND6|REBOOT6|INFORM6|BOUND|RENEW|REBIND|REBOOT)
+    # Add IPv6 NTP server(s) from various sources
+    if [ -n "$new_dhcp6_ntp_server_addr" ]; then
+        for server in $new_dhcp6_ntp_server_addr; do
+            echo -n "Add $server to chronyd (reason: $reason, iface: $interface)"
+            chronyc add server "$server" iburst minpoll 2 prefer
+        done
+    fi
+    if [ -n "$new_dhcp6_sntp_servers" ]; then
+        for server in $new_dhcp6_sntp_servers; do
+            echo -n "Add $server to chronyd (reason: $reason, iface: $interface)"
+            chronyc add server "$server" iburst minpoll 2 prefer
+        done
+    fi
+    if [ -n "$new_dhcp6_ntp_server_fqdn" ]; then
+        for server in $new_dhcp6_ntp_server_fqdn; do
+            echo -n "Add $server to chronyd (reason: $reason, iface: $interface)"
+            chronyc add server "$server" iburst minpoll 2 prefer
+        done
+    fi
+
+    # Add IPv4 NTP server(s)
+    if [ -n "$new_ntp_servers" ]; then
+        for server in $new_ntp_servers; do
+            echo -n "Add $server to chronyd (reason: $reason, iface: $interface)"
+            chronyc add server "$server" iburst minpoll 2 prefer
+        done
+    fi
+;;
+EXPIRE6|STOP6|EXPIRE|STOP)
+    # Remove IPv6 NTP server(s) from various sources
+    if [ -n "$old_dhcp6_ntp_server_addr" ]; then
+        for server in $old_dhcp6_ntp_server_addr; do
+            echo -n "Remove $server from chronyd (reason: $reason, iface: $interface)"
+            chronyc delete "$server"
+        done
+    fi
+    if [ -n "$old_dhcp6_sntp_servers" ]; then
+        for server in $old_dhcp6_sntp_servers; do
+            echo -n "Remove $server from chronyd (reason: $reason, iface: $interface)"
+            chronyc delete "$server"
+        done
+    fi
+    if [ -n "$old_dhcp6_ntp_server_fqdn" ]; then
+        for server in $old_dhcp6_ntp_server_fqdn; do
+            echo -n "Remove $server from chronyd (reason: $reason, iface: $interface)"
+            chronyc delete "$server"
+        done
+    fi
+
+    # Remove IPv4 NTP server(s)
+    if [ -n "$old_ntp_servers" ]; then
+        for server in $old_ntp_servers; do
+            echo -n "Remove $server from chronyd (reason: $reason, iface: $interface)"
+            chronyc delete "$server"
+        done
+    fi
+
+;;
+esac
