@@ -1,0 +1,38 @@
+From 14accfca107528f6be7b4f0d7d9b5dcdc45bec10 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Sat, 17 Aug 2024 07:57:24 +0200
+Subject: [PATCH] suricatta: Fix nocheckcert configuration
+
+Without this change, setting `nocheckcert = true`, as found in
+examples/configuration/swupdate.cfg, has no effect.
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Submitted [swupdate@googlegroups.com]
+---
+ suricatta/common.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/suricatta/common.c b/suricatta/common.c
+index c47fa5c7..969d5d46 100644
+--- a/suricatta/common.c
++++ b/suricatta/common.c
+@@ -19,6 +19,7 @@
+ void suricatta_channel_settings(void *elem, channel_data_t *chan)
+ {
+ 	char tmp[128];
++	bool tmp_bool;
+ 
+ 	get_field(LIBCFG_PARSER, elem, "retry",
+ 		&chan->retries);
+@@ -31,6 +32,8 @@ void suricatta_channel_settings(void *elem, channel_data_t *chan)
+ 	if (strlen(tmp))
+ 		chan->retry_sleep =
+ 			(unsigned int)strtoul(tmp, NULL, 10);
++	get_field(LIBCFG_PARSER, elem, "nocheckcert", &tmp_bool);
++	chan->strictssl = !tmp_bool;
+ 	GET_FIELD_STRING_RESET(LIBCFG_PARSER, elem, "cafile", tmp);
+ 	if (strlen(tmp))
+ 		SETSTRING(chan->cafile, tmp);
+-- 
+2.39.2
+

@@ -1,0 +1,2 @@
+SWUPDATE_ARGS="-e stable,bootslot$(fw_printenv -n bootslot 2>/dev/null)"
+SWUPDATE_SURICATTA_ARGS="-e"
