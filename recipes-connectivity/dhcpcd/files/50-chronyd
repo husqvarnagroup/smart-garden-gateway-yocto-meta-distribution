@@ -25,11 +25,8 @@
 # To list the current state variables run `dhcpcd -U`
 
 if [ "$reason" = "BOUND" -o "$reason" = "BOUND6" -o "$reason" = "ROUTERADVERT" ] && [ "$if_up" = "true" ]; then
-    # Set chronyd online, if there are no time sources online yet
-    if [ -z "$(chronyc -n -c sources)" ]; then
-        echo "Set chronyd fallback pool online (reason: $reason, iface: $interface)"
-        chronyc online
-    fi
+    # Set chronyd online every time something comes up.
+    chronyc online >/dev/null
 fi
 
 case "$reason" in
