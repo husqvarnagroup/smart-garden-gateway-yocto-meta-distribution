@@ -1,3 +1,5 @@
+inherit swupdate-legacy
+
 require gardena-update-image.inc
 
 SRC_URI += "\

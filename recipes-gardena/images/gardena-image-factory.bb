@@ -15,6 +15,7 @@ IMAGE_INSTALL += " \
     sshtunnel \
     sshtunnel-timer \
     swupdate-check \
+    swupdate-legacy \
 "
 
 inherit gardena-image-base

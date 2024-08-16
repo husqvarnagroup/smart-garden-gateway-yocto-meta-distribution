@@ -17,6 +17,7 @@ IMAGE_INSTALL += " \
     ssh-authorized-keys-prod \
     sshtunnel \
     sshtunnel-check \
+    swupdate-legacy \
     swupdate-check \
 "
 

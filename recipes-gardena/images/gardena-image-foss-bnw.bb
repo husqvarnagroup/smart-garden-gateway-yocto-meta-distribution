@@ -32,8 +32,10 @@ IMAGE_INSTALL += " \
     systemd \
 "
 
+# Misc
 IMAGE_INSTALL += " \
     os-release-foss-bnw \
+    swupdate-legacy \
 "
 
 inherit gardena-image-foss

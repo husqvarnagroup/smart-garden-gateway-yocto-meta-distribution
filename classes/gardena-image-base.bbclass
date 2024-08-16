@@ -31,7 +31,6 @@ IMAGE_INSTALL:append = " \
     reset-rm \
     rfkill \
     squashfs-tools \
-    swupdate \
     systemd-conf \
     systemd-extra-utils \
     sysupgrade \
