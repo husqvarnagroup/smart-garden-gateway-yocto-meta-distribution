@@ -10,7 +10,6 @@ IMAGE_INSTALL += " \
     gateway-firmware-zephyr \
     manufacturing-tools \
     os-release-factory \
-    ppp-network-zephyr \
     rm-test-firmware \
     ssh-authorized-keys-prod \
     sshtunnel \

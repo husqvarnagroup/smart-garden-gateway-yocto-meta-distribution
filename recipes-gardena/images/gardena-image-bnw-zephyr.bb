@@ -14,7 +14,6 @@ IMAGE_INSTALL += " \
     metrics \
     nngforward \
     os-release-bnw-zephyr \
-    ppp-network-zephyr \
     ssh-authorized-keys-prod \
     sshtunnel \
     sshtunnel-check \

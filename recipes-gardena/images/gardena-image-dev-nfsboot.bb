@@ -21,7 +21,6 @@ IMAGE_INSTALL += " \
     lwm2mserver \
     nngforward \
     os-release-dev-nfsboot \
-    ppp-network \
     ssh-authorized-keys-dev \
     sshtunnel \
     sshtunnel-check \

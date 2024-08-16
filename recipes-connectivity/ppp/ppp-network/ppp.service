@@ -18,7 +18,7 @@ ExecStartPre=/bin/sh -c 'echo netdev > /sys/class/leds/smartgw:radio:red/trigger
 ExecStartPre=/bin/sh -c 'echo 1      > /sys/class/leds/smartgw:radio:red/tx'
 ExecStartPre=/bin/sh -c 'echo ppp0   > /sys/class/leds/smartgw:radio:red/device_name'
 
-ExecStart=@SBINDIR@/pppd local crtscts @TTY@ 115200 +ipv6 noauth nodetach noip
+ExecStart=@SBINDIR@/pppd local crtscts @TTY@ 500000 +ipv6 noauth nodetach noip noccp
 Restart=on-failure
 RestartSec=10s
 

@@ -34,4 +34,4 @@ RDEPENDS:${PN} += " \
 inherit systemd
 SYSTEMD_SERVICE:${PN} = "ppp.service"
 
-PR = "r3"
+PR = "r0"

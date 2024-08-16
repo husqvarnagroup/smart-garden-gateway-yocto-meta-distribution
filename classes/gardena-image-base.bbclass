@@ -25,6 +25,7 @@ IMAGE_INSTALL:append = " \
     openssl-ossl-module-legacy \
     packagegroup-core-boot \
     ppp \
+    ppp-network \
     reset-rm \
     rfkill \
     squashfs-tools \
