@@ -9,7 +9,7 @@ IMAGE_INSTALL += " \
     fwrolloutd \
     gateway-config-backend \
     gateway-firmware-zephyr \
-    lemonbeatd-zephyr \
+    lemonbeatd \
     lwm2mserver \
     metrics \
     nngforward \
