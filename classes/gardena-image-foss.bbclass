@@ -7,8 +7,6 @@ IMAGE_INSTALL += " \
     manufacturing-tools-shim \
     memtester \
     nngforward \
-    chrony \
-    chronyc \
     rsyslog \
     snapshot \
     tcpdump-sherlock-ppp0 \
