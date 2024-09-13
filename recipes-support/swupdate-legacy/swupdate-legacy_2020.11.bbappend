@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".1"
+PR:append = ".2"
 
 SRC_URI += " \
             file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
@@ -33,13 +33,14 @@ RDEPENDS:${PN} += "${PN}-progress"
 
 # Move on with actually adapting the package to our needs
 FILES:${PN} += " \
-    ${datadir}/${PN}/sw-update.cert.pem \
+    ${datadir}/swupdate/sw-update.cert.pem \
     ${sysconfdir}/swupdate.cfg \
 "
 
 do_install:append () {
-    install -d ${D}${datadir}/${PN}
-    install -m 644 ${WORKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/${PN}/sw-update.cert.pem
+    # Put the certifcate in the same place it was before (not /usr/share/swupdate-legacy)
+    install -d ${D}${datadir}/swupdate/
+    install -m 644 ${WORKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/swupdate/sw-update.cert.pem
 
     install -d ${D}${sysconfdir}
     install -m 644 ${WORKDIR}/swupdate.cfg ${D}${sysconfdir}
