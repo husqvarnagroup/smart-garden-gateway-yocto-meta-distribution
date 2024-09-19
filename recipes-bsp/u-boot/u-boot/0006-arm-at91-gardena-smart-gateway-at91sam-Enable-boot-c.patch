@@ -1,0 +1,24 @@
+From ad601eb807240c6789326187e68baa001d5ef5ad Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Thu, 19 Sep 2024 18:29:41 +0200
+Subject: [PATCH] arm: at91: gardena-smart-gateway-at91sam: Enable boot counter
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Pending
+---
+ configs/gardena-smart-gateway-at91sam_defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/configs/gardena-smart-gateway-at91sam_defconfig b/configs/gardena-smart-gateway-at91sam_defconfig
+index 40fe0f150e..0476b8ed74 100644
+--- a/configs/gardena-smart-gateway-at91sam_defconfig
++++ b/configs/gardena-smart-gateway-at91sam_defconfig
+@@ -84,3 +84,5 @@ CONFIG_ATMEL_PIT_TIMER=y
+ CONFIG_WDT=y
+ CONFIG_WDT_AT91=y
+ # CONFIG_UBIFS_SILENCE_MSG is not set
++CONFIG_CMD_BOOTCOUNT=y
++CONFIG_BOOTCOUNT_LIMIT=y
+-- 
+2.43.0
+

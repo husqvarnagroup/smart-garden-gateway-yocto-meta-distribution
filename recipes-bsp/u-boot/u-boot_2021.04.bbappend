@@ -1,8 +1,8 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/${MACHINE_ARCH}:${THISDIR}/${PN}:"
 
-PR:append = ".2"
+PR:append = ".3"
 
-UBOOT_LOCALVERSION = "-gardena-6"
+UBOOT_LOCALVERSION = "-gardena-7"
 PV:append = "${UBOOT_LOCALVERSION}"
 
 SRC_URI += " \
@@ -11,6 +11,8 @@ SRC_URI += " \
     file://0002-arm-at91-gardena-smart-gateway-at91sam-Adjust-to-pro.patch \
     file://0003-Revert-time-Fix-get_ticks-being-non-monotonic.patch \
     file://0004-mips-mt76xx-gardena-smart-gateway-Increase-CONFIG_SP.patch \
+    file://0005-bootcount-Allow-boot-counter-to-be-enabled-for-AT91S.patch \
+    file://0006-arm-at91-gardena-smart-gateway-at91sam-Enable-boot-c.patch \
     file://distro.cfg \
 "
 
