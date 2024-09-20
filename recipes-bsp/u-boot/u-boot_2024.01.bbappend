@@ -1,8 +1,8 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/${MACHINE_ARCH}:${THISDIR}/${PN}:"
 
-PR:append = ".0"
+PR:append = ".1"
 
-UBOOT_LOCALVERSION = "-gardena-0"
+UBOOT_LOCALVERSION = "-gardena-1"
 PV:append = "${UBOOT_LOCALVERSION}"
 
 SRC_URI += " \
@@ -13,6 +13,7 @@ SRC_URI += " \
     file://0004-arm-at91-gardena-smart-gateway-at91sam-Fix-udelay-in.patch \
     file://0005-Revert-spl-nor-Don-t-allocate-header-on-stack.patch \
     file://0006-mips-mt7688-gardena-smart-gateway-Use-DM-API-for-fla.patch \
+    file://0007-mips-mt7688-gardena-smart-gateway-Increase-CONFIG_SY.patch \
     file://distro.cfg \
 "
 

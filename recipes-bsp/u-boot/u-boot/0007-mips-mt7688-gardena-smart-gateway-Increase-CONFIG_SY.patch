@@ -1,0 +1,32 @@
+From 104e24d7d82b1fb15b68d43a922786e928c582d9 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Wed, 7 Feb 2024 12:09:49 +0200
+Subject: [PATCH] mips: mt7688: gardena-smart-gateway: Increase
+ CONFIG_SYS_BOOTM_LEN
+
+The default value of 0x800000 (8 MB) is somewhat limiting for us, as our
+compressed kernel may grow up to around 4 MB. By choosing the commonly
+used value of 0x2000000 (32 MB), we are definitely on the safe side.
+This rather large amount should be fine, as we have 128 MB of RAM.
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Submitted
+---
+ configs/gardena-smart-gateway-mt7688_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/gardena-smart-gateway-mt7688_defconfig b/configs/gardena-smart-gateway-mt7688_defconfig
+index bedc596910cc..4d97492f6ac7 100644
+--- a/configs/gardena-smart-gateway-mt7688_defconfig
++++ b/configs/gardena-smart-gateway-mt7688_defconfig
+@@ -48,6 +48,7 @@ CONFIG_SYS_MAXARGS=64
+ CONFIG_SYS_CBSIZE=512
+ CONFIG_SYS_PBSIZE=532
+ CONFIG_CMD_LICENSE=y
++CONFIG_SYS_BOOTM_LEN=0x2000000
+ # CONFIG_CMD_ELF is not set
+ # CONFIG_CMD_XIMG is not set
+ CONFIG_CMD_MEMINFO=y
+-- 
+2.43.0
+
