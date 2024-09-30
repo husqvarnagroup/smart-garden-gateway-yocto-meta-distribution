@@ -8,12 +8,27 @@ set -eu -o pipefail
 
 DEFAULT_SERVER=https://updates-dev.iot.sg.dss.husqvarnagroup.net
 
-cp /media/rfs/ro/etc/swupdate.cfg /tmp/swupdate.cfg
-
 # shellcheck source=/dev/null
 . /etc/os-release
 
-cat << EOF >> /tmp/swupdate.cfg
+case $(cut -d ' ' -f 1 /etc/hw-revision) in
+    smart-gateway-mt7688)
+        mtd_blacklist="0 1 2 3 4"
+        ;;
+    smart-gateway-at91sam)
+        mtd_blacklist="0 1"
+        ;;
+esac
+
+cat << EOF > /tmp/swupdate.cfg
+globals :
+{
+	verbose = true;
+	loglevel = 5;
+	syslog = false;
+	public-key-file = "/usr/share/swupdate/sw-update.cert.pem";
+	mtd-blacklist = "$mtd_blacklist";
+};
 
 suricatta :
 {

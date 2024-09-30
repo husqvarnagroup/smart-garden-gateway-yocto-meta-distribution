@@ -19,7 +19,6 @@ SRC_URI += " \
             file://set_hw_revision_file_path.cfg \
             file://set_sw_versions_file_path.cfg \
             file://swupdate-config.sh \
-            file://swupdate.cfg \
             file://swupdate.service_override.conf \
             "
 
@@ -27,7 +26,6 @@ SRC_URI += " \
 FILES:${PN} += " \
     ${bindir}/swupdate-config \
     ${datadir}/${PN}/sw-update.cert.pem \
-    ${sysconfdir}/swupdate.cfg \
     ${sysconfdir}/swupdate/conf.d/10-suricatta \
     ${sysconfdir}/systemd/system/swupdate.service.d/override.conf \
 "
@@ -40,7 +38,6 @@ do_install:append () {
     install -m 644 ${WORKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/${PN}/sw-update.cert.pem
 
     install -d ${D}${sysconfdir}/swupdate/conf.d
-    install -m 644 ${WORKDIR}/swupdate.cfg ${D}${sysconfdir}
     install -m 644 ${WORKDIR}/10-suricatta ${D}${sysconfdir}/swupdate/conf.d
 
     install -d ${D}${sysconfdir}/systemd/system/swupdate.service.d
