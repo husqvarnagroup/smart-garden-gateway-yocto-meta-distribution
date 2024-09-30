@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".0"
+PR:append = ".1"
 
 SRC_URI += " \
             file://0001-suricatta-Fix-nocheckcert-configuration.patch \

@@ -20,6 +20,10 @@ case $(cut -d ' ' -f 1 /etc/hw-revision) in
         ;;
 esac
 
+globals_extra=""
+(! fw_printenv bnw_cloud_tenant >/dev/null 2>&1 || [ "$(fw_printenv -n bnw_cloud_tenant)" = "sg-live" ]) &&
+    globals_extra="no-downgrading = \"$VERSION_ID\";"
+
 cat << EOF > /tmp/swupdate.cfg
 globals :
 {
@@ -28,6 +32,7 @@ globals :
 	syslog = false;
 	public-key-file = "/usr/share/swupdate/sw-update.cert.pem";
 	mtd-blacklist = "$mtd_blacklist";
+	$globals_extra
 };
 
 suricatta :
