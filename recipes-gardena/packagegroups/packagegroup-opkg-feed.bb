@@ -13,7 +13,6 @@ RDEPENDS:packagegroup-opkg-feed = "\
     conntrack-tools \
     cuitest \
     curl \
-    emc-tools \
     ethtool \
     file \
     gdb \
