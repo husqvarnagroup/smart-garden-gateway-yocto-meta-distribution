@@ -1,7 +1,7 @@
 From 7b2c47ba62389ed98936b01ca3ab0d2d5c034434 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Sun, 6 Jun 2021 01:15:24 +0200
-Subject: [PATCH 11/28] mtd: spi-nor: Add support for XM25QH64C
+Subject: [PATCH] mtd: spi-nor: Add support for XM25QH64C
 
 The data sheets can be found here:
 http://xmcwh.com/Uploads/2020-12-17/XM25QH64C_Ver1.1.pdf
@@ -29,5 +29,5 @@ index 2c7773b68993..b6ac37bd59b8 100644
  			     SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
  };
 -- 
-2.39.2
+2.43.0
 

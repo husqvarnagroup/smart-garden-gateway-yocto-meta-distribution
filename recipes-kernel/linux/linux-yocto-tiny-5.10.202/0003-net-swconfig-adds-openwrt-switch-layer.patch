@@ -1,7 +1,7 @@
 From d54bef5455aed3d2eb2c909e9a56a3e64326ff88 Mon Sep 17 00:00:00 2001
 From: Felix Fietkau <nbd@nbd.name>
 Date: Fri, 7 Jul 2017 17:24:23 +0200
-Subject: [PATCH 03/28] net: swconfig: adds openwrt switch layer
+Subject: [PATCH] net: swconfig: adds openwrt switch layer
 
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Upstream-Status: Inappropriate [for OpenWRT driver]
@@ -43,5 +43,5 @@ index a13e402074cf..0d3ef0dd0ce4 100644
  
  obj-$(CONFIG_SFP)		+= sfp.o
 -- 
-2.39.2
+2.43.0
 

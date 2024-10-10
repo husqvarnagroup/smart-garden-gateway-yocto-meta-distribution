@@ -1,7 +1,7 @@
 From 9c8dfda8ea38cb156ed28c960a6c12aac2084b80 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?=C3=8D=C3=B1igo=20Huguet?= <ihuguet@redhat.com>
 Date: Tue, 11 May 2021 09:19:27 +0200
-Subject: [PATCH 17/28] rtl8xxxu: avoid parsing short RX packet
+Subject: [PATCH] rtl8xxxu: avoid parsing short RX packet
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -81,5 +81,5 @@ index d0f0db63263f..5c424b738154 100644
  	return RX_TYPE_DATA_PKT;
  }
 -- 
-2.39.2
+2.43.0
 

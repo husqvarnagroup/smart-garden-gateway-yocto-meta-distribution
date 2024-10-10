@@ -1,7 +1,7 @@
 From a1671737519ad4658a94c90728a5a8f7bd66b09e Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chris.chiu@canonical.com>
 Date: Thu, 30 Sep 2021 17:11:37 +0800
-Subject: [PATCH 15/28] rtl8xxxu: Add debugfs entries for registers
+Subject: [PATCH] rtl8xxxu: Add debugfs entries for registers
 
 Dump register contents of MAC, baseband, and RF for debugging. It will
 help cross-comparison with the same entries in the vendor driver. The
@@ -184,5 +184,5 @@ index 004778faf3d0..0c07aea4bf9e 100644
  
  	priv->fops->power_off(priv);
 -- 
-2.39.2
+2.43.0
 

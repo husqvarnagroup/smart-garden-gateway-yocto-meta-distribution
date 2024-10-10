@@ -1,7 +1,7 @@
 From 49f1ee22df8128d6a13dbe261bd98d4d7e4dfd4c Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chris.chiu@canonical.com>
 Date: Fri, 1 Oct 2021 12:00:44 +0800
-Subject: [PATCH 19/28] rtl8xxxu: Use lower tx rates for the ack packet
+Subject: [PATCH] rtl8xxxu: Use lower tx rates for the ack packet
 
 According to the Realtek propritary driver and the rtw88 driver, the
 tx rates of the ack (includes block ack) are initialized with lower
@@ -63,5 +63,5 @@ index a2a31f374a82..438b65ba9640 100644
  #define  RSR_2M				BIT(1)
  #define  RSR_5_5M			BIT(2)
 -- 
-2.39.2
+2.43.0
 

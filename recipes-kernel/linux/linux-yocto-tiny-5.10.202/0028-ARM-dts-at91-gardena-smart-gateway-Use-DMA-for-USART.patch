@@ -1,8 +1,7 @@
 From a03e4d93d73de3b0964e0c0267ed942c3b94f9e1 Mon Sep 17 00:00:00 2001
 From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
 Date: Tue, 2 Jan 2024 12:28:24 +0100
-Subject: [PATCH 28/28] ARM: dts: at91: gardena-smart-gateway: Use DMA for
- USART3
+Subject: [PATCH] ARM: dts: at91: gardena-smart-gateway: Use DMA for USART3
 
 The AT91SAM9G25-based GARDENA smart Gateway uses USART3 (ttyS1) to
 communicate (over PPP, at 115200 baud) with the radio module.
@@ -32,5 +31,5 @@ index 7da70aeeb528..331ed968f27e 100644
  
  	pinctrl-0 = <&pinctrl_usart3
 -- 
-2.39.2
+2.43.0
 

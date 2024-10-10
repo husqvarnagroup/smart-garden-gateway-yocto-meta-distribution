@@ -1,7 +1,7 @@
 From ae487df2552b84e7a2d76f01fcc8e9fcc8417b9b Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Wed, 7 Oct 2020 11:08:59 +0800
-Subject: [PATCH 22/28] rtl8xxxu: Enable RX STBC by default
+Subject: [PATCH] rtl8xxxu: Enable RX STBC by default
 
 (cherry picked from commit f740aef70abe336c63b9a20c5603402dc90cdfee)
 Upstream-Status: Pending [needs (a lot of) work]
@@ -23,5 +23,5 @@ index 0e2618424621..020564ee57a1 100644
  	/*
  	 * Some APs will negotiate HT20_40 in a noisy environment leading
 -- 
-2.39.2
+2.43.0
 

@@ -1,7 +1,7 @@
 From c93809aed9d0de3021897241b415b5f88441ffb1 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Thu, 11 Feb 2021 12:36:19 +0100
-Subject: [PATCH 12/28] mtd: spinand: gigadevice: Support GD5F1GQ5UExxG
+Subject: [PATCH] mtd: spinand: gigadevice: Support GD5F1GQ5UExxG
 
 The relevant changes to the already existing GD5F1GQ4UExxG support has
 been determined by consulting the GigaDevice product change notice
@@ -174,5 +174,5 @@ index 33c67403c4aa..1dd1c5898093 100644
  
  static const struct spinand_manufacturer_ops gigadevice_spinand_manuf_ops = {
 -- 
-2.39.2
+2.43.0
 

@@ -1,7 +1,7 @@
 From 92e2037a0c8afc48406c1db3d271e832dc6679d9 Mon Sep 17 00:00:00 2001
 From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Date: Mon, 5 Apr 2021 11:09:14 +0200
-Subject: [PATCH 16/28] rtl8xxxu: Simplify locking of a skb list accesses
+Subject: [PATCH] rtl8xxxu: Simplify locking of a skb list accesses
 
 The 'c2hcmd_lock' spinlock is only used to protect some __skb_queue_tail()
 and __skb_dequeue() calls.
@@ -81,5 +81,5 @@ index 0c07aea4bf9e..d0f0db63263f 100644
  	skb_queue_head_init(&priv->c2hcmd_queue);
  
 -- 
-2.39.2
+2.43.0
 

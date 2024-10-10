@@ -1,7 +1,7 @@
 From c68ce11d659a2998cf9428c85de536bdef69a2f7 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Sun, 23 Jan 2022 19:46:46 +0100
-Subject: [PATCH 26/28] rtl8xxxu: Raise error level of IQK failures
+Subject: [PATCH] rtl8xxxu: Raise error level of IQK failures
 
 Despite being recoverable, RX IQ calibration failure prints a warning.
 Final IQ calibration errors should be noticed even more so.
@@ -53,5 +53,5 @@ index 2fa7ffc8557a..0f3501fef0eb 100644
  
  	/* Back to BB mode, load original value */
 -- 
-2.39.2
+2.43.0
 

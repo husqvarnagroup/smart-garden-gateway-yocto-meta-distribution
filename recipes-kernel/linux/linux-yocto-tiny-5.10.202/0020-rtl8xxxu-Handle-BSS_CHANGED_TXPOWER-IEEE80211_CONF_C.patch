@@ -1,7 +1,7 @@
 From d3b13cc623c2584989d8d2c7b9a1452f2d61e218 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Tue, 29 Sep 2020 15:51:25 +0800
-Subject: [PATCH 20/28] rtl8xxxu: Handle
+Subject: [PATCH] rtl8xxxu: Handle
  BSS_CHANGED_TXPOWER/IEEE80211_CONF_CHANGE_POWER
 
 The 'iw set txpower' is not handled by the driver. Use the existing
@@ -239,5 +239,5 @@ index eb83c5531751..e63c20af3ff1 100644
  	rtl8xxxu_print_chipinfo(priv);
  
 -- 
-2.39.2
+2.43.0
 

@@ -1,7 +1,7 @@
 From d24f0be6a72f2710a9ae863e423a7245d9449ff4 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Wed, 16 Jun 2021 10:10:45 +0200
-Subject: [PATCH 02/28] Import OpenWRT Ethernet switch drivers
+Subject: [PATCH] Import OpenWRT Ethernet switch drivers
 
 Repo: git://git.openwrt.org/openwrt/openwrt.git
 Commit: b118aba8cbac58a45d4882cd79e18e56c3fbdc70
@@ -7030,5 +7030,5 @@ index 000000000000..ea449653fafa
 +
 +#endif /* _UAPI_LINUX_SWITCH_H */
 -- 
-2.39.2
+2.43.0
 

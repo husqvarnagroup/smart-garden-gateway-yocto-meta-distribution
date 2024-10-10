@@ -1,8 +1,8 @@
 From f19e8f22e4e8fa6e40e60ae6f81e00eb3ed9a68b Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 23 May 2019 13:39:16 +0200
-Subject: [PATCH 07/28] MIPS: ralink: dts: gardena_smart_gateway_mt7688: Add
- ethernet and ESW DT nodes
+Subject: [PATCH] MIPS: ralink: dts: gardena_smart_gateway_mt7688: Add ethernet
+ and ESW DT nodes
 
 We can not upstream this because there is no DSA switch driver yet in
 mainline.
@@ -55,5 +55,5 @@ index affba1859fb7..2b9efb1f9adf 100644
  
  	esw: esw@10110000 {
 -- 
-2.39.2
+2.43.0
 

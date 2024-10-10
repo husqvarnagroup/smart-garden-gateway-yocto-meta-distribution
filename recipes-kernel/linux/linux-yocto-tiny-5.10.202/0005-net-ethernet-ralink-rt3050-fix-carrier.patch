@@ -1,7 +1,7 @@
 From c11369f5add224d50675872a9023f9ad4044b402 Mon Sep 17 00:00:00 2001
 From: Michael Zimmermann <michael.zimmermann@grandcentrix.net>
 Date: Mon, 17 Dec 2018 11:12:49 +0100
-Subject: [PATCH 05/28] net: ethernet: ralink: rt3050: fix carrier
+Subject: [PATCH] net: ethernet: ralink: rt3050: fix carrier
 
 Change by Stefan Roese:
 DEFER in mtk_eth_soc.c removed as it does not seem to be necessary.
@@ -156,5 +156,5 @@ index 914b81410e5c..54238065135d 100644
  	.checksum_bit = RX_DMA_L4VALID,
  	.rx_int = RT5350_RX_DONE_INT,
 -- 
-2.39.2
+2.43.0
 

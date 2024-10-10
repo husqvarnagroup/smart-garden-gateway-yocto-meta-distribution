@@ -1,7 +1,7 @@
 From e2d66dd2388ba7d4ff4eb533455a40f1e76e100a Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Sat, 22 Dec 2018 11:26:46 +0100
-Subject: [PATCH 09/28] tty/serial/8250: Call serial8250_enable_ms() from
+Subject: [PATCH] tty/serial/8250: Call serial8250_enable_ms() from
  serial8250_config_port()
 
 This hack can be used to verify the HW handshake on the Gardena smart
@@ -39,5 +39,5 @@ index 8b49ac4856d2..beb612e1a411 100644
  
  static int
 -- 
-2.39.2
+2.43.0
 

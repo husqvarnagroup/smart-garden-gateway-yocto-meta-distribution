@@ -1,7 +1,7 @@
 From 76bfb863240dc6fc1dbddc647f66653b9af6fb05 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Wed, 7 Oct 2020 15:20:56 +0800
-Subject: [PATCH 23/28] rtl8xxxu: Feed antenna information for mac80211
+Subject: [PATCH] rtl8xxxu: Feed antenna information for mac80211
 
 (cherry picked from commit 557e87b5db655394a16c9b54a07a2fc11f1ea618)
 Upstream-Status: Pending [needs (a lot of) work]
@@ -57,5 +57,5 @@ index 020564ee57a1..e0dc9357928f 100644
  };
  
 -- 
-2.39.2
+2.43.0
 

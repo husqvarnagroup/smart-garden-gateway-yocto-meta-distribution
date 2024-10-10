@@ -1,8 +1,7 @@
 From 98f26bb6f61db593d24b6a29b200b6430294f72f Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chris.chiu@canonical.com>
 Date: Fri, 2 Jul 2021 00:33:54 +0800
-Subject: [PATCH 18/28] rtl8xxxu: disable interrupt_in transfer for 8188cu and
- 8192cu
+Subject: [PATCH] rtl8xxxu: disable interrupt_in transfer for 8188cu and 8192cu
 
 There will be crazy numbers of interrupts triggered by 8188cu and
 8192cu module, around 8000~10000 interrupts per second, on the usb
@@ -48,5 +47,5 @@ index 5c424b738154..5deb69715270 100644
  	}
  
 -- 
-2.39.2
+2.43.0
 

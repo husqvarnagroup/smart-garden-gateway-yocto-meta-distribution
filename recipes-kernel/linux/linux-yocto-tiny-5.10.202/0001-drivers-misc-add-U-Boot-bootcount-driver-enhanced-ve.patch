@@ -1,8 +1,8 @@
 From ee258ef9823c75e4fae680772aff1a1c6e0c5fc5 Mon Sep 17 00:00:00 2001
 From: Heiko Schocher <hs@denx.de>
 Date: Mon, 25 Feb 2013 12:39:21 +0100
-Subject: [PATCH 01/28] drivers, misc: add U-Boot bootcount driver (enhanced
- version with single-word support)
+Subject: [PATCH] drivers, misc: add U-Boot bootcount driver (enhanced version
+ with single-word support)
 
 This driver implements the Linux kernel half of the boot count feature -
 the boot counter can only be reset after it is clear that the
@@ -367,5 +367,5 @@ index 000000000000..ffcbabb48a9d
 +MODULE_AUTHOR("Steffen Rumler <steffen.rumler@siemens.com>");
 +MODULE_DESCRIPTION("Provide (read/write) access to the U-Boot bootcounter via sysFS");
 -- 
-2.39.2
+2.43.0
 
