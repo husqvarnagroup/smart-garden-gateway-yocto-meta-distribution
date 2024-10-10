@@ -121,7 +121,7 @@ end";
                     },
                     {
                         name = "altbootcmd";
-                        value = "test -n ${ustate} -a ${ustate} -ne 1 && setenv ustate 3 && run do_toggle_bootslot && saveenv; run bootcmd";
+                        value = "test -n \"${ustate}\" -a ${ustate} -ne 0 && setenv ustate 3 && run do_toggle_bootslot && saveenv; run bootcmd";
                     },
                     {
                         name = "bootlimit";
@@ -208,7 +208,7 @@ end";
                     },
                     {
                         name = "altbootcmd";
-                        value = "test -n ${ustate} -a ${ustate} -ne 1 && setenv ustate 3 && run do_toggle_bootslot && saveenv; run bootcmd";
+                        value = "test -n \"${ustate}\" -a ${ustate} -ne 0 && setenv ustate 3 && run do_toggle_bootslot && saveenv; run bootcmd";
                     },
                     {
                         name = "bootlimit";
