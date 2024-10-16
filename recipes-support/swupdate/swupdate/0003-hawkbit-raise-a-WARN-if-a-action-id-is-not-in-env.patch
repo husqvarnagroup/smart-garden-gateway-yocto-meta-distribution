@@ -1,0 +1,65 @@
+From 5de1174beec4c03ac896323faf4d0592f6561f30 Mon Sep 17 00:00:00 2001
+From: Stefano Babic <stefano.babic@swupdate.org>
+Date: Tue, 9 Jul 2024 09:58:33 +0200
+Subject: [PATCH] hawkbit: raise a WARN if a action id is not in env
+
+For long time, thjere was a race condition with Hawkbit: if after a
+restart, the operator changed on the server the deploy, SWUpdate
+committed an update that wasn't executed. To avoid this, the action id
+of the update that was executed is now stored in env, but to be
+compatible with the past, the old behavior is accepted as well.
+
+This raises a warning in case the old behavior is chosen to advise that
+the answer to Hawkbit could be wrong.
+
+Signed-off-by: Stefano Babic <stefano.babic@swupdate.org>
+Reviewed-by: Dominique Martinet <dominique.martinet@atmark-techno.com>
+(cherry picked from commit d0cfc4ec27eb6ccb25612a6f325982db7f6fdd3d)
+Upstream-Status: Backport
+---
+ suricatta/server_hawkbit.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/suricatta/server_hawkbit.c b/suricatta/server_hawkbit.c
+index 78ffa252..4d2fb42e 100644
+--- a/suricatta/server_hawkbit.c
++++ b/suricatta/server_hawkbit.c
+@@ -868,20 +868,22 @@ static void get_action_id_from_env(int *action_id)
+ 	 * stored.
+ 	 */
+ 	char *action_str = swupdate_vars_get("action_id", NULL);
+-	if (action_str) {
+-		int tmp = ustrtoull(action_str, NULL, 10);
+-		if (errno)
+-			WARN("action_id %s: ustrtoull failed",
+-			     action_str);
+-		/*
+-		 * action_id = 0 is invalid, then check it
+-		 */
+-		if (tmp > 0) {
+-			*action_id = tmp;
+-			TRACE("Retrieve action_id from previous run: %d", *action_id);
+-		}
+-		free(action_str);
++	if (!action_str) {
++		WARN("Action id not in env: action from server sent, possible mismatch ");
++		return;
++	}
++	int tmp = ustrtoull(action_str, NULL, 10);
++	if (errno)
++		WARN("action_id %s: ustrtoull failed",
++		     action_str);
++	/*
++	 * action_id = 0 is invalid, then check it
++	 */
++	if (tmp > 0) {
++		*action_id = tmp;
++		TRACE("Retrieve action_id from previous run: %d", *action_id);
+ 	}
++	free(action_str);
+ }
+ 
+ server_op_res_t server_handle_initial_state(update_state_t stateovrrd)
+-- 
+2.43.0
+

@@ -1,9 +1,12 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".1"
+PR:append = ".0"
 
 SRC_URI += " \
             file://0001-suricatta-Fix-nocheckcert-configuration.patch \
+            file://0002-hawkbit-do-not-reset-action_id-when-getting-from-env.patch \
+            file://0003-hawkbit-raise-a-WARN-if-a-action-id-is-not-in-env.patch \
+            file://0004-hawkbit-fix-process-notification-not-sending-logs.patch \
             file://10-suricatta \
             file://2018-10-11-smart_gateway_mt7688-sw-update.cert.pem \
             file://disable_ubi_attach.cfg \

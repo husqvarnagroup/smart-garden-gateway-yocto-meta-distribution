@@ -1,0 +1,56 @@
+From 75b8bd7bb31d4700c4161698cfc1f08ff0295ae8 Mon Sep 17 00:00:00 2001
+From: Dominique Martinet <dominique.martinet@atmark-techno.com>
+Date: Fri, 5 Jul 2024 15:54:30 +0900
+Subject: [PATCH] hawkbit: fix process notification not sending logs
+
+ipc_get_status_timeout() returns the size of the message on success, but
+ipc_get_status() returns 0 in this case (both return a negative value on
+error)
+
+Changing the function to use ipc_get_status() didn't update the return
+value check: fix this, and also properly check for errors.
+Also remove obsolete comment describing the return value.
+
+Reported-by: James Hilliard <james.hilliard1@gmail.com>
+Fixes: da48265ad29f ("suricatta process notification: improve ipc_get_status scheduling")
+Signed-off-by: Dominique Martinet <dominique.martinet@atmark-techno.com>
+(cherry picked from commit 9ef80aefd3547c35d3f6bd706e59d3a97b0ef703)
+Upstream-Status: Backport
+---
+ suricatta/server_hawkbit.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/suricatta/server_hawkbit.c b/suricatta/server_hawkbit.c
+index 4d2fb42e..e5e2b631 100644
+--- a/suricatta/server_hawkbit.c
++++ b/suricatta/server_hawkbit.c
+@@ -1004,7 +1004,12 @@ static void *process_notification_thread(void *data)
+ 		bool data_avail = false;
+ 		int ret = ipc_get_status(&msg);
+ 
+-		data_avail = ret > 0 && (strlen(msg.data.status.desc) != 0);
++		if (ret < 0) {
++			ERROR("Error getting status, stopping notification thread");
++			stop = true;;
++		} else {
++			data_avail = (strlen(msg.data.status.desc) != 0);
++		}
+ 
+ 		/*
+ 		 * Mutex used to synchronize end of the thread
+@@ -1018,12 +1023,6 @@ static void *process_notification_thread(void *data)
+ 
+ 		if (data_avail && msg.data.status.current == PROGRESS)
+ 			continue;
+-		/*
+-		 * If there is a message
+-		 * ret > 0: data available
+-		 * ret == 0: TIMEOUT, no more messages
+-		 * ret < 0 : ERROR, exit
+-		 */
+ 		if (data_avail && numdetails < MAX_DETAILS) {
+ 			for (int c = 0; c < strlen(msg.data.status.desc); c++) {
+ 				switch (msg.data.status.desc[c]) {
+-- 
+2.43.0
+

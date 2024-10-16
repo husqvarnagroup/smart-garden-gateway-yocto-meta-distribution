@@ -1,0 +1,37 @@
+From efacb6f6d82aac459f1559d95f1019af85c9db5c Mon Sep 17 00:00:00 2001
+From: Dominique Martinet <dominique.martinet@atmark-techno.com>
+Date: Fri, 5 Jul 2024 15:54:32 +0900
+Subject: [PATCH] hawkbit: do not reset action_id when getting from env
+
+server_handle_initial_state() firsts get an action id from the server
+and then overrides it with the env value, but there is no check if there
+had been no env value, sending a request to id -1 to server.
+
+The commit that added this reset also added code to only call
+get_action_id_from_env() if action_id <= 0, so it did not need to reset
+it: just leave the status quo of using the last value if it wasn't set.
+
+Fixes: f3b1e1e26dfb ("hawkbit: check for validity of action_id")
+Signed-off-by: Dominique Martinet <dominique.martinet@atmark-techno.com>
+Acked-by: Stefano Babic <stefano.babic@swupdate.org>
+(cherry picked from commit 725b6675a9c2e5e2cae2ced158e319222e968dfc)
+Upstream-Status: Backport
+---
+ suricatta/server_hawkbit.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/suricatta/server_hawkbit.c b/suricatta/server_hawkbit.c
+index 9c3e9741..78ffa252 100644
+--- a/suricatta/server_hawkbit.c
++++ b/suricatta/server_hawkbit.c
+@@ -867,7 +867,6 @@ static void get_action_id_from_env(int *action_id)
+ 	 * Get the acction_id that corresponds to the done update if it was
+ 	 * stored.
+ 	 */
+-	*action_id = -1;
+ 	char *action_str = swupdate_vars_get("action_id", NULL);
+ 	if (action_str) {
+ 		int tmp = ustrtoull(action_str, NULL, 10);
+-- 
+2.43.0
+
