@@ -16,7 +16,7 @@ IMAGE_INSTALL += " \
     coap-transport-proxy \
     fwrolloutd \
     gateway-config-backend \
-    gateway-firmware \
+    gateway-firmware-zephyr \
     lemonbeatd \
     lwm2mserver \
     nngforward \
