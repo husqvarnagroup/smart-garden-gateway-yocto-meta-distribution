@@ -60,6 +60,7 @@ RDEPENDS:packagegroup-opkg-feed = "\
     stresstest-download \
     tar \
     tcpdump \
+    trace-cmd \
     traceroute \
     tshark \
     vim \
