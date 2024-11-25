@@ -66,7 +66,6 @@ RDEPENDS:packagegroup-opkg-feed = "\
     wakaama \
     wget \
     wifi-certification-util \
-    wlan-stresstest \
     xz \
     zsh \
     "
