@@ -67,3 +67,7 @@ COPY_LIC_DIRS = "1"
 
 # Optional: Lower optimization to improve debugability
 #DEBUG_BUILD = "1"
+
+# Optional: Reduce number of parallel tasks, this saves load and memory on the build machine.
+# BB_NUMBER_THREADS = "2"
+# PARALLEL_MAKE = "-j 2"
