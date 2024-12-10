@@ -17,12 +17,13 @@ SWUPDATE_IMAGES_FSTYPES[gardena-image-factory] = ".squashfs-xz"
 # (binary blob) copy of U-Boot.
 UBOOT_FILENAME_IN_DEPLOYDIR = "${@d.getVar('UBOOT_FILENAME').replace('.bin', '-' + d.getVar('IMAGE_ID') + '.bin')}"
 
-# Since we want the bootloaders binaries to be buit (just) once and only
+# Since we want the bootloaders binaries to be built (just) once and only
 # updated when absolutely needed, keep them stable by using prebuilt binaries.
-# The sources for the binaries can be found here:
-# - mt7688 (2019.01-rc2-mt7688-2018-12-18-gardena-rc2-yocto): https://github.com/husqvarnagroup/smart-garden-u-boot/commit/e6f4ac2a81f76be4e07f200f1aa6e9c2e389859e
-# - at91am (2019.10-gardena-2): https://github.com/husqvarnagroup/smart-garden-gateway-public/tree/release/linux-system-4.3.2
-UBOOT_VERSION = "2021.04-gardena-6"
+# The binaries were taken from the official Gateway 9.1.0 build:
+# https://github.com/husqvarnagroup/smart-garden-gateway-public/tree/81285c30b2e68216450be8f9b197f77d92c430ef
+# The build scripts for the binaries can be found here:
+# https://github.com/husqvarnagroup/smart-garden-gateway-yocto-openembedded-core/tree/964ef69ebbd3e9058be8d4306da8946a20f795b6/meta/recipes-bsp/u-boot
+UBOOT_VERSION = "2024.01-gardena-1"
 UBOOT_FILENAME = "prebuilt-u-boot-with-spl-${MACHINE}_${UBOOT_VERSION}.bin"
 SRC_URI:append = "file://${UBOOT_FILENAME}"
 do_deploy() {
