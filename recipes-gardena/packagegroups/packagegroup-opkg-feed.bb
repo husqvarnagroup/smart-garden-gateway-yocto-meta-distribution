@@ -10,7 +10,6 @@ RDEPENDS:packagegroup-opkg-feed = "\
     chrony \
     chronyc \
     conntrack-tools \
-    cuitest \
     curl \
     ethtool \
     file \
