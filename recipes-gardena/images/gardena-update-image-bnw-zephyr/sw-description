@@ -143,6 +143,14 @@ end";
                     {
                         name = "bootcmd"; /* Introduced as part of SG-16934 */
                         value = "run do_print_ids && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset";
+                    },
+                    {
+                        name = "altbootcmd";
+                        value = "";
+                    },
+                    {
+                        name = "bootlimit";
+                        value = "";
                     }
                 )
             }
@@ -222,6 +230,14 @@ end";
                     {
                         name = "bootcmd"; /* Introduced as part of SG-16934 */
                         value = "run do_print_ids && run do_if_factory_reset && run do_if_resurrection_reset && run do_set_bootargs && run do_boot_from_flash; reset";
+                    },
+                    {
+                        name = "altbootcmd";
+                        value = "";
+                    },
+                    {
+                        name = "bootlimit";
+                        value = "";
                     }
                 )
             }
