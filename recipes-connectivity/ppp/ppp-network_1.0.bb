@@ -28,10 +28,10 @@ FILES:${PN} += "\
 
 RDEPENDS:${PN} += " \
     ppp \
-    virtual/gardena-gateway-firmware \
+    gateway-firmware-zephyr \
 "
 
 inherit systemd
 SYSTEMD_SERVICE:${PN} = "ppp.service"
 
-PR = "r0"
+PR = "r1"
