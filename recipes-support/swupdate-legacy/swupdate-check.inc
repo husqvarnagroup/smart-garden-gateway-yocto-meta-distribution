@@ -3,7 +3,7 @@ MAINTAINER = "Gardena GmbH"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-INC_PR = "r5"
+INC_PR = "r6"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/swupdate-check:"
 
@@ -22,7 +22,6 @@ FILES:${PN} = " \
 RDEPENDS:${PN} = " \
     components-introspection \
     swupdate-legacy \
-    virtual/os-release \
 "
 
 do_install() {

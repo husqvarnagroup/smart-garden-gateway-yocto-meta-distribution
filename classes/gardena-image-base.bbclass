@@ -52,7 +52,6 @@ IMAGE_INSTALL:append = " \
     wpa-supplicant \
     wpa-supplicant-cli \
     zram-init \
-    virtual/os-release \
 "
 
 IMAGE_INSTALL:append:mt7688 = " \

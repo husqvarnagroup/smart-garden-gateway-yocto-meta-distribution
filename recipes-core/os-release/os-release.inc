@@ -11,5 +11,6 @@ OS_RELEASE_FIELDS += "BUILD_ID CODENAME IMAGE_ID"
 # Packages like gateway-config-interface depend on the quotes
 OS_RELEASE_UNQUOTED_FIELDS = ""
 
-RPROVIDES:${PN} += "virtual/os-release"
 RCONFLICTS:${PN} += "os-release"
+
+PR = "r1"
