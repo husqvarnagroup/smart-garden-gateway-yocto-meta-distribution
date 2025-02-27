@@ -61,3 +61,8 @@ CONFIG_AUTO_ZRELADDR=y
 
 # Enable GPIO userspace control
 CONFIG_GPIO_SYSFS=y
+
+# WEXT compatibility 8192cu driver
+CONFIG_WEXT_CORE=y
+CONFIG_WEXT_PROC=y
+CONFIG_CFG80211_WEXT=y
