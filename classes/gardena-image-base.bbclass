@@ -85,3 +85,17 @@ compress_lic_files() {
     install -m 0644 "${WORKDIR}/licenses.tar.xz" "${lic_dir_rootfs}/"
 }
 ROOTFS_POSTPROCESS_COMMAND:append = "compress_lic_files; "
+
+python check_optimized_python_files() {
+    from pathlib import Path
+    rootfs = Path(d.getVar('IMAGE_ROOTFS'))
+    pyc_files = rootfs.rglob('*.pyc')
+    # Allow .pyc files with optimization level 2
+    pyc_files = [f for f in pyc_files
+                 if not f.name.endswith('.opt-2.pyc')]
+    if len(pyc_files) > 0:
+        pyc_files_str = "\n".join([str(f) for f in pyc_files])
+        bb.fatal('Found unexpected .pyc files:\n', pyc_files_str)
+}
+ROOTFS_POSTPROCESS_COMMAND:append = "check_optimized_python_files; "
+
