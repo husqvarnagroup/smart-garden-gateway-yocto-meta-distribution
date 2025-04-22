@@ -27,8 +27,7 @@ globals_extra=""
 cat << EOF > /tmp/swupdate.cfg
 globals :
 {
-	verbose = true;
-	loglevel = 5;
+	loglevel = 4;
 	syslog = false;
 	public-key-file = "/usr/share/swupdate/sw-update.cert.pem";
 	mtd-blacklist = "$mtd_blacklist";
