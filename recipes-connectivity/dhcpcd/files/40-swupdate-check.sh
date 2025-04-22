@@ -19,7 +19,9 @@ try_update()
 {
     [ -e "${update_marker}" ] && return 0
 
-    systemctl restart swupdate-check.timer
+    if systemctl list-unit-files swupdate-check.timer >/dev/null; then
+        systemctl restart swupdate-check.timer
+    fi
 }
 
 # The only interesting interfaces are Ethernet and WiFi
