@@ -1,4 +1,4 @@
-From 08ec11e1eab17df566a081667e5ca0993891e0ef Mon Sep 17 00:00:00 2001
+From 32aabbf3adc49f8042d11d75e4d74604dd83d377 Mon Sep 17 00:00:00 2001
 From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
 Date: Thu, 11 Jul 2024 20:26:16 +0200
 Subject: [PATCH] ARM: dts: microchip: gardena-smart-gateway: Add bootcounter

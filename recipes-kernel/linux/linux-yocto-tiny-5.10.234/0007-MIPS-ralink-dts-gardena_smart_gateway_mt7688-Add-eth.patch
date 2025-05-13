@@ -1,4 +1,4 @@
-From f19e8f22e4e8fa6e40e60ae6f81e00eb3ed9a68b Mon Sep 17 00:00:00 2001
+From 364c692df7d5364bac91d7972ee06aa49dee7ab0 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 23 May 2019 13:39:16 +0200
 Subject: [PATCH] MIPS: ralink: dts: gardena_smart_gateway_mt7688: Add ethernet

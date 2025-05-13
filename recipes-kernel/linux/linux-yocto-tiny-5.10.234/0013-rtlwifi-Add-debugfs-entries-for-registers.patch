@@ -1,4 +1,4 @@
-From 09b0fbe49fa2e66d63ad3eb1f42d87f25c7c4e9c Mon Sep 17 00:00:00 2001
+From d33192511aa777e88495a2620a7370f35401a416 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Thu, 6 Jan 2022 00:23:01 +0100
 Subject: [PATCH] rtlwifi: Add debugfs entries for registers

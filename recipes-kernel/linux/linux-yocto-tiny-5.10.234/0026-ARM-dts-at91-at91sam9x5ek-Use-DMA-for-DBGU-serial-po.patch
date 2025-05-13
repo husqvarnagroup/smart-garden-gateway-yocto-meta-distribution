@@ -1,4 +1,4 @@
-From 3a716b0c51fa89eab0fec4142c9e3920191d6f84 Mon Sep 17 00:00:00 2001
+From 517bdcacb3ae7ce29cfc1c51caf7a4a3ca81e7f7 Mon Sep 17 00:00:00 2001
 From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
 Date: Tue, 2 Jan 2024 11:57:01 +0100
 Subject: [PATCH] ARM: dts: at91: at91sam9x5ek: Use DMA for DBGU serial port

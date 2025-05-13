@@ -1,4 +1,4 @@
-From d24f0be6a72f2710a9ae863e423a7245d9449ff4 Mon Sep 17 00:00:00 2001
+From c37716f954790e250340fe1ba6393e47414e2be6 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Wed, 16 Jun 2021 10:10:45 +0200
 Subject: [PATCH] Import OpenWRT Ethernet switch drivers

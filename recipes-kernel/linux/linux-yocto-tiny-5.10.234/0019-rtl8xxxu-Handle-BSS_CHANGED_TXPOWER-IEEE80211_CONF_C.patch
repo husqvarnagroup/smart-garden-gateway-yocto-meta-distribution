@@ -1,4 +1,4 @@
-From d3b13cc623c2584989d8d2c7b9a1452f2d61e218 Mon Sep 17 00:00:00 2001
+From 20fb0ddd6b3cd431f51c494de3182f7af6e03c10 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Tue, 29 Sep 2020 15:51:25 +0800
 Subject: [PATCH] rtl8xxxu: Handle
@@ -76,10 +76,10 @@ index 4f93f88716a9..a5d56f61c4eb 100644
  	.update_rate_mask = rtl8xxxu_update_rate_mask,
  	.report_connect = rtl8xxxu_gen1_report_connect,
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index eb83c5531751..e63c20af3ff1 100644
+index 378374b9f5c1..8676099040a6 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -1382,6 +1382,38 @@ void rtl8xxxu_gen2_config_channel(struct ieee80211_hw *hw)
+@@ -1383,6 +1383,38 @@ void rtl8xxxu_gen2_config_channel(struct ieee80211_hw *hw)
  	}
  }
  
@@ -118,7 +118,7 @@ index eb83c5531751..e63c20af3ff1 100644
  void
  rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv, int channel, bool ht40)
  {
-@@ -4555,6 +4587,68 @@ static void rtl8xxxu_set_aifs(struct rtl8xxxu_priv *priv, u8 slot_time)
+@@ -4551,6 +4583,68 @@ static void rtl8xxxu_set_aifs(struct rtl8xxxu_priv *priv, u8 slot_time)
  	}
  }
  
@@ -187,7 +187,7 @@ index eb83c5531751..e63c20af3ff1 100644
  static void
  rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  			  struct ieee80211_bss_conf *bss_conf, u32 changed)
-@@ -4653,6 +4747,11 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+@@ -4649,6 +4743,11 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  		dev_dbg(dev, "Changed BASIC_RATES!\n");
  		rtl8xxxu_set_basic_rates(priv, bss_conf->basic_rates);
  	}
@@ -199,7 +199,7 @@ index eb83c5531751..e63c20af3ff1 100644
  error:
  	return;
  }
-@@ -5944,6 +6043,9 @@ static int rtl8xxxu_config(struct ieee80211_hw *hw, u32 changed)
+@@ -5940,6 +6039,9 @@ static int rtl8xxxu_config(struct ieee80211_hw *hw, u32 changed)
  		priv->fops->config_channel(hw);
  	}
  
@@ -209,7 +209,7 @@ index eb83c5531751..e63c20af3ff1 100644
  exit:
  	return ret;
  }
-@@ -6715,6 +6817,20 @@ static int rtl8xxxu_parse_usb(struct rtl8xxxu_priv *priv,
+@@ -6712,6 +6814,20 @@ static int rtl8xxxu_parse_usb(struct rtl8xxxu_priv *priv,
  	return ret;
  }
  
@@ -230,7 +230,7 @@ index eb83c5531751..e63c20af3ff1 100644
  static int rtl8xxxu_probe(struct usb_interface *interface,
  			  const struct usb_device_id *id)
  {
-@@ -6817,6 +6933,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+@@ -6814,6 +6930,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
  		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
  		goto exit;
  	}

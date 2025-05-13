@@ -1,4 +1,4 @@
-From ef2611a9d7f12f893e1f90beb9537c592c78cdb3 Mon Sep 17 00:00:00 2001
+From 9b59a37e4ae4505d023671c08b16e3f92a7e3e66 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Mon, 3 Dec 2018 10:54:57 +0100
 Subject: [PATCH] net: ethernet: ralink: mtk_eth_soc: Set DMA masks

@@ -1,4 +1,4 @@
-From a03e4d93d73de3b0964e0c0267ed942c3b94f9e1 Mon Sep 17 00:00:00 2001
+From 203b356cb2f6bac9ffa54427a0225f9c7436eef7 Mon Sep 17 00:00:00 2001
 From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
 Date: Tue, 2 Jan 2024 12:28:24 +0100
 Subject: [PATCH] ARM: dts: at91: gardena-smart-gateway: Use DMA for USART3

@@ -1,4 +1,4 @@
-From 5563a98b13285e2264707261a900227732d9f017 Mon Sep 17 00:00:00 2001
+From cd5fc13b793b4928c31c65c7e259283197c40050 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Wed, 30 Sep 2020 10:20:15 +0800
 Subject: [PATCH] rtl8xxxu: Handle mac80211 get_txpower
@@ -56,10 +56,10 @@ index bb6df8cac82f..54f41af1015e 100644
  	.report_connect = rtl8xxxu_gen1_report_connect,
  	.fill_txdesc = rtl8xxxu_fill_txdesc_v1,
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index e63c20af3ff1..0e2618424621 100644
+index 8676099040a6..6cc696c47fe0 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -1414,6 +1414,55 @@ rtl8xxxu_gen1_dbm_to_txpwridx(struct rtl8xxxu_priv *priv, u16 mode, int dbm)
+@@ -1415,6 +1415,55 @@ rtl8xxxu_gen1_dbm_to_txpwridx(struct rtl8xxxu_priv *priv, u16 mode, int dbm)
  	return txpwridx;
  }
  
@@ -115,7 +115,7 @@ index e63c20af3ff1..0e2618424621 100644
  void
  rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv, int channel, bool ht40)
  {
-@@ -4629,10 +4678,12 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
+@@ -4625,10 +4674,12 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
  	ofdm_txpwridx = priv->fops->dbm_to_txpwridx(priv, WIRELESS_MODE_N_24G,
  						    dbm);
  
@@ -130,7 +130,7 @@ index e63c20af3ff1..0e2618424621 100644
  
  	group = rtl8xxxu_gen1_channel_to_group(channel);
  
-@@ -4646,6 +4697,9 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
+@@ -4642,6 +4693,9 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
  		priv->ht40_1s_tx_power_index_B[group] = ofdm_txpwridx;
  	}
  
@@ -140,7 +140,7 @@ index e63c20af3ff1..0e2618424621 100644
  	priv->fops->set_tx_power(priv, channel, ht40);
  }
  
-@@ -6739,6 +6793,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
+@@ -6736,6 +6790,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
  	.set_key = rtl8xxxu_set_key,
  	.ampdu_action = rtl8xxxu_ampdu_action,
  	.sta_statistics = rtl8xxxu_sta_statistics,

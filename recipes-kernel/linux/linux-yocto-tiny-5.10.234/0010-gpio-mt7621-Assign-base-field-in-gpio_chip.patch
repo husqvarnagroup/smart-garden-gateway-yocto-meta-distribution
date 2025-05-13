@@ -1,4 +1,4 @@
-From b82f90c57bdf0f78b6c52a7c332f552bc0f05ae6 Mon Sep 17 00:00:00 2001
+From fbecfb369d3845983099a4fa128c5e37d2ece269 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Sat, 5 Jun 2021 14:21:17 +0200
 Subject: [PATCH] gpio: mt7621: Assign base field in gpio_chip

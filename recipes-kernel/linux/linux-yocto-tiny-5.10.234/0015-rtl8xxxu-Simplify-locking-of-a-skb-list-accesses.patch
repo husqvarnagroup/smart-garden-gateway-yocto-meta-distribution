@@ -1,4 +1,4 @@
-From 92e2037a0c8afc48406c1db3d271e832dc6679d9 Mon Sep 17 00:00:00 2001
+From d7dfc0e2dcf81de4f23128f06efcd51a29c4727d Mon Sep 17 00:00:00 2001
 From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Date: Mon, 5 Apr 2021 11:09:14 +0200
 Subject: [PATCH] rtl8xxxu: Simplify locking of a skb list accesses
@@ -31,10 +31,10 @@ index 7a27cb909004..1d2533cf7424 100644
  	struct rtl8xxxu_ra_report ra_report;
  	struct dentry *debugfs_dir;
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 0c07aea4bf9e..d0f0db63263f 100644
+index 34535d5aeb09..b311e73f8125 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -5480,7 +5480,6 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
+@@ -5476,7 +5476,6 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
  	struct rtl8xxxu_priv *priv;
  	struct rtl8723bu_c2h *c2h;
  	struct sk_buff *skb = NULL;
@@ -42,7 +42,7 @@ index 0c07aea4bf9e..d0f0db63263f 100644
  	u8 bt_info = 0;
  	struct rtl8xxxu_btcoex *btcoex;
  	struct rtl8xxxu_ra_report *rarpt;
-@@ -5493,9 +5492,7 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
+@@ -5489,9 +5488,7 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
  	rarpt = &priv->ra_report;
  
  	while (!skb_queue_empty(&priv->c2hcmd_queue)) {
@@ -53,7 +53,7 @@ index 0c07aea4bf9e..d0f0db63263f 100644
  
  		c2h = (struct rtl8723bu_c2h *)skb->data;
  
-@@ -5556,7 +5553,6 @@ static void rtl8723bu_handle_c2h(struct rtl8xxxu_priv *priv,
+@@ -5552,7 +5549,6 @@ static void rtl8723bu_handle_c2h(struct rtl8xxxu_priv *priv,
  	struct rtl8723bu_c2h *c2h = (struct rtl8723bu_c2h *)skb->data;
  	struct device *dev = &priv->udev->dev;
  	int len;
@@ -61,7 +61,7 @@ index 0c07aea4bf9e..d0f0db63263f 100644
  
  	len = skb->len - 2;
  
-@@ -5595,9 +5591,7 @@ static void rtl8723bu_handle_c2h(struct rtl8xxxu_priv *priv,
+@@ -5591,9 +5587,7 @@ static void rtl8723bu_handle_c2h(struct rtl8xxxu_priv *priv,
  		break;
  	}
  
@@ -72,7 +72,7 @@ index 0c07aea4bf9e..d0f0db63263f 100644
  
  	schedule_work(&priv->c2hcmd_work);
  }
-@@ -6786,7 +6780,6 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+@@ -6783,7 +6777,6 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
  	spin_lock_init(&priv->rx_urb_lock);
  	INIT_WORK(&priv->rx_urb_wq, rtl8xxxu_rx_urb_work);
  	INIT_DELAYED_WORK(&priv->ra_watchdog, rtl8xxxu_watchdog_callback);

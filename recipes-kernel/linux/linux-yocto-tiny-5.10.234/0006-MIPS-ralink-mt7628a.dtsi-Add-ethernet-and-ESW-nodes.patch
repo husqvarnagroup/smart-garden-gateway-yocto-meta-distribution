@@ -1,4 +1,4 @@
-From cfe7f45b83c6a0abbb887d786824a88e94895dee Mon Sep 17 00:00:00 2001
+From a260fbcda974239868ef6b430e8bb40e03ec4691 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 23 May 2019 13:28:46 +0200
 Subject: [PATCH] MIPS: ralink: mt7628a.dtsi: Add ethernet and ESW nodes
