@@ -37,4 +37,6 @@ SRC_URI += " \
     file://0026-ARM-dts-at91-at91sam9x5ek-Use-DMA-for-DBGU-serial-po.patch \
     file://0027-ARM-dts-at91-gardena-smart-gateway-Use-DMA-for-USART.patch \
     file://0028-ARM-dts-microchip-gardena-smart-gateway-Add-bootcoun.patch \
+    file://0029-MIPS-ralink-dts-gardena_smart_gateway_mt7688-Fix-pow.patch \
+    file://0030-ARM-dts-microchip-gardena-smart-gateway-Fix-power-LE.patch \
 "

@@ -1,0 +1,34 @@
+From 803cea2b7bb5e813b66a294be33c94f9424bd0f4 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Mon, 28 Oct 2024 10:45:59 +0100
+Subject: [PATCH] MIPS: ralink: dts: gardena_smart_gateway_mt7688: Fix power
+ LED
+
+When starting up, the GARDENA smart Gateway's power LED should be
+flashing green. It is unclear why it was initially set to "off".
+
+The LED frequency cannot be configured in the devicetree. Luckily, the
+default is 1 Hz, which is what we want.
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Pending
+---
+ arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
+index 9e1587f1e991..235c95698ee3 100644
+--- a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
++++ b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
+@@ -56,7 +56,7 @@ power_blue {
+ 		power_green {
+ 			label = "smartgw:power:green";
+ 			gpios = <&gpio 19 GPIO_ACTIVE_HIGH>;
+-			default-state = "off";
++			linux,default-trigger = "timer";
+ 		};
+ 
+ 		power_red {
+-- 
+2.43.0
+

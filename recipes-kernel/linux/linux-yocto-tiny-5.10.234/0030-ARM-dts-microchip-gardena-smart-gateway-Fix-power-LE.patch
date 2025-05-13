@@ -1,0 +1,33 @@
+From 47f7351712cebee8415031ef9a7e2d9f926aa4d5 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Wed, 30 Oct 2024 19:07:42 +0100
+Subject: [PATCH] ARM: dts: microchip: gardena-smart-gateway: Fix power LED
+
+When starting up, the GARDENA smart Gateway's power LED should be
+flashing green. It is unclear why this has not been done earlier.
+
+The LED frequency cannot be configured in the devicetree. Luckily, the
+default is 1 Hz, which is what we want.
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Pending
+---
+ arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts b/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
+index 7da14bb1d870..86874b9dd063 100644
+--- a/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
++++ b/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
+@@ -46,7 +46,7 @@ power_blue {
+ 		power_green {
+ 			label = "smartgw:power:green";
+ 			gpios = <&pioC 20 GPIO_ACTIVE_HIGH>;
+-			default-state = "on";
++			linux,default-trigger = "timer";
+ 		};
+ 
+ 		power_red {
+-- 
+2.43.0
+
