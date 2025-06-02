@@ -13,7 +13,6 @@ IMAGE_INSTALL += " \
     rm-test-firmware \
     ssh-authorized-keys-prod \
     sshtunnel \
-    sshtunnel-timer \
     swupdate-check \
     swupdate-legacy \
 "
