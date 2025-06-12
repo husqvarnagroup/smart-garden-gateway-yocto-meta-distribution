@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".27"
+PR:append = ".28"
 
 DEPENDS += "openssl"
 RDEPENDS:${PN} += " \

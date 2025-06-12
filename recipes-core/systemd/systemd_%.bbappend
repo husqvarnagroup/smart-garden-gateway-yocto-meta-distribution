@@ -4,6 +4,7 @@ SRC_URI += "\
     file://credit-random-seed.conf \
     file://keep.d/${BPN} \
     file://serial-getty@ttyS0.service_override.conf \
+    file://syslog.socket_override.conf \
     file://systemd-disable-colors.sh \
     file://systemd-disable-pager.sh \
     file://systemd-networkd-wait-online.service \
@@ -18,7 +19,7 @@ FILES:${PN} += "\
     ${systemd_unitdir}/system/systemd-random-seed.service.d \
 "
 
-PR:append = ".2"
+PR:append = ".3"
 
 do_install:append() {
     # Disable colorized output of system tools (systemctl, etc.)
@@ -42,6 +43,11 @@ do_install:append() {
     install -d ${D}${sysconfdir}/systemd/system/serial-getty@ttyS0.service.d
     install -m 0644 ${WORKDIR}/serial-getty@ttyS0.service_override.conf \
         ${D}${sysconfdir}/systemd/system/serial-getty@ttyS0.service.d/override.conf
+
+    # Override syslog.socket to start it only if customer allows collecting logs
+    install -d ${D}${sysconfdir}/systemd/system/syslog.socket.d
+    install -m 0644 ${WORKDIR}/syslog.socket_override.conf \
+        ${D}${sysconfdir}/systemd/system/syslog.socket.d/override.conf
 
     # Keep relevant systemd data from being erased on update
     install -d ${D}${base_libdir}/upgrade/keep.d

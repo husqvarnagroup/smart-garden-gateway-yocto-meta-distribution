@@ -5,6 +5,7 @@ Documentation=man:rsyslogd(8)
 Documentation=https://www.rsyslog.com/doc/
 After=rsyslog-gw-init.service
 Wants=rsyslog-gw-init.service
+ConditionPathExists=/etc/consent-to-telemetry
 
 [Service]
 Type=notify
