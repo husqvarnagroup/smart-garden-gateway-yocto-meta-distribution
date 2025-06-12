@@ -3,6 +3,7 @@
 IMAGE_INSTALL:append = " \
     chrony \
     chronyc \
+    consent \
     dhcpcd \
     dnsmasq \
     environment \
