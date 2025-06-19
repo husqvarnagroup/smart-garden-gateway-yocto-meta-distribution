@@ -28,11 +28,14 @@ ExecStartPre=/bin/sh -c 'if systemctl -q is-active hostapd@%i.service; then \
 ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
 ExecStartPre=-modprobe rtl8xxxu
 
-# Give the driver some time to initialize
-ExecStartPre=-sleep 3
+# Wait for the driver to initialize
+ExecStartPre=-/bin/sh -c 'for _ in $(seq 10); do \
+                              iw dev wlan0 info >/dev/null 2>&1 && break; \
+                              sleep 1; \
+                          done'
 
 # SG-16157 Limiting to 15dBm due to EMC requirements
-ExecStartPre=-iw wlan0 set txpower limit 1500
+ExecStartPre=-iw dev wlan0 set txpower limit 1500
 
 # attach dhcpcd in case hostapd detached it
 ExecStartPre=dhcpcd --rebind %i
