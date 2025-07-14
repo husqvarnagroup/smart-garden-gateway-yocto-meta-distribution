@@ -1,6 +1,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-PR:append = ".2"
+PR:append = ".3"
 
 SRC_URI += "\
     file://fstab \
