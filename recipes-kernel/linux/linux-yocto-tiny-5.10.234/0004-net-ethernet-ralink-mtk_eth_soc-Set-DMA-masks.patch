@@ -1,4 +1,4 @@
-From 1adb399d5882c057a5eea70f99f587617dd662c5 Mon Sep 17 00:00:00 2001
+From 9b59a37e4ae4505d023671c08b16e3f92a7e3e66 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Mon, 3 Dec 2018 10:54:57 +0100
 Subject: [PATCH] net: ethernet: ralink: mtk_eth_soc: Set DMA masks
@@ -7,18 +7,33 @@ Without setting the DMA masks, the DMA subsystem complains and xfer
 does not work correctly. So lets set the DMA masks in the probe
 function.
 
+Additionally the patch fixes some compile warnings.
+
 Signed-off-by: Stefan Roese <sr@denx.de>
-Upstream-Status: Pending [to OpenWrt]
+Upstream-Status: Inappropriate [for OpenWRT driver]
 ---
- drivers/net/ethernet/ralink/mtk_eth_soc.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/ethernet/ralink/mtk_eth_soc.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/ralink/mtk_eth_soc.c b/drivers/net/ethernet/ralink/mtk_eth_soc.c
-index 8b0b915cc646..d07df7f3c083 100644
+index b6e321b78c0c..84d85a56ffc9 100644
 --- a/drivers/net/ethernet/ralink/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/ralink/mtk_eth_soc.c
-@@ -1627,6 +1627,19 @@ static int fe_probe(struct platform_device *pdev)
- 	netif_napi_add_weight(netdev, &priv->rx_napi, fe_poll, napi_weight);
+@@ -1545,7 +1545,11 @@ static int fe_probe(struct platform_device *pdev)
+ 	struct clk *sysclk;
+ 	int err, napi_weight;
+ 
+-	device_reset(&pdev->dev);
++	err = device_reset(&pdev->dev);
++	if (err) {
++		dev_err(&pdev->dev, "device_reset failed (%d)!\n", err);
++		return err;
++	}
+ 
+ 	match = of_match_device(of_fe_match, &pdev->dev);
+ 	soc = (struct fe_soc_data *)match->data;
+@@ -1640,6 +1644,19 @@ static int fe_probe(struct platform_device *pdev)
+ 	netif_napi_add(netdev, &priv->rx_napi, fe_poll, napi_weight);
  	fe_set_ethtool_ops(netdev);
  
 +	/* Init DMA mask */
@@ -26,15 +41,15 @@ index 8b0b915cc646..d07df7f3c083 100644
 +	err = dma_set_mask(&netdev->dev, DMA_BIT_MASK(32));
 +	if (err) {
 +		dev_err(&pdev->dev, "error setting DMA mask\n");
-+		return err;
++		goto err_free_dev;
 +	}
 +	err = dma_set_coherent_mask(&netdev->dev, DMA_BIT_MASK(32));
 +	if (err) {
 +		dev_err(&pdev->dev, "error setting coherent DMA mask\n");
-+		return err;
++		goto err_free_dev;
 +	}
 +
- 	err = devm_register_netdev(&pdev->dev, netdev);
+ 	err = register_netdev(netdev);
  	if (err) {
  		dev_err(&pdev->dev, "error bringing up device\n");
 -- 

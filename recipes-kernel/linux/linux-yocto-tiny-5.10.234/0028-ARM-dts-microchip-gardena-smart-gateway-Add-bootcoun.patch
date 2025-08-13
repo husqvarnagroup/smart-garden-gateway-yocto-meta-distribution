@@ -1,0 +1,31 @@
+From 32aabbf3adc49f8042d11d75e4d74604dd83d377 Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Thu, 11 Jul 2024 20:26:16 +0200
+Subject: [PATCH] ARM: dts: microchip: gardena-smart-gateway: Add bootcounter
+ DT node
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Inappropriate [for U-Boot bootcounter driver]
+---
+ arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts b/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
+index 331ed968f27e..7da14bb1d870 100644
+--- a/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
++++ b/arch/arm/boot/dts/at91sam9g25-gardena-smart-gateway.dts
+@@ -105,6 +105,11 @@ pd21 {
+ 			status = "disabled";
+ 		};
+ 	};
++
++	bootcount@fffffe6c {
++		compatible = "uboot,bootcount";
++		reg = <0xfffffe6c 0x4>;
++	};
+ };
+ 
+ &macb0 {
+-- 
+2.43.0
+

@@ -1,4 +1,4 @@
-From d9b0608835bb9b3ac006a735e448dd8e01eb1166 Mon Sep 17 00:00:00 2001
+From cf4e929296a54678173352c7ad801bc510478478 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Wed, 7 Oct 2020 11:08:59 +0800
 Subject: [PATCH] rtl8xxxu: Enable RX STBC by default
@@ -6,14 +6,14 @@ Subject: [PATCH] rtl8xxxu: Enable RX STBC by default
 (cherry picked from commit f740aef70abe336c63b9a20c5603402dc90cdfee)
 Upstream-Status: Pending [needs (a lot of) work]
 ---
- drivers/net/wireless/realtek/rtl8xxxu/core.c | 2 ++
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/core.c b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-index d1dc43d967c8..b83d92de35fc 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-@@ -8221,6 +8221,8 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 6cc696c47fe0..51ce4cbe9c80 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -7016,6 +7016,8 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
  		sband->ht_cap.mcs.rx_mask[1] = 0xff;
  		sband->ht_cap.cap |= IEEE80211_HT_CAP_SGI_40;
  	}

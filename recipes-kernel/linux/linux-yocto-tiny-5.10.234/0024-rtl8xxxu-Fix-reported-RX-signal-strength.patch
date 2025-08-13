@@ -1,4 +1,4 @@
-From e10158863e6578fcb61975598ab495b86c0bd501 Mon Sep 17 00:00:00 2001
+From f04d2ecea45884a716efa29665a7897ea16cc198 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Tue, 20 Oct 2020 13:27:37 +0800
 Subject: [PATCH] rtl8xxxu: Fix reported RX signal strength
@@ -14,14 +14,14 @@ Add 10dBm to avoid confusion.
 (cherry picked from commit e1a4f83da577474dfa23e85483a83eb7fb707edc)
 Upstream-Status: Pending [needs (a lot of) work]
 ---
- drivers/net/wireless/realtek/rtl8xxxu/core.c | 5 +++++
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 5 +++++
  1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/core.c b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-index b83d92de35fc..1fab9dbd2ae7 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-@@ -5908,6 +5908,11 @@ void rtl8723au_rx_parse_phystats(struct rtl8xxxu_priv *priv,
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 208836c44dd4..03c5075b331d 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -5375,6 +5375,11 @@ static void rtl8xxxu_rx_parse_phystats(struct rtl8xxxu_priv *priv,
  		rx_status->signal =
  			(phy_stats->cck_sig_qual_ofdm_pwdb_all >> 1) - 110;
  	}
@@ -32,7 +32,7 @@ index b83d92de35fc..1fab9dbd2ae7 100644
 +		rx_status->signal += 10;
  }
  
- static void jaguar2_rx_parse_phystats_type0(struct rtl8xxxu_priv *priv,
+ static void rtl8xxxu_free_rx_resources(struct rtl8xxxu_priv *priv)
 -- 
 2.43.0
 
