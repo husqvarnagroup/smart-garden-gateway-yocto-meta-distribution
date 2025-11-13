@@ -17,9 +17,9 @@ IMAGE_INSTALL += " \
     fwrolloutd \
     gateway-config-backend \
     gateway-firmware-zephyr \
+    ipcforward \
     lemonbeatd \
     lwm2mserver \
-    nngforward \
     os-release-dev-nfsboot \
     ssh-authorized-keys-dev \
     sshtunnel \
