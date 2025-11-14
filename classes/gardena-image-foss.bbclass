@@ -6,7 +6,7 @@ IMAGE_INSTALL += " \
     iproute2-tc \
     manufacturing-tools-shim \
     memtester \
-    nngforward \
+    ipcforward \
     rsyslog \
     snapshot \
     tcpdump-sherlock-ppp0 \
