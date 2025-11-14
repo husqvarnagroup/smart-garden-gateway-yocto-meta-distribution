@@ -48,7 +48,6 @@ RDEPENDS:packagegroup-opkg-feed = "\
     rsyslog \
     screen \
     sed \
-    sg-mqtt-client \
     socat \
     srecord \
     ssh-authorized-keys-dev \
