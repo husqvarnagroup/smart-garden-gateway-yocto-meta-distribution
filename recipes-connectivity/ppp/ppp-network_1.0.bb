@@ -11,7 +11,7 @@ SRC_URI = " \
 "
 
 do_install() {
-    install -d 0755 "${D}${systemd_unitdir}/network" "${D}${systemd_unitdir}/system"
+    install -m 0755 -d "${D}${systemd_unitdir}/network" "${D}${systemd_unitdir}/system"
     install -m 0644 "${WORKDIR}/99-ppp0.network" "${D}${systemd_unitdir}/network"
     install -m 0644 "${WORKDIR}/ppp-failure.service" "${D}${systemd_unitdir}/system"
     install -m 0644 "${WORKDIR}/ppp.service" "${D}${systemd_unitdir}/system"
@@ -34,4 +34,4 @@ RDEPENDS:${PN} += " \
 inherit systemd
 SYSTEMD_SERVICE:${PN} = "ppp.service"
 
-PR = "r1"
+PR = "r2"
