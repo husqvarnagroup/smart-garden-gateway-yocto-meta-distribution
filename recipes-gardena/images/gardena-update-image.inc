@@ -5,7 +5,7 @@ DESCRIPTION = "SWUpdate compound image for gardena-image-${IMAGE_ID}"
 
 inherit deploy
 
-INC_PR = "r16"
+INC_PR = "r17"
 
 # Images to build before building swupdate image
 IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_ID}"
@@ -23,6 +23,11 @@ SWUPDATE_IMAGES = "fitImage uEnv gardena-image-${IMAGE_ID} ${UBOOT_FILENAME_IN_D
 SWUPDATE_IMAGES_FSTYPES[fitImage] = ".bin"
 SWUPDATE_IMAGES_FSTYPES[u-boot] = ".bin"
 SWUPDATE_IMAGES_FSTYPES[uEnv] = ".txt"
+
+# We don't want files in `SRC_URI` to be automatically added to the SWU file.
+# We pack U-Boot with a different name (see `do_deploy` in the recipe of the 
+# corresponding update image).
+INHIBIT_SWUPDATE_ADD_SRC_URI = "1"
 
 # We had smart-gateway-mt7688 in swupdate as hardware identification string and
 # need to keep this pattern in order to be able to update every existing gateway.
