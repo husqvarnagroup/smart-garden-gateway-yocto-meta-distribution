@@ -1,4 +1,4 @@
-From a260fbcda974239868ef6b430e8bb40e03ec4691 Mon Sep 17 00:00:00 2001
+From ae1a011dd8a3232877447ae74dd589432830cef9 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 23 May 2019 13:28:46 +0200
 Subject: [PATCH] MIPS: ralink: mt7628a.dtsi: Add ethernet and ESW nodes
@@ -7,16 +7,16 @@ We can not upstream this because there is no DSA switch driver yet in
 mainline.
 
 Signed-off-by: Stefan Roese <sr@denx.de>
-Upstream-Status: Inappropriate [for OpenWRT driver]
+Upstream-Status: Inappropriate [for OpenWrt driver]
 ---
  arch/mips/boot/dts/ralink/mt7628a.dtsi | 27 ++++++++++++++++++++++++++
  1 file changed, 27 insertions(+)
 
 diff --git a/arch/mips/boot/dts/ralink/mt7628a.dtsi b/arch/mips/boot/dts/ralink/mt7628a.dtsi
-index 892e8ab863c5..affba1859fb7 100644
+index 5d7a6cfa9e2b..589baeb3b289 100644
 --- a/arch/mips/boot/dts/ralink/mt7628a.dtsi
 +++ b/arch/mips/boot/dts/ralink/mt7628a.dtsi
-@@ -295,4 +295,31 @@ wmac: wmac@10300000 {
+@@ -300,4 +300,31 @@ wmac: wmac@10300000 {
  
  		status = "disabled";
  	};
@@ -31,8 +31,8 @@ index 892e8ab863c5..affba1859fb7 100644
 +		interrupt-parent = <&cpuintc>;
 +		interrupts = <5>;
 +
-+		resets = <&resetc 21>;
-+		reset-names = "fe";
++		resets = <&sysc 21>, <&sysc 23>;
++		reset-names = "fe", "esw";
 +
 +		status = "disabled";
 +	};
@@ -41,8 +41,8 @@ index 892e8ab863c5..affba1859fb7 100644
 +		compatible = "ralink,rt3050-esw";
 +		reg = <0x10110000 0x8000>;
 +
-+		resets = <&resetc 23>;
-+		reset-names = "esw";
++		resets = <&sysc 24>;
++		reset-names = "ephy";
 +
 +		interrupt-parent = <&intc>;
 +		interrupts = <17>;
