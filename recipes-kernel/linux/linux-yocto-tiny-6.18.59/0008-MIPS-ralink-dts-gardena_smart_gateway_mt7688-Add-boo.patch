@@ -1,4 +1,4 @@
-From ff4abbc3f4ef23cc1852d45d3147dc4261b4fae1 Mon Sep 17 00:00:00 2001
+From b8b502f8cbd60335e2689105d62c81fa7fe6141d Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Tue, 18 Dec 2018 09:26:32 +0100
 Subject: [PATCH] MIPS: ralink: dts: gardena_smart_gateway_mt7688: Add
@@ -9,13 +9,14 @@ it.
 
 Signed-off-by: Stefan Roese <sr@denx.de>
 Upstream-Status: Inappropriate [for U-Boot bootcounter driver]
+(cherry picked from commit e339d5255ea3b8c9fafe4fb64d4aa12edda7c3af)
 ---
  arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts | 7 +++++++
  arch/mips/boot/dts/ralink/mt7628a.dtsi                     | 2 +-
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
-index 8569d89e4e5a..9e1587f1e991 100644
+index 7eb927a30722..4929286c08be 100644
 --- a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
 +++ b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
 @@ -212,3 +212,10 @@ &wmac {
@@ -30,10 +31,10 @@ index 8569d89e4e5a..9e1587f1e991 100644
 +	};
 +};
 diff --git a/arch/mips/boot/dts/ralink/mt7628a.dtsi b/arch/mips/boot/dts/ralink/mt7628a.dtsi
-index 2b9efb1f9adf..e5a1ba8a6a0a 100644
+index 5b90d5cf09ac..3fd05e967466 100644
 --- a/arch/mips/boot/dts/ralink/mt7628a.dtsi
 +++ b/arch/mips/boot/dts/ralink/mt7628a.dtsi
-@@ -28,7 +28,7 @@ cpuintc: interrupt-controller {
+@@ -24,7 +24,7 @@ cpuintc: interrupt-controller {
  		compatible = "mti,cpu-interrupt-controller";
  	};
  
