@@ -16,7 +16,6 @@ IMAGE_INSTALL:append = " \
     iw \
     jq \
     kernel-module-nft-compat \
-    kernel-module-nft-counter \
     kernel-module-nft-ct \
     kernel-module-xt-dscp \
     libubootenv-bin \

@@ -1,4 +1,4 @@
-From 3abfcc4f33cabf1ebd39d85f792dcca5485e577f Mon Sep 17 00:00:00 2001
+From 44881ccdd536d518c4230a23401745dd992798e3 Mon Sep 17 00:00:00 2001
 From: Heiko Schocher <hs@denx.de>
 Date: Mon, 25 Feb 2013 12:39:21 +0100
 Subject: [PATCH] drivers, misc: add U-Boot bootcount driver (enhanced version
@@ -82,14 +82,14 @@ Cc: Ryan Mallon <rmallon@gmail.com>
     - remove __devinit as no longer needed
 
 Signed-off-by: Heiko Schocher <hs@denx.de>
-Upstream-Status: Pending [needs (a lot of) work]
+Upstream-Status: Pending [needs a lot of work (https://lore.kernel.org/lkml/4F268EA1.3090907@denx.de/)]
 ---
  .../testing/sysfs-class-misc-uboot-bootcount  |  11 ++
  .../bindings/misc/uboot-bootcount.txt         |  36 ++++
  drivers/misc/Kconfig                          |   7 +
  drivers/misc/Makefile                         |   1 +
- drivers/misc/uboot_bootcount.c                | 177 ++++++++++++++++++
- 5 files changed, 232 insertions(+)
+ drivers/misc/uboot_bootcount.c                | 176 ++++++++++++++++++
+ 5 files changed, 231 insertions(+)
  create mode 100644 Documentation/ABI/testing/sysfs-class-misc-uboot-bootcount
  create mode 100644 Documentation/devicetree/bindings/misc/uboot-bootcount.txt
  create mode 100644 drivers/misc/uboot_bootcount.c
@@ -154,12 +154,12 @@ index 000000000000..532d237d4a6c
 +	reg = <0x23060 0x20>;
 +};
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index fafa8b0d8099..ee345a5baa4a 100644
+index 3fe7e2a9bd29..0572a9cd44b3 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -423,6 +423,13 @@ config SRAM
- config SRAM_EXEC
- 	bool
+@@ -467,6 +467,13 @@ config DW_XDATA_PCIE
+ 
+ 	  If unsure, say N.
  
 +config UBOOT_BOOTCOUNT
 +	tristate "U-Boot Bootcount driver"
@@ -172,10 +172,10 @@ index fafa8b0d8099..ee345a5baa4a 100644
  	depends on PCI
  	select CRC32
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index d23231e73330..fc36cffcb399 100644
+index a9f94525e181..7a324b7dcf23 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
-@@ -41,6 +41,7 @@ obj-$(CONFIG_PCH_PHUB)		+= pch_phub.o
+@@ -43,6 +43,7 @@ obj-$(CONFIG_PCH_PHUB)		+= pch_phub.o
  obj-y				+= ti-st/
  obj-y				+= lis3lv02d/
  obj-$(CONFIG_ALTERA_STAPL)	+=altera-stapl/
@@ -185,10 +185,10 @@ index d23231e73330..fc36cffcb399 100644
  obj-$(CONFIG_LATTICE_ECP3_CONFIG)	+= lattice-ecp3-config.o
 diff --git a/drivers/misc/uboot_bootcount.c b/drivers/misc/uboot_bootcount.c
 new file mode 100644
-index 000000000000..ffcbabb48a9d
+index 000000000000..04370ffe7fc7
 --- /dev/null
 +++ b/drivers/misc/uboot_bootcount.c
-@@ -0,0 +1,177 @@
+@@ -0,0 +1,176 @@
 +/*
 + * This driver gives access(read/write) to the bootcounter used by u-boot.
 + * Access is supported via sysFS.
@@ -210,6 +210,7 @@ index 000000000000..ffcbabb48a9d
 +#include <linux/of.h>
 +#include <linux/of_address.h>
 +#include <linux/of_platform.h>
++#include <linux/platform_device.h>
 +
 +#define UBOOT_BOOTCOUNT_NAME "bootcount"
 +
@@ -335,12 +336,10 @@ index 000000000000..ffcbabb48a9d
 +	return -ENODEV;
 +}
 +
-+static int bootcount_remove(struct platform_device *ofdev)
++static void bootcount_remove(struct platform_device *ofdev)
 +{
 +	misc_deregister(&bootcount_miscdev);
 +	iounmap(mem);
-+
-+	return 0;
 +}
 +
 +static const struct of_device_id bootcount_match[] = {

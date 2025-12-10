@@ -1,4 +1,4 @@
-From 364c692df7d5364bac91d7972ee06aa49dee7ab0 Mon Sep 17 00:00:00 2001
+From 9c7678cbd9703f12e857e65650fb0b51cb00c7a0 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 23 May 2019 13:39:16 +0200
 Subject: [PATCH] MIPS: ralink: dts: gardena_smart_gateway_mt7688: Add ethernet
@@ -8,17 +8,17 @@ We can not upstream this because there is no DSA switch driver yet in
 mainline.
 
 Signed-off-by: Stefan Roese <sr@denx.de>
-Upstream-Status: Inappropriate [for OpenWRT driver]
+Upstream-Status: Inappropriate [for OpenWrt driver]
 ---
  .../boot/dts/ralink/gardena_smart_gateway_mt7688.dts     | 9 +++++++++
  arch/mips/boot/dts/ralink/mt7628a.dtsi                   | 2 ++
  2 files changed, 11 insertions(+)
 
 diff --git a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
-index 6069b33cf09f..8569d89e4e5a 100644
+index 0bfb1dde9764..7eb927a30722 100644
 --- a/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
 +++ b/arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts
-@@ -116,6 +116,7 @@ ethernet_activity {
+@@ -116,6 +116,7 @@ led-ethernet-activity {
  
  	aliases {
  		serial0 = &uart0;
@@ -42,11 +42,11 @@ index 6069b33cf09f..8569d89e4e5a 100644
  	status = "okay";
  
 diff --git a/arch/mips/boot/dts/ralink/mt7628a.dtsi b/arch/mips/boot/dts/ralink/mt7628a.dtsi
-index affba1859fb7..2b9efb1f9adf 100644
+index 589baeb3b289..5b90d5cf09ac 100644
 --- a/arch/mips/boot/dts/ralink/mt7628a.dtsi
 +++ b/arch/mips/boot/dts/ralink/mt7628a.dtsi
-@@ -310,6 +310,8 @@ ethernet: ethernet@10100000 {
- 		reset-names = "fe";
+@@ -315,6 +315,8 @@ ethernet: ethernet@10100000 {
+ 		reset-names = "fe", "esw";
  
  		status = "disabled";
 +
