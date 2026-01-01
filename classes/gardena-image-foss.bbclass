@@ -10,6 +10,7 @@ IMAGE_INSTALL += " \
     rsyslog \
     snapshot \
     tcpdump-sherlock-ppp0 \
+    websocketd \
 "
 
 inherit gardena-image-base
