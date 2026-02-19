@@ -1,4 +1,4 @@
-From a1e97e02aa53c949a9d5869e5a0d1e12a938d5ff Mon Sep 17 00:00:00 2001
+From d28f0dbed217fa722f8c531d74154252a63c8c8c Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Sun, 23 Jan 2022 19:46:46 +0100
 Subject: [PATCH] rtl8xxxu: Raise error level of IQK failures
@@ -13,10 +13,10 @@ Upstream-Status: Pending
  1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/core.c b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-index 1fab9dbd2ae7..192eadd677c8 100644
+index b0b83508b98d..2cda0a66e3ef 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-@@ -3355,7 +3355,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
+@@ -3376,7 +3376,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
  			break;
  		} else if (i == (retry - 1) && path_a_ok == 0x01) {
  			/* TX IQK OK */
@@ -25,7 +25,7 @@ index 1fab9dbd2ae7..192eadd677c8 100644
  				__func__);
  
  			val32 = rtl8xxxu_read32(priv,
-@@ -3368,7 +3368,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
+@@ -3389,7 +3389,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
  	}
  
  	if (!path_a_ok)
@@ -34,7 +34,7 @@ index 1fab9dbd2ae7..192eadd677c8 100644
  
  	if (priv->tx_paths > 1) {
  		/*
-@@ -3395,6 +3395,9 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
+@@ -3416,6 +3416,9 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
  				break;
  			} else if (i == (retry - 1) && path_b_ok == 0x01) {
  				/* TX IQK OK */
@@ -44,7 +44,7 @@ index 1fab9dbd2ae7..192eadd677c8 100644
  				val32 = rtl8xxxu_read32(priv, REG_TX_POWER_BEFORE_IQK_B);
  				result[t][4] = (val32 >> 16) & 0x3ff;
  				val32 = rtl8xxxu_read32(priv, REG_TX_POWER_AFTER_IQK_B);
-@@ -3403,7 +3406,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
+@@ -3424,7 +3427,7 @@ static void rtl8xxxu_phy_iqcalibrate(struct rtl8xxxu_priv *priv,
  		}
  
  		if (!path_b_ok)

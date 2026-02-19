@@ -1,4 +1,4 @@
-From b466252767e20d7fb0a3bd635b1f268fee570663 Mon Sep 17 00:00:00 2001
+From 46c60959feebf8bc82d79a144e67ca85ab6e6afa Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Tue, 18 Dec 2018 09:26:32 +0100
 Subject: [PATCH] MIPS: ralink: dts: gardena_smart_gateway_mt7688: Add
@@ -9,6 +9,7 @@ it.
 
 Signed-off-by: Stefan Roese <sr@denx.de>
 Upstream-Status: Inappropriate [for U-Boot bootcounter driver]
+(cherry picked from commit e339d5255ea3b8c9fafe4fb64d4aa12edda7c3af)
 ---
  arch/mips/boot/dts/ralink/gardena_smart_gateway_mt7688.dts | 7 +++++++
  arch/mips/boot/dts/ralink/mt7628a.dtsi                     | 2 +-

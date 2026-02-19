@@ -1,4 +1,4 @@
-From 44881ccdd536d518c4230a23401745dd992798e3 Mon Sep 17 00:00:00 2001
+From 366a662e778ff69079853c313875e7bb7188b914 Mon Sep 17 00:00:00 2001
 From: Heiko Schocher <hs@denx.de>
 Date: Mon, 25 Feb 2013 12:39:21 +0100
 Subject: [PATCH] drivers, misc: add U-Boot bootcount driver (enhanced version
@@ -83,6 +83,7 @@ Cc: Ryan Mallon <rmallon@gmail.com>
 
 Signed-off-by: Heiko Schocher <hs@denx.de>
 Upstream-Status: Pending [needs a lot of work (https://lore.kernel.org/lkml/4F268EA1.3090907@denx.de/)]
+(cherry picked from commit d55009037f545a23269ca07a6c9114f5c1f47cba)
 ---
  .../testing/sysfs-class-misc-uboot-bootcount  |  11 ++
  .../bindings/misc/uboot-bootcount.txt         |  36 ++++
@@ -154,10 +155,10 @@ index 000000000000..532d237d4a6c
 +	reg = <0x23060 0x20>;
 +};
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 3fe7e2a9bd29..0572a9cd44b3 100644
+index b9c11f67315f..7fc5e184d92f 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -467,6 +467,13 @@ config DW_XDATA_PCIE
+@@ -479,6 +479,13 @@ config DW_XDATA_PCIE
  
  	  If unsure, say N.
  
@@ -172,11 +173,11 @@ index 3fe7e2a9bd29..0572a9cd44b3 100644
  	depends on PCI
  	select CRC32
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index a9f94525e181..7a324b7dcf23 100644
+index b32a2597d246..ced0e5d00b4a 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
-@@ -43,6 +43,7 @@ obj-$(CONFIG_PCH_PHUB)		+= pch_phub.o
- obj-y				+= ti-st/
+@@ -43,6 +43,7 @@ obj-$(CONFIG_VMWARE_BALLOON)	+= vmw_balloon.o
+ obj-$(CONFIG_PCH_PHUB)		+= pch_phub.o
  obj-y				+= lis3lv02d/
  obj-$(CONFIG_ALTERA_STAPL)	+=altera-stapl/
 +obj-$(CONFIG_UBOOT_BOOTCOUNT)	+= uboot_bootcount.o

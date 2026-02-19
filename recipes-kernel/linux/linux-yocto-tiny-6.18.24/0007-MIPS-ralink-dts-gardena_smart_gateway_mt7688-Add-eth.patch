@@ -1,4 +1,4 @@
-From 9c7678cbd9703f12e857e65650fb0b51cb00c7a0 Mon Sep 17 00:00:00 2001
+From 681a2cf05645f8b760bd6d328e9a077111cf4825 Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Thu, 23 May 2019 13:39:16 +0200
 Subject: [PATCH] MIPS: ralink: dts: gardena_smart_gateway_mt7688: Add ethernet
@@ -8,7 +8,8 @@ We can not upstream this because there is no DSA switch driver yet in
 mainline.
 
 Signed-off-by: Stefan Roese <sr@denx.de>
-Upstream-Status: Inappropriate [for OpenWrt driver]
+Upstream-Status: Inappropriate [for OpenWRT driver]
+(cherry picked from commit ca752fde19951c02f2a96c196a9006346446e3d2)
 ---
  .../boot/dts/ralink/gardena_smart_gateway_mt7688.dts     | 9 +++++++++
  arch/mips/boot/dts/ralink/mt7628a.dtsi                   | 2 ++

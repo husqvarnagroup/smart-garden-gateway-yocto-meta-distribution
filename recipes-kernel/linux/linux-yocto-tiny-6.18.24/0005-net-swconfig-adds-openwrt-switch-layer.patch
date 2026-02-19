@@ -1,20 +1,21 @@
-From fa79585ab3cc5bf5aa012f2ed28ce0d4df3232b9 Mon Sep 17 00:00:00 2001
+From 11c79cd3d3e3f072308c28794ac3b60a33204df0 Mon Sep 17 00:00:00 2001
 From: Felix Fietkau <nbd@nbd.name>
 Date: Fri, 7 Jul 2017 17:24:23 +0200
 Subject: [PATCH] net: swconfig: adds openwrt switch layer
 
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Upstream-Status: Inappropriate [for OpenWrt driver]
+Upstream-Status: Inappropriate [needed for OpenWrt driver]
+(cherry picked from commit 40b9fec5fc9837ca67b2bbdc07dab7d3c969e6a5)
 ---
  drivers/net/phy/Kconfig  | 8 ++++++++
  drivers/net/phy/Makefile | 2 ++
  2 files changed, 10 insertions(+)
 
 diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 01b235b3bb7e..829cf912cf08 100644
+index 98700d069191..0f3488e136ea 100644
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
-@@ -77,6 +77,14 @@ config SFP
+@@ -82,6 +82,14 @@ config SFP
  	depends on HWMON || HWMON=n
  	select MDIO_I2C
  
@@ -28,14 +29,14 @@ index 01b235b3bb7e..829cf912cf08 100644
 +
  comment "MII PHY device drivers"
  
- config AIR_EN8811H_PHY
+ config AS21XXX_PHY
 diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index 90f886844381..c0ccadd0dd2e 100644
+index 76e0db40f879..0cb7d73969a5 100644
 --- a/drivers/net/phy/Makefile
 +++ b/drivers/net/phy/Makefile
-@@ -27,6 +27,8 @@ libphy-$(CONFIG_OPEN_ALLIANCE_HELPERS) += open_alliance_helpers.o
- obj-$(CONFIG_PHYLINK)		+= phylink.o
- obj-$(CONFIG_PHYLIB)		+= libphy.o
+@@ -21,6 +21,8 @@ obj-$(CONFIG_PHYLIB)		+= libphy.o
+ obj-$(CONFIG_PHYLIB)		+= mdio_devres.o
+ obj-$(CONFIG_PHY_PACKAGE)	+= phy_package.o
  
 +obj-$(CONFIG_SWCONFIG)		+= swconfig.o
 +

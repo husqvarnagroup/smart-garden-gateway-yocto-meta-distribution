@@ -1,4 +1,4 @@
-From 466e69ab3c054a5c4c251cd959212c428bd4c372 Mon Sep 17 00:00:00 2001
+From 842e25aee79773b89ee99a6713dcf05af10f8dba Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Wed, 30 Sep 2020 10:20:15 +0800
 Subject: [PATCH] rtl8xxxu: Handle mac80211 get_txpower
@@ -16,7 +16,7 @@ Upstream-Status: Pending [needs (a lot of) work]
  3 files changed, 61 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/8192c.c b/drivers/net/wireless/realtek/rtl8xxxu/8192c.c
-index 5643722602ac..92d3e38cd441 100644
+index 9ef0970ab08b..a307701b5346 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/8192c.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/8192c.c
 @@ -635,6 +635,7 @@ struct rtl8xxxu_fileops rtl8192cu_fops = {
@@ -28,7 +28,7 @@ index 5643722602ac..92d3e38cd441 100644
  	.report_connect = rtl8xxxu_gen1_report_connect,
  	.report_rssi = rtl8xxxu_gen1_report_rssi,
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/core.c b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-index c4cf69b15170..d1dc43d967c8 100644
+index bd0a2d309a1c..5add2de44a0a 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/core.c
 @@ -1490,6 +1490,55 @@ rtl8xxxu_gen1_dbm_to_txpwridx(struct rtl8xxxu_priv *priv, u16 mode, int dbm)
@@ -87,7 +87,7 @@ index c4cf69b15170..d1dc43d967c8 100644
  void
  rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv, int channel, bool ht40)
  {
-@@ -5013,10 +5062,12 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
+@@ -5042,10 +5091,12 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
  	ofdm_txpwridx = priv->fops->dbm_to_txpwridx(priv, WIRELESS_MODE_N_24G,
  						    dbm);
  
@@ -102,7 +102,7 @@ index c4cf69b15170..d1dc43d967c8 100644
  
  	group = rtl8xxxu_gen1_channel_to_group(channel);
  
-@@ -5030,6 +5081,9 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
+@@ -5059,6 +5110,9 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
  		priv->ht40_1s_tx_power_index_B[group] = ofdm_txpwridx;
  	}
  
@@ -112,7 +112,7 @@ index c4cf69b15170..d1dc43d967c8 100644
  	priv->fops->set_tx_power(priv, channel, ht40);
  }
  
-@@ -7859,6 +7913,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
+@@ -7765,6 +7819,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
  	.set_tim = rtl8xxxu_set_tim,
  	.sta_add = rtl8xxxu_sta_add,
  	.sta_remove = rtl8xxxu_sta_remove,
@@ -121,7 +121,7 @@ index c4cf69b15170..d1dc43d967c8 100644
  
  static int rtl8xxxu_parse_usb(struct rtl8xxxu_priv *priv,
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-index 1003c968b619..cc55040cb36f 100644
+index cdd59a59aea4..0c1fd9027fd5 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
 @@ -1836,6 +1836,7 @@ struct rtl8xxxu_priv {
@@ -132,7 +132,7 @@ index 1003c968b619..cc55040cb36f 100644
  	u8 package_type;
  	u32 chip_cut:4;
  	u32 rom_rev:4;
-@@ -1988,6 +1989,7 @@ struct rtl8xxxu_fileops {
+@@ -1987,6 +1988,7 @@ struct rtl8xxxu_fileops {
  	void (*disable_rf) (struct rtl8xxxu_priv *priv);
  	void (*usb_quirks) (struct rtl8xxxu_priv *priv);
  	u8 (*dbm_to_txpwridx)(struct rtl8xxxu_priv *priv, u16 mode, int dbm);
@@ -140,7 +140,7 @@ index 1003c968b619..cc55040cb36f 100644
  	void (*set_tx_power) (struct rtl8xxxu_priv *priv, int channel,
  			      bool ht40);
  	void (*update_rate_mask) (struct rtl8xxxu_priv *priv,
-@@ -2113,6 +2115,7 @@ void rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv,
+@@ -2112,6 +2114,7 @@ void rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv,
  void rtl8188f_channel_to_group(int channel, int *group, int *cck_group);
  void rtl8188f_set_tx_power(struct rtl8xxxu_priv *priv,
  			   int channel, bool ht40);

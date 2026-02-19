@@ -1,4 +1,4 @@
-From 10ca2aba44418a76610b145b34af068ba9961b5e Mon Sep 17 00:00:00 2001
+From e8d443363b5137b7f75f9bee75409126d6521994 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Wed, 16 Jun 2021 10:10:45 +0200
 Subject: [PATCH] net: ethernet: ralink: Import switch driver from OpenWrt
@@ -61,10 +61,10 @@ Upstream-Status: Denied [only DSA drivers will be accepted]
  create mode 100644 include/uapi/linux/switch.h
 
 diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index 9a542e3c9b05..d119481e87ea 100644
+index aead145dd91d..82505fcf74e0 100644
 --- a/drivers/net/ethernet/Kconfig
 +++ b/drivers/net/ethernet/Kconfig
-@@ -176,6 +176,7 @@ source "drivers/net/ethernet/qlogic/Kconfig"
+@@ -177,6 +177,7 @@ source "drivers/net/ethernet/qlogic/Kconfig"
  source "drivers/net/ethernet/brocade/Kconfig"
  source "drivers/net/ethernet/qualcomm/Kconfig"
  source "drivers/net/ethernet/rdc/Kconfig"
@@ -73,10 +73,10 @@ index 9a542e3c9b05..d119481e87ea 100644
  source "drivers/net/ethernet/renesas/Kconfig"
  source "drivers/net/ethernet/rocker/Kconfig"
 diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
-index 99fa180dedb8..4c72dbb37602 100644
+index 998dd628b202..b64ee93b7038 100644
 --- a/drivers/net/ethernet/Makefile
 +++ b/drivers/net/ethernet/Makefile
-@@ -78,6 +78,7 @@ obj-$(CONFIG_NET_VENDOR_PACKET_ENGINES) += packetengines/
+@@ -79,6 +79,7 @@ obj-$(CONFIG_NET_VENDOR_PACKET_ENGINES) += packetengines/
  obj-$(CONFIG_NET_VENDOR_PASEMI) += pasemi/
  obj-$(CONFIG_NET_VENDOR_QLOGIC) += qlogic/
  obj-$(CONFIG_NET_VENDOR_QUALCOMM) += qualcomm/
