@@ -12,10 +12,6 @@ Before=hostapd@%i.service
 Type=dbus
 BusName=fi.w1.wpa_supplicant1
 
-# wpa_supplicant needs to respond to e.g. GTK rekeying requests within 1 second,
-# which is not guaranteed under heavy load without real-time scheduling (SG-22534).
-CPUSchedulingPolicy=rr
-
 # wpa_supplicant conflicts with hostapd, implementation according to
 # https://unix.stackexchange.com/questions/503719/how-to-set-a-conflict-in-systemd-in-one-direction-only/503896#503896
 ExecStartPre=/bin/sh -c 'if systemctl -q is-active hostapd@%i.service; then \
