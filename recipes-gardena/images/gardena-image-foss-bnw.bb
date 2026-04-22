@@ -6,7 +6,6 @@ SUMMARY = "Image with everything we are allowed to make publicly available"
 IMAGE_INSTALL += " \
     accessory-server-foss-dependencies \
     cloudadapter-foss-dependencies \
-    gateway-config-backend-foss-dependencies \
     lemonbeatd-foss-dependencies \
     lwm2mserver-foss-dependencies \
 "
