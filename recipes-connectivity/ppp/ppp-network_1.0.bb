@@ -12,9 +12,9 @@ SRC_URI = " \
 
 do_install() {
     install -m 0755 -d "${D}${systemd_unitdir}/network" "${D}${systemd_unitdir}/system"
-    install -m 0644 "${WORKDIR}/99-ppp0.network" "${D}${systemd_unitdir}/network"
-    install -m 0644 "${WORKDIR}/ppp-failure.service" "${D}${systemd_unitdir}/system"
-    install -m 0644 "${WORKDIR}/ppp.service" "${D}${systemd_unitdir}/system"
+    install -m 0644 "${UNPACKDIR}/99-ppp0.network" "${D}${systemd_unitdir}/network"
+    install -m 0644 "${UNPACKDIR}/ppp-failure.service" "${D}${systemd_unitdir}/system"
+    install -m 0644 "${UNPACKDIR}/ppp.service" "${D}${systemd_unitdir}/system"
 
     sed -i -e 's,@SBINDIR@,${sbindir},g' \
         -e 's,@TTY@,${RADIO_MODULE_PPP_TTY},g' \

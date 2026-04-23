@@ -8,7 +8,7 @@ PR:append = ".2"
 
 do_install:append () {
     install -d ${D}${systemd_unitdir}/system
-    install -m 0644 ${WORKDIR}/zram-run-log-journal.service ${D}${systemd_unitdir}/system/zram-run-log-journal.service
+    install -m 0644 ${UNPACKDIR}/zram-run-log-journal.service ${D}${systemd_unitdir}/system/zram-run-log-journal.service
 }
 
 FILES:${PN} += " \
