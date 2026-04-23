@@ -9,10 +9,10 @@ SRC_URI:append = " \
 
 do_install:append() {
     install -d ${D}${bindir}
-    install -m 755 ${WORKDIR}/hostapd-genconf.sh ${D}${bindir}/hostapd-genconf
+    install -m 755 ${UNPACKDIR}/hostapd-genconf.sh ${D}${bindir}/hostapd-genconf
 
     rm ${D}${systemd_unitdir}/system/hostapd.service
-    install -m 0644 ${WORKDIR}/hostapd@.service ${D}${systemd_unitdir}/system/
+    install -m 0644 ${UNPACKDIR}/hostapd@.service ${D}${systemd_unitdir}/system/
 }
 
 SYSTEMD_SERVICE:${PN} = "hostapd@.service"

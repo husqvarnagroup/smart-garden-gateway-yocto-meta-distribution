@@ -82,6 +82,6 @@ DEPENDS:append = " libgpiod "
 RDEPENDS:${PN}:append  = " libgpiod "
 
 do_install:append () {
-    install -m 0644 ${WORKDIR}/gardena_radio.cfg ${D}${datadir}/openocd/scripts/board/
-    install -m 0644 ${WORKDIR}/gardena_nrf52.cfg ${D}${datadir}/openocd/scripts/board/
+    install -m 0644 ${UNPACKDIR}/gardena_radio.cfg ${D}${datadir}/openocd/scripts/board/
+    install -m 0644 ${UNPACKDIR}/gardena_nrf52.cfg ${D}${datadir}/openocd/scripts/board/
 }

@@ -35,16 +35,16 @@ FILES:${PN} += " \
 
 do_install:append () {
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/swupdate-config.sh ${D}${bindir}/swupdate-config
+    install -m 0755 ${UNPACKDIR}/swupdate-config.sh ${D}${bindir}/swupdate-config
 
     install -d ${D}${datadir}/${PN}
-    install -m 644 ${WORKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/${PN}/sw-update.cert.pem
+    install -m 644 ${UNPACKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/${PN}/sw-update.cert.pem
 
     install -d ${D}${sysconfdir}/swupdate/conf.d
-    install -m 644 ${WORKDIR}/10-suricatta ${D}${sysconfdir}/swupdate/conf.d
+    install -m 644 ${UNPACKDIR}/10-suricatta ${D}${sysconfdir}/swupdate/conf.d
 
     install -d ${D}${sysconfdir}/systemd/system/swupdate.service.d
-    install -m 0644 ${WORKDIR}/swupdate.service_override.conf \
+    install -m 0644 ${UNPACKDIR}/swupdate.service_override.conf \
         ${D}${sysconfdir}/systemd/system/swupdate.service.d/override.conf
 }
 
