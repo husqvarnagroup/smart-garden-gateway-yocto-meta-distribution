@@ -8,6 +8,7 @@ DISTRO ?= "gardena"
 # directory wipe.
 DL_DIR ?= "${HOME}/.cache/yocto/downloads"
 SSTATE_DIR ?= "${HOME}/.cache/yocto/sstate-cache"
+BB_HASHSERVE_DB_DIR = "${SSTATE_DIR}"
 
 # Use OPKG packages
 PACKAGE_CLASSES ?= "package_ipk"

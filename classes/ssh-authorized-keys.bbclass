@@ -11,6 +11,6 @@ FILES:${PN} += "${ROOT_HOME}/.ssh/authorized_keys"
 
 do_install() {
         install -d ${D}${ROOT_HOME}/.ssh/
-        cat ${WORKDIR}/*.pub > ${D}${ROOT_HOME}/.ssh/authorized_keys
+        cat ${UNPACKDIR}/*.pub > ${D}${ROOT_HOME}/.ssh/authorized_keys
         chmod 600 ${D}${ROOT_HOME}/.ssh/authorized_keys
 }
