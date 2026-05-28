@@ -3,9 +3,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}:${THISDIR}/files/${MACHINE_AR
 PR:append = ".0"
 
 SRC_URI += " \
-  file://fw_env.config \
-  file://0001-sg-noup-fw_printenv-Exit-with-error-code-on-unset-va.patch \
-  file://0002-sg-noup-fw_setenv-Support-extra-long-lines.patch \
+    file://fw_env.config \
+    file://0001-fw_printenv-Exit-with-error-code-on-unset-variables.patch \
+    file://0002-fw_setenv-Support-extra-long-lines.patch \
 "
 
 do_install:append() {
