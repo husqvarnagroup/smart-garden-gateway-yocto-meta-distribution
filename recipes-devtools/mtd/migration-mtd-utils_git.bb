@@ -18,7 +18,7 @@ SRC_URI = "git://ssh.dev.azure.com/v3/HQV-Gardena/SG-Gateway/mtd-utils;protocol=
            file://add-exclusion-to-mkfs-jffs2-git-2.patch \
 "
 
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 # xattr support creates an additional compile-time dependency on acl because
 # the sys/acl.h header is needed. libacl is not needed and thus enabling xattr

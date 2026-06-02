@@ -33,27 +33,27 @@ do_compile:append() {
 do_install:append() {
     # Install rsyslog configuration
     install -d "${D}${sysconfdir}/rsyslog.d"
-    install -m 644 ${WORKDIR}/rsyslog.conf ${D}${sysconfdir}/rsyslog.conf
-    install -m 644 ${WORKDIR}/rsyslog.d/20-diagnostics.conf.dev ${D}${sysconfdir}/rsyslog.d/20-diagnostics.conf.dev
-    install -m 644 ${WORKDIR}/rsyslog.d/20-diagnostics.conf.prod ${D}${sysconfdir}/rsyslog.d/20-diagnostics.conf.prod
-    install -m 644 ${WORKDIR}/rsyslog.d/90-severity-forward-filter.conf.prod ${D}${sysconfdir}/rsyslog.d/90-severity-forward-filter.conf.prod
-    install -m 644 ${WORKDIR}/rsyslog.d/90-templates.conf ${D}${sysconfdir}/rsyslog.d/90-templates.conf
+    install -m 644 ${UNPACKDIR}/rsyslog.conf ${D}${sysconfdir}/rsyslog.conf
+    install -m 644 ${UNPACKDIR}/rsyslog.d/20-diagnostics.conf.dev ${D}${sysconfdir}/rsyslog.d/20-diagnostics.conf.dev
+    install -m 644 ${UNPACKDIR}/rsyslog.d/20-diagnostics.conf.prod ${D}${sysconfdir}/rsyslog.d/20-diagnostics.conf.prod
+    install -m 644 ${UNPACKDIR}/rsyslog.d/90-severity-forward-filter.conf.prod ${D}${sysconfdir}/rsyslog.d/90-severity-forward-filter.conf.prod
+    install -m 644 ${UNPACKDIR}/rsyslog.d/90-templates.conf ${D}${sysconfdir}/rsyslog.d/90-templates.conf
 
     # Allow rsyslog-gw-init to access the vanilla configuration at any time
     cp "${D}${sysconfdir}/rsyslog.conf" "${D}${sysconfdir}/rsyslog.conf.prod"
 
     # Install rsyslog gateway init script
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/rsyslog-gw-init.sh ${D}${bindir}/rsyslog-gw-init
+    install -m 0755 ${UNPACKDIR}/rsyslog-gw-init.sh ${D}${bindir}/rsyslog-gw-init
 
     # Install systemd unit files
     install -d ${D}${systemd_unitdir}/system
-    install -m 644 ${WORKDIR}/rsyslog-gw-init.service ${D}${systemd_unitdir}/system
+    install -m 644 ${UNPACKDIR}/rsyslog-gw-init.service ${D}${systemd_unitdir}/system
     sed -i -e 's,@BINDIR@,${bindir},g' \
         ${D}${systemd_unitdir}/system/rsyslog-gw-init.service
 
     # Overwrite upstream service file
-    install -m 644 ${WORKDIR}/rsyslog.service ${D}${systemd_unitdir}/system
+    install -m 644 ${UNPACKDIR}/rsyslog.service ${D}${systemd_unitdir}/system
 
     # Create directory for our serialized messages
     install -d ${D}${localstatedir}/spool/rsyslog
@@ -62,7 +62,7 @@ do_install:append() {
     cp ${B}/${TESTDIR}/syslog_caller ${D}${bindir}/rsyslog-syslog_caller
 
     # Install self-singed server certificate
-    install -Dm 0644 ${WORKDIR}/husqvarna-gateway-remote-logging.crt ${D}${sysconfdir}/ssl/certs/husqvarna-gateway-remote-logging.crt
+    install -Dm 0644 ${UNPACKDIR}/husqvarna-gateway-remote-logging.crt ${D}${sysconfdir}/ssl/certs/husqvarna-gateway-remote-logging.crt
 }
 
 SYSTEMD_SERVICE:${PN} += "rsyslog-gw-init.service"

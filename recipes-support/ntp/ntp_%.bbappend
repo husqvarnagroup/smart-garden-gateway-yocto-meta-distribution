@@ -7,7 +7,7 @@ SRC_URI += " \
 "
 
 do_install:append() {
-	install -m 0644 ${WORKDIR}/ntp.conf ${D}${sysconfdir}
+	install -m 0644 ${UNPACKDIR}/ntp.conf ${D}${sysconfdir}
 
 	# Prevent systemd-timedated from messing with the service
 	rm -r ${D}${systemd_unitdir}/ntp-units.d

@@ -10,7 +10,7 @@ SRC_URI += " \
 
 do_install:append() {
     install -d ${D}${sysconfdir}
-    install -m 0644 ${WORKDIR}/fw_env.config ${D}${sysconfdir}/fw_env.config
+    install -m 0644 ${UNPACKDIR}/fw_env.config ${D}${sysconfdir}/fw_env.config
 
     # Make tools available under the original paths
     install -d ${D}${base_sbindir}

@@ -13,10 +13,10 @@ FILES:${PN} += "\
 
 do_install:append() {
     install -d ${D}${sysconfdir}/default
-    install -m 0644 ${WORKDIR}/chrony_env ${D}${sysconfdir}/default/chronyd
+    install -m 0644 ${UNPACKDIR}/chrony_env ${D}${sysconfdir}/default/chronyd
 
     # Keep driftfile from being erased on update
     install -d ${D}${base_libdir}/upgrade/keep.d
-    install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
+    install -m 0644 ${UNPACKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
 
 }
