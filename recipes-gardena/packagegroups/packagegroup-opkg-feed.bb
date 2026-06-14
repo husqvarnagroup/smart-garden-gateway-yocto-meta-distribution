@@ -25,6 +25,7 @@ RDEPENDS:packagegroup-opkg-feed = "\
     iperf3 \
     iproute2-ip \
     iputils \
+    jemalloc \
     lsof \
     mc \
     minicom \
