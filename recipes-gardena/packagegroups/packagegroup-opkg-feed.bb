@@ -36,6 +36,7 @@ RDEPENDS:packagegroup-opkg-feed = "\
     openssh \
     picocom \
     pstree \
+    procps \
     pv \
     python3-aiocoap \
     python3-dbus-next \
