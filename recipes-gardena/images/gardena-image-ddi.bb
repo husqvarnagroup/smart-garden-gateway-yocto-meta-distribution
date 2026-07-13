@@ -12,7 +12,6 @@ IMAGE_INSTALL += " \
     ipcforward \
     lemonbeatd \
     lwm2mserver \
-    metrics \
     os-release-ddi \
     ssh-authorized-keys-prod \
     sshtunnel \
