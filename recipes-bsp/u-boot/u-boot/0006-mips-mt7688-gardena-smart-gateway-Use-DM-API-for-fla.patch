@@ -1,4 +1,4 @@
-From dea690a632ca5d52280133218de224f031d54b6c Mon Sep 17 00:00:00 2001
+From 5b9c6d6db41b9108340c93a5d405ae3e5deee87c Mon Sep 17 00:00:00 2001
 From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
 Date: Tue, 15 Oct 2024 20:14:56 +0200
 Subject: [PATCH] mips: mt7688: gardena-smart-gateway: Use DM API for flash
@@ -16,11 +16,11 @@ adjusting the value of CONFIG_SF_DEFAULT_SPEED.
 Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
 Upstream-Status: Pending
 ---
- board/gardena/smart-gateway-mt7688/board.c | 45 ++++++++--------------
- 1 file changed, 16 insertions(+), 29 deletions(-)
+ board/gardena/smart-gateway-mt7688/board.c | 49 ++++++++--------------
+ 1 file changed, 18 insertions(+), 31 deletions(-)
 
 diff --git a/board/gardena/smart-gateway-mt7688/board.c b/board/gardena/smart-gateway-mt7688/board.c
-index 0cfde91c94c6..ae35f9d98e59 100644
+index 0cfde91c94c6..bcb8e37b635e 100644
 --- a/board/gardena/smart-gateway-mt7688/board.c
 +++ b/board/gardena/smart-gateway-mt7688/board.c
 @@ -1,3 +1,4 @@
@@ -36,7 +36,15 @@ index 0cfde91c94c6..ae35f9d98e59 100644
  #include <env.h>
  #include <env_internal.h>
  #include <init.h>
-@@ -89,7 +91,7 @@ static bool prepare_uuid_var(const char *fd_ptr, const char *env_var_name,
+@@ -61,6 +63,7 @@ int board_early_init_f(void)
+ 	return 0;
+ }
+ 
++#ifndef CONFIG_SPL_BUILD
+ static bool prepare_uuid_var(const char *fd_ptr, const char *env_var_name,
+ 			     char errorchar)
+ {
+@@ -89,7 +92,7 @@ static bool prepare_uuid_var(const char *fd_ptr, const char *env_var_name,
  static void factory_data_env_config(void)
  {
  	struct factory_data_values *fd;
@@ -45,7 +53,7 @@ index 0cfde91c94c6..ae35f9d98e59 100644
  	int env_updated = 0;
  	char str[UUID_STR_LEN + 1];	/* Enough for UUID stuff */
  	char *env;
-@@ -107,20 +109,16 @@ static void factory_data_env_config(void)
+@@ -107,20 +110,16 @@ static void factory_data_env_config(void)
  	/*
  	 * Get values from factory-data area in SPI NOR
  	 */
@@ -70,7 +78,7 @@ index 0cfde91c94c6..ae35f9d98e59 100644
  	}
  
  	fd = (struct factory_data_values *)buf;
-@@ -173,9 +171,6 @@ static void factory_data_env_config(void)
+@@ -173,9 +172,6 @@ static void factory_data_env_config(void)
  		debug("F-Data:Values match current env values\n");
  	}
  
@@ -80,7 +88,7 @@ index 0cfde91c94c6..ae35f9d98e59 100644
  err_free:
  	free(buf);
  }
-@@ -209,7 +204,7 @@ static void copy_or_generate_uuid(char *fd_ptr, const char *env_var_name)
+@@ -209,7 +205,7 @@ static void copy_or_generate_uuid(char *fd_ptr, const char *env_var_name)
  int do_fd_write(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
  {
  	struct factory_data_values *fd;
@@ -89,7 +97,7 @@ index 0cfde91c94c6..ae35f9d98e59 100644
  	u8 *buf;
  	int ret = CMD_RET_FAILURE;
  
-@@ -219,11 +214,8 @@ int do_fd_write(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
+@@ -219,11 +215,8 @@ int do_fd_write(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
  		return CMD_RET_FAILURE;
  	}
  
@@ -103,7 +111,7 @@ index 0cfde91c94c6..ae35f9d98e59 100644
  		printf("F-Data:Unable to access SPI NOR flash\n");
  		goto err_free;
  	}
-@@ -231,11 +223,10 @@ int do_fd_write(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
+@@ -231,11 +224,10 @@ int do_fd_write(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
  	/* Generate the factory-data struct */
  
  	/* Fist read complete sector into buffer */
@@ -117,7 +125,7 @@ index 0cfde91c94c6..ae35f9d98e59 100644
  	}
  
  	fd = (struct factory_data_values *)buf;
-@@ -272,24 +263,20 @@ int do_fd_write(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
+@@ -272,34 +264,29 @@ int do_fd_write(struct cmd_tbl *cmdtp, int flag, int argc, char *const argv[])
  
  	fd->crc = crc32(0, (u8 *)&fd->magic, FACTORY_DATA_CRC_LEN);
  
@@ -146,6 +154,17 @@ index 0cfde91c94c6..ae35f9d98e59 100644
  err_free:
  	free(buf);
  
+ 	return ret;
+ }
+ 
+-#ifndef CONFIG_SPL_BUILD
+ U_BOOT_CMD(
+ 	fd_write,	1,	0,	do_fd_write,
+ 	"Write test factory-data values to SPI NOR",
+ 	"\n"
+ );
+-#endif
++#endif /* CONFIG_SPL_BUILD */
 -- 
 2.43.0
 
