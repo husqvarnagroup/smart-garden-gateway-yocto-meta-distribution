@@ -1,4 +1,4 @@
-From 0d2af401560ad4237225d13f437eaa6ff623e404 Mon Sep 17 00:00:00 2001
+From ac6232e3c57e52775ef391e053d2368037109d6f Mon Sep 17 00:00:00 2001
 From: Stefan Roese <sr@denx.de>
 Date: Sat, 22 Dec 2018 11:26:46 +0100
 Subject: [PATCH] tty/serial/8250: Call serial8250_enable_ms() from
@@ -28,10 +28,10 @@ Upstream-Status: Inappropriate [hack, still needed?]
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 8785961a2a82..07201c9cc7d8 100644
+index 0c633639f765..fa2098a29a33 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3108,6 +3108,7 @@ static void serial8250_config_port(struct uart_port *port, int flags)
+@@ -3111,6 +3111,7 @@ static void serial8250_config_port(struct uart_port *port, int flags)
  
  	register_dev_spec_attr_grp(up);
  	up->fcr = uart_config[up->port.type].fcr;

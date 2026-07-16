@@ -1,4 +1,4 @@
-From c8edb6882eaa694fc3cebb508b20487b022823a8 Mon Sep 17 00:00:00 2001
+From 29e121b7b537b5c227dbb34d79b6da90e3205d40 Mon Sep 17 00:00:00 2001
 From: Ezra Buehler <ezra@easyb.ch>
 Date: Mon, 15 Jan 2024 22:44:26 +0200
 Subject: [PATCH] net: ethernet: ralink: Fix for newer Linux versions

@@ -1,4 +1,4 @@
-From d72baf890189338a050ab127e962bd1deb4d6492 Mon Sep 17 00:00:00 2001
+From 461871fcb2f05a99ae690b8468a36687d64edc0f Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Tue, 29 Sep 2020 15:51:25 +0800
 Subject: [PATCH] rtl8xxxu: Handle
@@ -42,7 +42,7 @@ index ecbc324e4609..adf1f133d658 100644
  	.update_rate_mask = rtl8xxxu_update_rate_mask,
  	.report_connect = rtl8xxxu_gen1_report_connect,
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/core.c b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-index a17c1084931b..bd0a2d309a1c 100644
+index 25e5fd48b8e2..fa3d80c32803 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/core.c
 @@ -1458,6 +1458,38 @@ void rtl8xxxu_gen2_config_channel(struct ieee80211_hw *hw)
@@ -84,7 +84,7 @@ index a17c1084931b..bd0a2d309a1c 100644
  void
  rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv, int channel, bool ht40)
  {
-@@ -4967,6 +4999,69 @@ void rtl8xxxu_update_ra_report(struct rtl8xxxu_ra_report *rarpt,
+@@ -4955,6 +4987,69 @@ void rtl8xxxu_update_ra_report(struct rtl8xxxu_ra_report *rarpt,
  	rarpt->desc_rate = rate;
  }
  
@@ -154,7 +154,7 @@ index a17c1084931b..bd0a2d309a1c 100644
  static void
  rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  			  struct ieee80211_bss_conf *bss_conf, u64 changed)
-@@ -5097,6 +5192,10 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
+@@ -5085,6 +5180,10 @@ rtl8xxxu_bss_info_changed(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
  	if (changed & BSS_CHANGED_BEACON)
  		schedule_delayed_work(&priv->update_beacon_work, 0);
  
@@ -165,7 +165,7 @@ index a17c1084931b..bd0a2d309a1c 100644
  error:
  	return;
  }
-@@ -6894,6 +6993,9 @@ static int rtl8xxxu_config(struct ieee80211_hw *hw, int radio_idx, u32 changed)
+@@ -6882,6 +6981,9 @@ static int rtl8xxxu_config(struct ieee80211_hw *hw, int radio_idx, u32 changed)
  		priv->fops->config_channel(hw);
  	}
  
@@ -175,7 +175,7 @@ index a17c1084931b..bd0a2d309a1c 100644
  exit:
  	return ret;
  }
-@@ -7789,6 +7891,20 @@ static const struct ieee80211_iface_combination rtl8xxxu_combinations[] = {
+@@ -7777,6 +7879,20 @@ static const struct ieee80211_iface_combination rtl8xxxu_combinations[] = {
  	},
  };
  
@@ -196,7 +196,7 @@ index a17c1084931b..bd0a2d309a1c 100644
  static int rtl8xxxu_probe(struct usb_interface *interface,
  			  const struct usb_device_id *id)
  {
-@@ -7910,6 +8026,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+@@ -7898,6 +8014,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
  		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
  		goto err_set_intfdata;
  	}

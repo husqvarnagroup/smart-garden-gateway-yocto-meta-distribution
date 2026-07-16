@@ -1,4 +1,4 @@
-From 76e3a103525c1e342a92cc2ec1ca5dcdeeb91bd5 Mon Sep 17 00:00:00 2001
+From bc726280165e8b891e2854fed148710ea9500466 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Tue, 20 Oct 2020 13:27:37 +0800
 Subject: [PATCH] rtl8xxxu: Fix reported RX signal strength
@@ -18,10 +18,10 @@ Upstream-Status: Pending [needs (a lot of) work]
  1 file changed, 5 insertions(+)
 
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/core.c b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-index bf9459065f2b..b0b83508b98d 100644
+index 5cf546198505..e0f9f444ba18 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-@@ -5937,6 +5937,11 @@ void rtl8723au_rx_parse_phystats(struct rtl8xxxu_priv *priv,
+@@ -5925,6 +5925,11 @@ void rtl8723au_rx_parse_phystats(struct rtl8xxxu_priv *priv,
  		rx_status->signal =
  			(phy_stats->cck_sig_qual_ofdm_pwdb_all >> 1) - 110;
  	}

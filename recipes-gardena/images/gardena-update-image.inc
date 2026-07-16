@@ -8,7 +8,7 @@ inherit deploy
 INC_PR = "r17"
 
 # Images to build before building swupdate image
-IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_ID}"
+IMAGE_DEPENDS = "virtual/kernel linux-yocto-fitimage u-boot gardena-image-${IMAGE_ID}"
 
 # Define U-Boot filename and version. This is only relevant when the "freshly"
 # built U-Boot binary should get used. See comment below this section.
@@ -20,7 +20,8 @@ UBOOT_FILENAME_IN_DEPLOYDIR = "${@d.getVar('UBOOT_FILENAME')}"
 SWUPDATE_IMAGES = "fitImage uEnv gardena-image-${IMAGE_ID} ${UBOOT_FILENAME_IN_DEPLOYDIR}"
 
 # Configure file extensions of the images (potentially) used in SWUPDATE_IMAGES
-SWUPDATE_IMAGES_FSTYPES[fitImage] = ".bin"
+# linux-yocto-fitimage deploys the FIT image as plain "fitImage", without any
+# extension, hence no file type is configured for it.
 SWUPDATE_IMAGES_FSTYPES[u-boot] = ".bin"
 SWUPDATE_IMAGES_FSTYPES[uEnv] = ".txt"
 

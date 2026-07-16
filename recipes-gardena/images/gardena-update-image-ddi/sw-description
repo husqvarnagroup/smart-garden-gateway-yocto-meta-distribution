@@ -53,9 +53,9 @@ end";
                         installed-directly = true;
                     },
                     {
-                        filename = "fitImage-@@MACHINE@@.bin";
+                        filename = "fitImage";
                         volume = "kernel1";
-                        sha256 = "$swupdate_get_sha256(fitImage-@@MACHINE@@.bin)";
+                        sha256 = "$swupdate_get_sha256(fitImage)";
                         installed-directly = true;
                     },
                     {
@@ -140,9 +140,9 @@ end";
                         installed-directly = true;
                     },
                     {
-                        filename = "fitImage-@@MACHINE@@.bin";
+                        filename = "fitImage";
                         volume = "kernel0";
-                        sha256 = "$swupdate_get_sha256(fitImage-@@MACHINE@@.bin)";
+                        sha256 = "$swupdate_get_sha256(fitImage)";
                         installed-directly = true;
                     },
                     {

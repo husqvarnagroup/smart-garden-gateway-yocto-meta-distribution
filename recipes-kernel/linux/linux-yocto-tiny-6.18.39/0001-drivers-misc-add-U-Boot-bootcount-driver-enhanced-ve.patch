@@ -1,4 +1,4 @@
-From 366a662e778ff69079853c313875e7bb7188b914 Mon Sep 17 00:00:00 2001
+From 91a1058fed391ec88b04569687193334fb91dde7 Mon Sep 17 00:00:00 2001
 From: Heiko Schocher <hs@denx.de>
 Date: Mon, 25 Feb 2013 12:39:21 +0100
 Subject: [PATCH] drivers, misc: add U-Boot bootcount driver (enhanced version

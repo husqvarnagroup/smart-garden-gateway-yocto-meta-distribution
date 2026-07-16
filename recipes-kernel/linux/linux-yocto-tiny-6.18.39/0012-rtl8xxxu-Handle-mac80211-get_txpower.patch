@@ -1,4 +1,4 @@
-From 842e25aee79773b89ee99a6713dcf05af10f8dba Mon Sep 17 00:00:00 2001
+From d8e9bc01fbfce7eaefdbfa19863e548496103ea8 Mon Sep 17 00:00:00 2001
 From: Chris Chiu <chiu@endlessos.org>
 Date: Wed, 30 Sep 2020 10:20:15 +0800
 Subject: [PATCH] rtl8xxxu: Handle mac80211 get_txpower
@@ -28,7 +28,7 @@ index 9ef0970ab08b..a307701b5346 100644
  	.report_connect = rtl8xxxu_gen1_report_connect,
  	.report_rssi = rtl8xxxu_gen1_report_rssi,
 diff --git a/drivers/net/wireless/realtek/rtl8xxxu/core.c b/drivers/net/wireless/realtek/rtl8xxxu/core.c
-index bd0a2d309a1c..5add2de44a0a 100644
+index fa3d80c32803..d6b319e41fe7 100644
 --- a/drivers/net/wireless/realtek/rtl8xxxu/core.c
 +++ b/drivers/net/wireless/realtek/rtl8xxxu/core.c
 @@ -1490,6 +1490,55 @@ rtl8xxxu_gen1_dbm_to_txpwridx(struct rtl8xxxu_priv *priv, u16 mode, int dbm)
@@ -87,7 +87,7 @@ index bd0a2d309a1c..5add2de44a0a 100644
  void
  rtl8xxxu_gen1_set_tx_power(struct rtl8xxxu_priv *priv, int channel, bool ht40)
  {
-@@ -5042,10 +5091,12 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
+@@ -5030,10 +5079,12 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
  	ofdm_txpwridx = priv->fops->dbm_to_txpwridx(priv, WIRELESS_MODE_N_24G,
  						    dbm);
  
@@ -102,7 +102,7 @@ index bd0a2d309a1c..5add2de44a0a 100644
  
  	group = rtl8xxxu_gen1_channel_to_group(channel);
  
-@@ -5059,6 +5110,9 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
+@@ -5047,6 +5098,9 @@ static void rtl8xxxu_update_tx_power(struct rtl8xxxu_priv *priv, int dbm)
  		priv->ht40_1s_tx_power_index_B[group] = ofdm_txpwridx;
  	}
  
@@ -112,7 +112,7 @@ index bd0a2d309a1c..5add2de44a0a 100644
  	priv->fops->set_tx_power(priv, channel, ht40);
  }
  
-@@ -7765,6 +7819,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
+@@ -7753,6 +7807,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
  	.set_tim = rtl8xxxu_set_tim,
  	.sta_add = rtl8xxxu_sta_add,
  	.sta_remove = rtl8xxxu_sta_remove,

@@ -1,4 +1,4 @@
-From e8d443363b5137b7f75f9bee75409126d6521994 Mon Sep 17 00:00:00 2001
+From 4dc8743e2ac7105ede439e62f75fb38288ed96e4 Mon Sep 17 00:00:00 2001
 From: Reto Schneider <reto.schneider@husqvarnagroup.com>
 Date: Wed, 16 Jun 2021 10:10:45 +0200
 Subject: [PATCH] net: ethernet: ralink: Import switch driver from OpenWrt
