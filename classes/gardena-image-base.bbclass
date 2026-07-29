@@ -21,7 +21,6 @@ IMAGE_INSTALL:append = " \
     mtd-utils \
     mtd-utils-ubifs \
     nftables \
-    openocd \
     openssl-ossl-module-legacy \
     packagegroup-core-boot \
     ppp \
