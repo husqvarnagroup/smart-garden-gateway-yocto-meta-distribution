@@ -81,4 +81,7 @@ compress_lic_files() {
     rm -rf "${lic_dir_rootfs}"/*
     install -m 0644 "${WORKDIR}/licenses.tar.xz" "${lic_dir_rootfs}/"
 }
-ROOTFS_POSTPROCESS_COMMAND:append = "compress_lic_files; "
+# license_create_manifest, which populates the directory, is prepended to
+# ROOTFS_POSTUNINSTALL_COMMAND, and that list runs after all postprocess
+# commands
+ROOTFS_POSTUNINSTALL_COMMAND:append = " compress_lic_files"
