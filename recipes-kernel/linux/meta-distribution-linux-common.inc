@@ -2,7 +2,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
 SRC_URI:append = " file://distribution-kmeta;type=kmeta;name=distribution-kmeta;destsuffix=distribution-kmeta"
 
-PR:append = ".19"
+PR:append = ".20"
 
 KERNEL_FEATURES:append = " \
     distro.cfg \
