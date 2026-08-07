@@ -9,6 +9,7 @@ IMAGE_INSTALL += " \
     ipcforward \
     rsyslog \
     snapshot \
+    systemd-networkd \
     tcpdump-sherlock-ppp0 \
     websocketd \
 "
