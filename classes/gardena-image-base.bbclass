@@ -13,8 +13,6 @@ IMAGE_INSTALL:append = " \
     initscripts-readonly-rootfs-overlay \
     iw \
     jq \
-    kernel-module-nft-compat \
-    kernel-module-nft-ct \
     kernel-module-xt-dscp \
     libubootenv-bin \
     lsof \
