@@ -6,7 +6,6 @@ PR:append = ".1"
 
 KERNEL_FEATURES:append = " \
     distro.cfg \
-    features/bpf/bpf.scc \
 "
 
 # the netfilter feature enables a generic set of configs for iptables;
