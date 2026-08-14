@@ -1,0 +1,120 @@
+From 4c786b05e5362ba9cfdbc06b60c26b2be5d5d26b Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Fri, 14 Aug 2026 16:27:41 +0000
+Subject: [PATCH] mtd: spinand: Restore read throughput on slow SoCs
+
+Reading raw NAND on a MediaTek MT7688 is about 7 % slower under
+6.18 than under 5.10, 2.47 MB/s against 2.66 MB/s over 16 MB, and it
+reproduces across boards.
+
+Since commit 8941cd8d295e ("mtd: spinand: use the spi-mem poll
+status APIs") a page load waits through spi_mem_poll_status(). Hosts
+implementing mem_ops->poll_status offload that wait, but the rest fall
+into the generic path, which sleeps usleep_range(2, 5) between status
+reads. Before that commit the wait was a plain spin over the status
+register. A page load takes on the order of 100 us, so on a slow SoC
+the hrtimer and the reschedule per iteration cost more than the wait
+they are meant to cover.
+
+Spin over the status register for as long as a page load is expected to
+take, and fall back to the sleeping poll after that, so a chip that is
+genuinely stuck still times out instead of spinning for 400 ms. Writes
+and erases run for milliseconds and keep sleeping.
+
+Upstream-Status: Pending
+Co-authored-by: Claude Opus 5 <noreply@anthropic.com>
+---
+ drivers/mtd/nand/spi/core.c | 45 ++++++++++++++++++++++++++++++++-----
+ include/linux/mtd/spinand.h |  6 +++++
+ 2 files changed, 45 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/mtd/nand/spi/core.c b/drivers/mtd/nand/spi/core.c
+index 2f656a5e4af89..aa6eb1edb7acf 100644
+--- a/drivers/mtd/nand/spi/core.c
++++ b/drivers/mtd/nand/spi/core.c
+@@ -579,6 +579,43 @@ int spinand_wait(struct spinand_device *spinand, unsigned long initial_delay_us,
+ 	return status & STATUS_BUSY ? -ETIMEDOUT : 0;
+ }
+ 
++/**
++ * spinand_wait_page_load() - Wait for a page load to complete
++ * @spinand: the spinand device
++ * @s: the pointer to variable to store the value of REG_STATUS
++ *
++ * A page load completes in on the order of 100us, short enough that sleeping
++ * between status reads costs more than the wait itself: every iteration of the
++ * sleeping poll pays for an hrtimer and a reschedule, which on a slow SoC is
++ * the larger of the two. Spin over the status register for as long as a page
++ * load is expected to take, and only fall back to the sleeping poll for parts
++ * slower than that, so a stuck chip still times out rather than spinning.
++ *
++ * Return: 0 on success, a negative error code otherwise.
++ */
++static int spinand_wait_page_load(struct spinand_device *spinand, u8 *s)
++{
++	unsigned int spins = SPINAND_READ_SPIN_MAX;
++	u8 status;
++	int ret;
++
++	do {
++		ret = spinand_read_status(spinand, &status);
++		if (ret)
++			return ret;
++
++		if (!(status & STATUS_BUSY)) {
++			if (s)
++				*s = status;
++
++			return 0;
++		}
++	} while (--spins);
++
++	return spinand_wait(spinand, SPINAND_READ_INITIAL_DELAY_US,
++			    SPINAND_READ_POLL_DELAY_US, s);
++}
++
+ static int spinand_read_id_op(struct spinand_device *spinand, u8 naddr,
+ 			      u8 ndummy, u8 *buf)
+ {
+@@ -636,10 +673,7 @@ int spinand_read_page(struct spinand_device *spinand,
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = spinand_wait(spinand,
+-			   SPINAND_READ_INITIAL_DELAY_US,
+-			   SPINAND_READ_POLL_DELAY_US,
+-			   &status);
++	ret = spinand_wait_page_load(spinand, &status);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -802,8 +836,7 @@ static int spinand_mtd_continuous_page_read(struct mtd_info *mtd, loff_t from,
+ 		if (ret)
+ 			goto end_cont_read;
+ 
+-		ret = spinand_wait(spinand, SPINAND_READ_INITIAL_DELAY_US,
+-				   SPINAND_READ_POLL_DELAY_US, NULL);
++		ret = spinand_wait_page_load(spinand, NULL);
+ 		if (ret < 0)
+ 			goto end_cont_read;
+ 
+diff --git a/include/linux/mtd/spinand.h b/include/linux/mtd/spinand.h
+index 07e4d87019c64..536b11799eecc 100644
+--- a/include/linux/mtd/spinand.h
++++ b/include/linux/mtd/spinand.h
+@@ -282,6 +282,12 @@ struct spinand_device;
+  */
+ #define SPINAND_READ_INITIAL_DELAY_US	6
+ #define SPINAND_READ_POLL_DELAY_US	5
++/*
++ * Status reads to spin through before a page load falls back to the sleeping
++ * poll. One SPI transaction each, so this covers the page load time of the
++ * supported parts several times over.
++ */
++#define SPINAND_READ_SPIN_MAX		32
+ #define SPINAND_RESET_INITIAL_DELAY_US	5
+ #define SPINAND_RESET_POLL_DELAY_US	5
+ #define SPINAND_WRITE_INITIAL_DELAY_US	75
+-- 
+2.47.3
+

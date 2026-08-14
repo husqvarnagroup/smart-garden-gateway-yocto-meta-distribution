@@ -24,6 +24,7 @@ SRC_URI += " \
     file://0013-rtl8xxxu-Enable-RX-STBC-by-default.patch \
     file://0014-rtl8xxxu-Fix-reported-RX-signal-strength.patch \
     file://0015-rtl8xxxu-Raise-error-level-of-IQK-failures.patch \
+    file://0016-mtd-spinand-Restore-read-throughput-on-slow-SoCs.patch \
 "
 
 # FIXME: https://lists.yoctoproject.org/g/linux-yocto/topic/linux_kernel_tools/115767170
