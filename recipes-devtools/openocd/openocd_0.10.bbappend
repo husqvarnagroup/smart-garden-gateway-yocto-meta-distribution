@@ -81,7 +81,17 @@ EXTRA_OECONF:append = " --enable-gpiod "
 DEPENDS:append = " libgpiod "
 RDEPENDS:${PN}:append  = " libgpiod "
 
-do_install:append () {
+# The board configurations are only fetched for the machines that actually have
+# a radio module attached to the JTAG/SWD pins.
+install_board_configs () {
     install -m 0644 ${WORKDIR}/gardena_radio.cfg ${D}${datadir}/openocd/scripts/board/
     install -m 0644 ${WORKDIR}/gardena_nrf52.cfg ${D}${datadir}/openocd/scripts/board/
+}
+
+do_install:append:mt7688 () {
+    install_board_configs
+}
+
+do_install:append:at91sam9x5 () {
+    install_board_configs
 }
