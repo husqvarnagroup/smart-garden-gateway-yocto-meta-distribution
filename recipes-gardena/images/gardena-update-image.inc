@@ -5,6 +5,8 @@ DESCRIPTION = "SWUpdate compound image for gardena-image-${IMAGE_ID}"
 
 inherit deploy
 
+COMPATIBLE_MACHINE = "^(gardena-sg-mt7688|gardena-sg-at91sam)$"
+
 INC_PR = "r17"
 
 # Images to build before building swupdate image
