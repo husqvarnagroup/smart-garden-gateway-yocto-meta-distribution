@@ -60,6 +60,10 @@ IMAGE_INSTALL:append:mt7688 = " \
     linux-firmware-mt7628 \
 "
 
+IMAGE_INSTALL:append:qemuarmv5 = " \
+    dummy-u-boot-env \
+"
+
 IMAGE_FEATURES:append = " \
     empty-root-password \
     package-management \
