@@ -24,7 +24,6 @@ IMAGE_INSTALL:append = " \
     mtd-utils \
     mtd-utils-ubifs \
     nftables \
-    openocd \
     openssl-ossl-module-legacy \
     packagegroup-core-boot \
     ppp \
@@ -55,9 +54,18 @@ IMAGE_INSTALL:append = " \
     zram-init \
 "
 
+IMAGE_INSTALL:append:at91sam9x5 = " \
+    openocd \
+"
+
 IMAGE_INSTALL:append:mt7688 = " \
+    openocd \
     kernel-module-mt7603e \
     linux-firmware-mt7628 \
+"
+
+IMAGE_INSTALL:append:qemuarmv5 = " \
+    dummy-u-boot-env \
 "
 
 IMAGE_FEATURES:append = " \
