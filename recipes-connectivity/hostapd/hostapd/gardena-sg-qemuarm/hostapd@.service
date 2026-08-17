@@ -1,0 +1,23 @@
+[Unit]
+Description=Hostapd IEEE 802.11 AP, IEEE 802.1X/WPA/WPA2/EAP/RADIUS Authenticator
+Requires=sys-subsystem-net-devices-%i.device
+After=sys-subsystem-net-devices-%i.device network.target
+
+[Service]
+Type=forking
+PIDFile=/run/hostapd.pid
+
+# generate config
+ExecStartPre=mkdir -p /run/hostapd
+ExecStartPre=hostapd-genconf /run/hostapd/hostapd-%i.conf /etc/hostapd.conf /run/hostapd/hostapd.d /run/hostapd/hostapd.d/%i
+
+# detach dhcpcd
+ExecStartPre=dhcpcd --release %i
+
+ExecStart=hostapd /run/hostapd/hostapd-%i.conf -P /run/hostapd.pid -B -i %i
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
