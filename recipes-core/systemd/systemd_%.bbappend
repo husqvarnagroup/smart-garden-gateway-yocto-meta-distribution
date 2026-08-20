@@ -8,6 +8,8 @@ SRC_URI += "\
     file://systemd-disable-colors.sh \
     file://systemd-disable-pager.sh \
     file://systemd-networkd-wait-online.service \
+    file://10-gardena-skip-flash-probe.rules \
+    file://75-probe_mtd.rules \
     file://99-default.link \
     file://99-husqvarna-default.conf \
 "
@@ -19,7 +21,7 @@ FILES:${PN} += "\
     ${systemd_unitdir}/system/systemd-random-seed.service.d \
 "
 
-PR:append = ".3"
+PR:append = ".4"
 
 do_install:append() {
     # Disable colorized output of system tools (systemctl, etc.)
