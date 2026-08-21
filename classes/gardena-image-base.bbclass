@@ -68,6 +68,7 @@ IMAGE_INSTALL:append:qemuarmv5 = " \
 IMAGE_FEATURES:append = " \
     empty-root-password \
     package-management \
+    python-sourceless \
     ssh-server-dropbear \
 "
 
@@ -82,7 +83,7 @@ LICENSE = "MIT"
 # Default rootfs size: 40 MB
 IMAGE_ROOTFS_SIZE ?= "40960"
 
-inherit core-image
+inherit core-image gardena-python-sourceless
 
 compress_lic_files() {
     lic_dir_rootfs="${IMAGE_ROOTFS}/usr/share/common-licenses"
