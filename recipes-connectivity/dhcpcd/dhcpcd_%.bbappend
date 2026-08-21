@@ -1,6 +1,12 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-PR:append = ".8"
+PR:append = ".9"
+
+# dhcpcd 10.3.1 receives no events from its udev monitor, and while a dev
+# plugin is loaded it does not announce new interfaces from netlink either
+# (src/if-linux.c). An interface showing up after dhcpcd has started, such as
+# wlan0, is then never configured. Without the plugin, netlink is used again.
+PACKAGECONFIG:remove = "udev"
 
 SRC_URI += " \
     file://40-swupdate-check.sh \
