@@ -37,3 +37,6 @@ IMAGE_FSTYPES = "tar"
 
 # Image size may grow way beyond our gateways storage size (→ 1GB)
 IMAGE_ROOTFS_SIZE = "1048576"
+
+# Tracebacks keep their source lines, and there is no space to save here anyway
+IMAGE_FEATURES:remove = "python-sourceless"
