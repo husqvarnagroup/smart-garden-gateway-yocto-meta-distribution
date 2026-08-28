@@ -1,0 +1,123 @@
+From d93f088802be5e3b4547266790e95a382b49f73f Mon Sep 17 00:00:00 2001
+From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Date: Mon, 7 Sep 2026 10:17:06 +0200
+Subject: [PATCH] ARM: dts: qemu-gardena-smart-gateway: Add DT
+
+Signed-off-by: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
+Upstream-Status: Pending
+---
+ arch/arm/boot/dts/Makefile                    |  1 +
+ .../boot/dts/qemu-gardena-smart-gateway.dts   | 89 +++++++++++++++++++
+ 2 files changed, 90 insertions(+)
+ create mode 100644 arch/arm/boot/dts/qemu-gardena-smart-gateway.dts
+
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index d93f01dddc3f..486d633baa20 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1276,6 +1276,7 @@ dtb-$(CONFIG_ARCH_UNIPHIER) += \
+ 	uniphier-pxs2-vodka.dtb \
+ 	uniphier-sld8-ref.dtb
+ dtb-$(CONFIG_ARCH_VERSATILE) += \
++	qemu-gardena-smart-gateway.dtb \
+ 	versatile-ab.dtb \
+ 	versatile-ab-ib2.dtb \
+ 	versatile-pb.dtb
+diff --git a/arch/arm/boot/dts/qemu-gardena-smart-gateway.dts b/arch/arm/boot/dts/qemu-gardena-smart-gateway.dts
+new file mode 100644
+index 000000000000..e9efbc79a1b2
+--- /dev/null
++++ b/arch/arm/boot/dts/qemu-gardena-smart-gateway.dts
+@@ -0,0 +1,89 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Device Tree file for emulated (ARM) GARDENA smart Gateways
++ *
++ *  Copyright (C) 2026 GARDENA GmbH
++ */
++
++#include "versatile-pb.dts"
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "GARDENA smart Gateway (QEMU ARM)";
++	compatible = "gardena,smart-gateway-qemuarm", "arm,versatile-pb";
++
++	gpio-keys {
++		compatible = "gpio-keys";
++
++		user_btn1 {
++			label = "USER_BTN1";
++			gpios = <&gpio0 0 GPIO_ACTIVE_LOW>;
++			linux,code = <KEY_PROG1>;
++		};
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		power_blue {
++			label = "smartgw:power:blue";
++			gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		power_green {
++			label = "smartgw:power:green";
++			gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "timer";
++		};
++
++		power_red {
++			label = "smartgw:power:red";
++			gpios = <&gpio0 3 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		radio_blue {
++			label = "smartgw:radio:blue";
++			gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		radio_green {
++			label = "smartgw:radio:green";
++			gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		radio_red {
++			label = "smartgw:radio:red";
++			gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		internet_blue {
++			label = "smartgw:internet:blue";
++			gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		internet_green {
++			label = "smartgw:internet:green";
++			gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		internet_red {
++			label = "smartgw:internet:red";
++			gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		heartbeat {
++			label = "smartgw:heartbeat";
++			gpios = <&gpio1 3 GPIO_ACTIVE_HIGH>;
++			linux,default-trigger = "heartbeat";
++		};
++	};
++};
+-- 
+2.43.0
+
