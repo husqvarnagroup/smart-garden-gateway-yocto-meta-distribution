@@ -39,4 +39,5 @@ SRC_URI += " \
     file://0028-ARM-dts-microchip-gardena-smart-gateway-Add-bootcoun.patch \
     file://0029-MIPS-ralink-dts-gardena_smart_gateway_mt7688-Fix-pow.patch \
     file://0030-ARM-dts-microchip-gardena-smart-gateway-Fix-power-LE.patch \
+    file://0031-ARM-dts-qemu-gardena-smart-gateway-Add-DT.patch \
 "
