@@ -24,7 +24,6 @@ IMAGE_INSTALL += " \
 # FCT tool dependencies
 IMAGE_INSTALL += " \
     iw \
-    openocd \
     python3-core \
     python3-datetime \
     python3-evdev \
