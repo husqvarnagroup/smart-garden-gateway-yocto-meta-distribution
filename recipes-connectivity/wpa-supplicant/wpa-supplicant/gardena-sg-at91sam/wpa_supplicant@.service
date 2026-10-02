@@ -24,16 +24,6 @@ ExecStartPre=/bin/sh -c 'if systemctl -q is-active hostapd@%i.service; then \
                              exit 75; \
                          fi'
 
-# SG-14607 - only rtl8xxxu is able to scan for APs reliably
-ExecStartPre=-rmmod rtl8192cu rtl_usb rtl8192c_common rtlwifi rtl8xxxu
-ExecStartPre=-modprobe rtl8xxxu
-
-# Wait for the driver to initialize
-ExecStartPre=-/bin/sh -c 'for _ in $(seq 10); do \
-                              iw dev wlan0 info >/dev/null 2>&1 && break; \
-                              sleep 1; \
-                          done'
-
 # SG-16157 Limiting to 15dBm due to EMC requirements
 ExecStartPre=-iw dev wlan0 set txpower limit 1500
 

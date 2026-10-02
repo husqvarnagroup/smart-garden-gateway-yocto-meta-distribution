@@ -27,7 +27,7 @@ UBOOT_VERSION = "2024.01-gardena-1"
 UBOOT_FILENAME = "prebuilt-u-boot-with-spl-${MACHINE}_${UBOOT_VERSION}.bin"
 SRC_URI:append = "file://${UBOOT_FILENAME}"
 do_deploy() {
-    install -D -m 644 ${WORKDIR}/${UBOOT_FILENAME} ${DEPLOYDIR}/${UBOOT_FILENAME_IN_DEPLOYDIR}
+    install -D -m 644 ${UNPACKDIR}/${UBOOT_FILENAME} ${DEPLOYDIR}/${UBOOT_FILENAME_IN_DEPLOYDIR}
 }
 addtask deploy before do_swuimage after do_unpack
 

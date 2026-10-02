@@ -1,4 +1,4 @@
-From 104e24d7d82b1fb15b68d43a922786e928c582d9 Mon Sep 17 00:00:00 2001
+From 64b0c3abf97f7ba8d5ad63211354a7b2cf5a98ee Mon Sep 17 00:00:00 2001
 From: Ezra Buehler <ezra.buehler@husqvarnagroup.com>
 Date: Wed, 7 Feb 2024 12:09:49 +0200
 Subject: [PATCH] mips: mt7688: gardena-smart-gateway: Increase
