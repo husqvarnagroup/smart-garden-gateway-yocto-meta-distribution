@@ -2,11 +2,10 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}:"
 SRC_URI:append = " file://distribution-kmeta;type=kmeta;name=distribution-kmeta;destsuffix=distribution-kmeta"
 
-PR:append = ".18"
+PR:append = ".1"
 
 KERNEL_FEATURES:append = " \
     distro.cfg \
-    features/bpf/bpf.scc \
 "
 
 # the netfilter feature enables a generic set of configs for iptables;

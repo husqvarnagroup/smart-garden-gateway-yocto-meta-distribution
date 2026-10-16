@@ -1,0 +1,5 @@
+# Overrides /usr/lib/udev/rules.d/75-probe_mtd.rules, which runs mtd_probe on
+# every mtdNro device. mtd_probe sets no properties at all on this hardware,
+# and every invocation reads raw flash, which costs the CPU directly.
+#
+# See 10-gardena-skip-flash-probe.rules for the reasoning and the numbers.

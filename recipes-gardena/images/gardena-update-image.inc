@@ -10,7 +10,7 @@ COMPATIBLE_MACHINE = "^(gardena-sg-mt7688|gardena-sg-at91sam)$"
 INC_PR = "r17"
 
 # Images to build before building swupdate image
-IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_ID}"
+IMAGE_DEPENDS = "virtual/kernel linux-yocto-fitimage u-boot gardena-image-${IMAGE_ID}"
 
 # Define U-Boot filename and version. This is only relevant when the "freshly"
 # built U-Boot binary should get used. See comment below this section.
