@@ -13,4 +13,8 @@ IMAGE_INSTALL += " \
     websocketd \
 "
 
+IMAGE_INSTALL:remove:qemuarmv5 = "\
+    tcpdump-sherlock-ppp0 \
+"
+
 inherit gardena-image-base
