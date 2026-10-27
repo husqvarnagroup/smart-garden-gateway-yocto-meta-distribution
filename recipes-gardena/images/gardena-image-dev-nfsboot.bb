@@ -37,3 +37,8 @@ IMAGE_FSTYPES = "tar"
 
 # Image size may grow way beyond our gateways storage size (→ 1GB)
 IMAGE_ROOTFS_SIZE = "1048576"
+
+# NFS images are only used for development, being able to edit the sources
+# directly makes debugging a lot easier. Moreover tracebacks keep their
+# source lines. And there is no space to save here anyway.
+IMAGE_FEATURES:remove = "python-sourceless"
