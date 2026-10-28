@@ -20,4 +20,8 @@ IMAGE_INSTALL += " \
     swupdate-check \
 "
 
+IMAGE_INSTALL:remove:qemuarmv5 = "\
+    gateway-firmware-zephyr \
+"
+
 inherit gardena-image-foss

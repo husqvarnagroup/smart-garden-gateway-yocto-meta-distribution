@@ -31,7 +31,12 @@ RDEPENDS:${PN} += " \
     gateway-firmware-zephyr \
 "
 
+# QEMU has no radio module, so ppp.service would wait for rm-flashing.service
+# (which needs the radio module) and degrade the system.
+RDEPENDS:${PN}:remove:qemuarmv5 = "gateway-firmware-zephyr"
+
 inherit systemd
 SYSTEMD_SERVICE:${PN} = "ppp.service"
+SYSTEMD_SERVICE:${PN}:remove:qemuarmv5 = "ppp.service"
 
-PR = "r2"
+PR = "r3"

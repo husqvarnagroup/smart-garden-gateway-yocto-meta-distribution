@@ -68,6 +68,10 @@ IMAGE_INSTALL:append:qemuarmv5 = " \
     dummy-u-boot-env \
 "
 
+IMAGE_INSTALL:remove:qemuarmv5 = " \
+    reset-rm \
+"
+
 IMAGE_FEATURES:append = " \
     empty-root-password \
     package-management \
