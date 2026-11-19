@@ -11,14 +11,8 @@ IMAGE_INSTALL:append = " \
     hostapd \
     i2c-tools \
     initscripts-readonly-rootfs-overlay \
-    iptables \
-    iptables-modules \
     iw \
     jq \
-    kernel-module-nft-compat \
-    kernel-module-nft-counter \
-    kernel-module-nft-ct \
-    kernel-module-xt-dscp \
     libubootenv-bin \
     lsof \
     mtd-utils \
