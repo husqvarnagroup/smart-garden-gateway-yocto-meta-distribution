@@ -2,8 +2,10 @@
 
 IMAGE_INSTALL += " \
     devpkginstaller \
+    gateway-config-backend \
     healthcheck \
     iproute2-tc \
+    lemonbeatd \
     manufacturing-tools-shim \
     memtester \
     ipcforward \

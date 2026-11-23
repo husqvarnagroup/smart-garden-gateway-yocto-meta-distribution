@@ -7,10 +7,8 @@ IMAGE_INSTALL += " \
     cloudadapter \
     coap-transport-proxy \
     fwrolloutd \
-    gateway-config-backend \
     gateway-firmware-zephyr \
     ipcforward \
-    lemonbeatd \
     lwm2mserver \
     os-release-bnw-zephyr \
     ssh-authorized-keys-prod \
