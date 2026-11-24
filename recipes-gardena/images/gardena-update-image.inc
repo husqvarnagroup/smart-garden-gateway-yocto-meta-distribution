@@ -15,7 +15,6 @@ IMAGE_DEPENDS = "virtual/kernel u-boot gardena-image-${IMAGE_ID}"
 # Define U-Boot filename and version. This is only relevant when the "freshly"
 # built U-Boot binary should get used. See comment below this section.
 UBOOT_FILENAME = "u-boot-with-spl.bin-${MACHINE}"
-UBOOT_VERSION = "${@d.getVar("PREFERRED_VERSION_u-boot", False)}"
 UBOOT_FILENAME_IN_DEPLOYDIR = "${@d.getVar('UBOOT_FILENAME')}"
 
 # Images and files that will be included in the .swu image
