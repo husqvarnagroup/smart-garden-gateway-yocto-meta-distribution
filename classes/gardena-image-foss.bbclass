@@ -1,6 +1,7 @@
 # Base for all GARDENA images; Open Source software only
 
 IMAGE_INSTALL += " \
+    coap-transport-proxy \
     devpkginstaller \
     fwrolloutd \
     gateway-config-backend \

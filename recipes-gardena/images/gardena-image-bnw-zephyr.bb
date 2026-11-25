@@ -5,7 +5,6 @@ SUMMARY = "The GARDENA image for Zephyr based RM firmwares"
 IMAGE_INSTALL += " \
     accessory-server \
     cloudadapter \
-    coap-transport-proxy \
     gateway-firmware-zephyr \
     ipcforward \
     lwm2mserver \
