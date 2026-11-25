@@ -9,7 +9,6 @@ IMAGE_INSTALL += " \
     fwrolloutd \
     gateway-firmware-zephyr \
     ipcforward \
-    lemonbeatd \
     lwm2mserver \
     os-release-bnw-zephyr \
     ssh-authorized-keys-prod \

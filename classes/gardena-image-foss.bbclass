@@ -6,6 +6,7 @@ IMAGE_INSTALL += " \
     healthcheck \
     ipcforward \
     iproute2-tc \
+    lemonbeatd \
     manufacturing-tools-shim \
     memtester \
     rsyslog \
