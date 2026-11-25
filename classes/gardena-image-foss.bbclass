@@ -2,6 +2,7 @@
 
 IMAGE_INSTALL += " \
     devpkginstaller \
+    gateway-config-backend \
     healthcheck \
     ipcforward \
     iproute2-tc \

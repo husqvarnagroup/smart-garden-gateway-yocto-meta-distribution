@@ -7,7 +7,6 @@ IMAGE_INSTALL += " \
     cloudadapter \
     coap-transport-proxy \
     fwrolloutd \
-    gateway-config-backend \
     gateway-firmware-zephyr \
     ipcforward \
     lemonbeatd \
