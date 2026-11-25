@@ -1,12 +1,16 @@
 # Base for all GARDENA images; Open Source software only
 
 IMAGE_INSTALL += " \
+    coap-transport-proxy \
     devpkginstaller \
+    fwrolloutd \
+    gateway-config-backend \
     healthcheck \
+    ipcforward \
     iproute2-tc \
+    lemonbeatd \
     manufacturing-tools-shim \
     memtester \
-    ipcforward \
     rsyslog \
     snapshot \
     tcpdump-sherlock-ppp0 \
