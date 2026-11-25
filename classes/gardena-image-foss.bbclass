@@ -3,10 +3,10 @@
 IMAGE_INSTALL += " \
     devpkginstaller \
     healthcheck \
+    ipcforward \
     iproute2-tc \
     manufacturing-tools-shim \
     memtester \
-    ipcforward \
     rsyslog \
     snapshot \
     tcpdump-sherlock-ppp0 \
