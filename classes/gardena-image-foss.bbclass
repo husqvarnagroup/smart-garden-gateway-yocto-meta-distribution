@@ -2,6 +2,7 @@
 
 IMAGE_INSTALL += " \
     devpkginstaller \
+    fwrolloutd \
     gateway-config-backend \
     healthcheck \
     ipcforward \

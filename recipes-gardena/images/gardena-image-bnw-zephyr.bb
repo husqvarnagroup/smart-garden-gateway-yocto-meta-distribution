@@ -6,7 +6,6 @@ IMAGE_INSTALL += " \
     accessory-server \
     cloudadapter \
     coap-transport-proxy \
-    fwrolloutd \
     gateway-firmware-zephyr \
     ipcforward \
     lwm2mserver \
