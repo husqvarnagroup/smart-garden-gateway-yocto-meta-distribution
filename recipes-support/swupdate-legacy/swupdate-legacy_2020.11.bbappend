@@ -40,10 +40,10 @@ FILES:${PN} += " \
 do_install:append () {
     # Put the certifcate in the same place it was before (not /usr/share/swupdate-legacy)
     install -d ${D}${datadir}/swupdate/
-    install -m 644 ${WORKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/swupdate/sw-update.cert.pem
+    install -m 644 ${UNPACKDIR}/2018-10-11-smart_gateway_mt7688-sw-update.cert.pem ${D}${datadir}/swupdate/sw-update.cert.pem
 
     install -d ${D}${sysconfdir}
-    install -m 644 ${WORKDIR}/swupdate.cfg ${D}${sysconfdir}
+    install -m 644 ${UNPACKDIR}/swupdate.cfg ${D}${sysconfdir}
 }
 
 RDEPENDS:${PN} += "components-introspection"

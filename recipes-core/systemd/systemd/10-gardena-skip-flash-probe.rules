@@ -1,0 +1,17 @@
+# Skip content probing of raw flash devices.
+#
+# Reading the SPI NAND is pure CPU on this SoC - 640 kB out of /dev/mtd0ro
+# takes 0.27 s of wall clock and 0.27 s of CPU - and at boot every read
+# competes with the root filesystem on the same chip. blkid on the four UBI
+# volumes is among the slowest udev events of the whole boot.
+#
+# Nothing consumes what it produces. The root is mounted from
+# /dev/ubiblock0_0 and the overlay by volume number, both from the kernel
+# command line, and the only rule in the image that reads ID_FS_USAGE,
+# swupdate-usb.rules, matches USB block devices. Dropped along with the
+# properties is /dev/disk/by-uuid for the overlay volume, which nothing
+# refers to.
+#
+# Block devices are left alone, so /dev/ubiblock0_0 is still probed.
+
+SUBSYSTEM=="ubi", ENV{UDEV_DISABLE_PERSISTENT_STORAGE_RULES_FLAG}="1"

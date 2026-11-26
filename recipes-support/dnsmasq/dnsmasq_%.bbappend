@@ -9,10 +9,10 @@ SRC_URI:append = " \
 
 do_install:append() {
     rm ${D}/${systemd_unitdir}/system/dnsmasq.service
-    install -m 644 ${WORKDIR}/dnsmasq@.service ${D}/${systemd_unitdir}/system/
+    install -m 644 ${UNPACKDIR}/dnsmasq@.service ${D}/${systemd_unitdir}/system/
 
     install -d ${D}${sysconfdir}/dnsmasq.d/wlan0
-    install -m 644 ${WORKDIR}/dnsmasq.d/wlan0/gardena.conf ${D}${sysconfdir}/dnsmasq.d/wlan0/
+    install -m 644 ${UNPACKDIR}/dnsmasq.d/wlan0/gardena.conf ${D}${sysconfdir}/dnsmasq.d/wlan0/
 }
 
 SYSTEMD_SERVICE:${PN} = "dnsmasq@.service"

@@ -21,7 +21,7 @@ do_rootfs[depends] += "${PYTHON_PN}-native:do_populate_sysroot"
 # Update it when the Python version changes, e.g.:
 #   Python 3.12 (Yocto Scarthgap): cb0d0d0a
 #   Python 3.14 (Yocto Wrynose):   2b0e0d0a
-PYTHON_SOURCELESS_MAGIC = "cb0d0d0a"
+PYTHON_SOURCELESS_MAGIC = "2b0e0d0a"
 
 # Only the Python library tree is made sourceless. Scripts in other places
 # (e.g. /usr/bin/foo.py) are run by path and need their source.

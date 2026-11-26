@@ -26,7 +26,7 @@ do_configure:append() {
 do_install:append() {
     # Keep on updates
     install -d ${D}${base_libdir}/upgrade/keep.d
-    install -m 0644 ${WORKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
+    install -m 0644 ${UNPACKDIR}/keep.d/${PN} ${D}${base_libdir}/upgrade/keep.d
 
     # Remove unneeded service files
     rm ${D}/${systemd_unitdir}/system/wpa_supplicant-nl80211@.service
@@ -34,10 +34,10 @@ do_install:append() {
     rm ${D}/${systemd_unitdir}/system/wpa_supplicant.service
 
     # Install customized unit
-    install -m 644 ${WORKDIR}/wpa_supplicant@.service ${D}/${systemd_unitdir}/system/
+    install -m 644 ${UNPACKDIR}/wpa_supplicant@.service ${D}/${systemd_unitdir}/system/
 
     # Install D-Bus service
-    install -m 644 ${WORKDIR}/dbus/fi.w1.wpa_supplicant1.service ${D}/${datadir}/dbus-1/system-services
+    install -m 644 ${UNPACKDIR}/dbus/fi.w1.wpa_supplicant1.service ${D}/${datadir}/dbus-1/system-services
     # Hack for D-Bus alias
     ln -s wpa_supplicant@.service ${D}/${systemd_unitdir}/system/dbus-fi.w1.wpa_supplicant1@.service
 
